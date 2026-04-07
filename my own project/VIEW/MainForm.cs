@@ -1,4 +1,5 @@
 ﻿using my_own_project.DesignForms;
+using my_own_project.VIEW;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -70,6 +71,7 @@ namespace my_own_project
         private void btnTable_Click(object sender, EventArgs e)
         {
             ActivateButton(sender);
+            AddControls(new TableForm());
         }
 
         private void btnProducts_Click(object sender, EventArgs e)
