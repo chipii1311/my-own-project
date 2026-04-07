@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             this.pnlFunction = new System.Windows.Forms.Panel();
-            this.btnCustomer = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.btnPOS = new System.Windows.Forms.Button();
             this.btnTable = new System.Windows.Forms.Button();
             this.btnProducts = new System.Windows.Forms.Button();
@@ -45,9 +42,6 @@
             // pnlFunction
             // 
             this.pnlFunction.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
-            this.pnlFunction.Controls.Add(this.btnCustomer);
-            this.pnlFunction.Controls.Add(this.button5);
-            this.pnlFunction.Controls.Add(this.button4);
             this.pnlFunction.Controls.Add(this.btnPOS);
             this.pnlFunction.Controls.Add(this.btnTable);
             this.pnlFunction.Controls.Add(this.btnProducts);
@@ -58,63 +52,6 @@
             this.pnlFunction.Name = "pnlFunction";
             this.pnlFunction.Size = new System.Drawing.Size(263, 836);
             this.pnlFunction.TabIndex = 0;
-            // 
-            // btnCustomer
-            // 
-            this.btnCustomer.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnCustomer.FlatAppearance.BorderSize = 0;
-            this.btnCustomer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCustomer.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCustomer.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnCustomer.Image = global::my_own_project.Properties.Resources.icons8_customer_30;
-            this.btnCustomer.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCustomer.Location = new System.Drawing.Point(0, 680);
-            this.btnCustomer.Name = "btnCustomer";
-            this.btnCustomer.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            this.btnCustomer.Size = new System.Drawing.Size(263, 100);
-            this.btnCustomer.TabIndex = 7;
-            this.btnCustomer.Text = "   Customer";
-            this.btnCustomer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCustomer.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnCustomer.UseVisualStyleBackColor = true;
-            // 
-            // button5
-            // 
-            this.button5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.button5.FlatAppearance.BorderSize = 0;
-            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button5.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button5.Image = global::my_own_project.Properties.Resources.icons8_cart_30;
-            this.button5.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button5.Location = new System.Drawing.Point(0, 580);
-            this.button5.Name = "button5";
-            this.button5.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            this.button5.Size = new System.Drawing.Size(263, 100);
-            this.button5.TabIndex = 6;
-            this.button5.Text = "   Category";
-            this.button5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button5.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.button5.UseVisualStyleBackColor = true;
-            // 
-            // button4
-            // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.button4.FlatAppearance.BorderSize = 0;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.button4.Image = global::my_own_project.Properties.Resources.icons8_cart_30;
-            this.button4.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button4.Location = new System.Drawing.Point(0, 480);
-            this.button4.Name = "button4";
-            this.button4.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
-            this.button4.Size = new System.Drawing.Size(263, 100);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "   Category";
-            this.button4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.button4.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.button4.UseVisualStyleBackColor = true;
             // 
             // btnPOS
             // 
@@ -244,9 +181,6 @@
         private System.Windows.Forms.Panel pnlFunction;
         private System.Windows.Forms.Panel pnlLogo;
         private System.Windows.Forms.Button btnCategory;
-        private System.Windows.Forms.Button btnCustomer;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button btnPOS;
         private System.Windows.Forms.Button btnTable;
         private System.Windows.Forms.Button btnProducts;
