@@ -23,5 +23,10 @@ namespace my_own_project.DesignForms
             MainForm f = new MainForm();
             f.Show();
         }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
