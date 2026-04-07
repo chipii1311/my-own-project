@@ -93,6 +93,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\UserBLL.cs" />
+    <Compile Include="BLL\MenuItemBLL.cs" />
+    <Compile Include="BLL\CategoryBLL.cs" />
+    <Compile Include="BLL\RestaurantBLL.cs" />
+    <Compile Include="BLL\OrderBLL.cs" />
+    <Compile Include="BLL\OrderDetailBLL.cs" />
+    <Compile Include="BLL\PaymentBLL.cs" />
+    <Compile Include="BLL\DiningTableBLL.cs" />
+    <Compile Include="BLL\IngredientBLL.cs" />
+    <Compile Include="BLL\StaffBLL.cs" />
+    <Compile Include="BLL\PromotionBLL.cs" />
+    <Compile Include="BLL\FeedbackBLL.cs" />
+    <Compile Include="BLL\RecipeBLL.cs" />
+    <Compile Include="BLL\InventoryTransactionBLL.cs" />
     <Compile Include="DAL\MenuItemDAL.cs" />
     <Compile Include="DAL\OrderDAL.cs" />
     <Compile Include="DAL\OrderDetailDAL.cs" />
@@ -301,8 +315,6 @@
   <ItemGroup>
     <None Include="Resources\icons8-take-away-food-94.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="BLL\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
