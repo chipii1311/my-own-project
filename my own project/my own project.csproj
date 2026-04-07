@@ -94,6 +94,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\DataHelper.cs" />
+    <Compile Include="DAL\DTO\MenuItemDTO.cs" />
+    <Compile Include="DAL\DTO\OrderHistoryDTO.cs" />
+    <Compile Include="DAL\DTO\InventoryTransactionDTO.cs" />
+    <Compile Include="DAL\DTO\DiningTableDTO.cs" />
+    <Compile Include="DAL\DTO\OrderDetailDTO.cs" />
+    <Compile Include="DAL\DTO\OrderDTO.cs" />
+    <Compile Include="DAL\DTO\RecipeDTO.cs" />
+    <Compile Include="DAL\DTO\IngredientDTO.cs" />
+    <Compile Include="DAL\DTO\PromotionDetailDTO.cs" />
+    <Compile Include="DAL\DTO\PromotionDTO.cs" />
+    <Compile Include="DAL\DTO\FeedbackDTO.cs" />
+    <Compile Include="DAL\DTO\PaymentDTO.cs" />
+    <Compile Include="DAL\DTO\CategoryDTO.cs" />
+    <Compile Include="DAL\DTO\RestaurantDTO.cs" />
+    <Compile Include="DAL\DTO\StaffDTO.cs" />
+    <Compile Include="DAL\DTO\UserDTO.cs" />
+    <Compile Include="Helpers\CurrentUser.cs" />
     <Compile Include="VIEW\AddTable.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -272,8 +289,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BLL\" />
-    <Folder Include="DAL\DTO\" />
-    <Folder Include="DTO\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
