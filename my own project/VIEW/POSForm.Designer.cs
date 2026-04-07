@@ -282,9 +282,9 @@
             // 
             this.flowLayoutPanel1.AutoScroll = true;
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 71);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 65);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1027, 794);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1027, 800);
             this.flowLayoutPanel1.TabIndex = 1;
             // 
             // panel6
@@ -292,7 +292,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1027, 71);
+            this.panel6.Size = new System.Drawing.Size(1027, 65);
             this.panel6.TabIndex = 0;
             // 
             // POSForm
