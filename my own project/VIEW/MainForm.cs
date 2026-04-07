@@ -1,4 +1,5 @@
 ﻿using my_own_project.DesignForms;
+using my_own_project.Helpers;
 using my_own_project.VIEW;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,18 @@ namespace my_own_project
         private void btnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            if (CurrentUser.IsLoggedIn)
+            {
+                lblUserName.Text = "Welcome, " + CurrentUser.FullName;
+            }
+            else
+            {
+                lblUserName.Text = "Welcome, Guest";
+            }
         }
     }
 }
