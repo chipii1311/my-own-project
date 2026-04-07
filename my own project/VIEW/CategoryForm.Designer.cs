@@ -28,13 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgvSTT = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvEdit = new System.Windows.Forms.DataGridViewImageColumn();
-            this.dgvDelete = new System.Windows.Forms.DataGridViewImageColumn();
+            this.dgvEdit = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.dgvDelete = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -53,7 +52,6 @@
             // 
             // dataGridView1
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -89,19 +87,17 @@
             // 
             // dgvEdit
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dgvEdit.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvEdit.HeaderText = "";
-            this.dgvEdit.Image = global::my_own_project.Properties.Resources.icons8_edit_161;
             this.dgvEdit.MinimumWidth = 8;
             this.dgvEdit.Name = "dgvEdit";
+            this.dgvEdit.Text = "Edit";
             // 
             // dgvDelete
             // 
             this.dgvDelete.HeaderText = "";
-            this.dgvDelete.Image = global::my_own_project.Properties.Resources.icons8_delete_16;
             this.dgvDelete.MinimumWidth = 8;
             this.dgvDelete.Name = "dgvDelete";
+            this.dgvDelete.Text = "Delete";
             // 
             // CategoryForm
             // 
@@ -129,7 +125,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvSTT;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvID;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvName;
-        private System.Windows.Forms.DataGridViewImageColumn dgvEdit;
-        private System.Windows.Forms.DataGridViewImageColumn dgvDelete;
+        private System.Windows.Forms.DataGridViewButtonColumn dgvEdit;
+        private System.Windows.Forms.DataGridViewButtonColumn dgvDelete;
     }
 }

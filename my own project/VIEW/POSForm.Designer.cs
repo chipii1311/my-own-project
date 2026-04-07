@@ -51,12 +51,10 @@
             this.dgvQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel6 = new System.Windows.Forms.Panel();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -94,7 +92,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel3.Location = new System.Drawing.Point(0, 49);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(361, 865);
+            this.panel3.Size = new System.Drawing.Size(375, 865);
             this.panel3.TabIndex = 3;
             // 
             // button10
@@ -270,36 +268,28 @@
             // 
             // panel5
             // 
-            this.panel5.Controls.Add(this.flowLayoutPanel1);
-            this.panel5.Controls.Add(this.panel6);
-            this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel5.Location = new System.Drawing.Point(361, 49);
+            this.panel5.BackColor = System.Drawing.Color.DimGray;
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel5.Location = new System.Drawing.Point(375, 49);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(1027, 865);
+            this.panel5.Size = new System.Drawing.Size(2, 865);
             this.panel5.TabIndex = 5;
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.AutoScroll = true;
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 65);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1027, 800);
-            this.flowLayoutPanel1.TabIndex = 1;
             // 
             // panel6
             // 
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel6.Location = new System.Drawing.Point(0, 0);
+            this.panel6.BackColor = System.Drawing.Color.DimGray;
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panel6.Location = new System.Drawing.Point(1386, 49);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1027, 65);
-            this.panel6.TabIndex = 0;
+            this.panel6.Size = new System.Drawing.Size(2, 865);
+            this.panel6.TabIndex = 6;
             // 
             // POSForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2079, 971);
+            this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
@@ -311,7 +301,6 @@
             this.panel3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.panel5.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -334,14 +323,13 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvName;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvPrice;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvQuantity;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvTotal;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.Panel panel6;
     }
 }
