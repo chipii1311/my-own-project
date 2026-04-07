@@ -82,7 +82,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1034, 615);
+            this.ClientSize = new System.Drawing.Size(1054, 633);
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.lblSearch);
             this.Controls.Add(this.btnAdd);
