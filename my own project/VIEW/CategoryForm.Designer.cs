@@ -46,7 +46,7 @@
             // 
             this.btnAdd.FlatAppearance.BorderSize = 0;
             this.btnAdd.Image = global::my_own_project.Properties.Resources.icons8_add_100;
-            this.btnAdd.Location = new System.Drawing.Point(126, 118);
+            this.btnAdd.Location = new System.Drawing.Point(122, 118);
             this.btnAdd.Size = new System.Drawing.Size(144, 138);
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click_1);
             // 
