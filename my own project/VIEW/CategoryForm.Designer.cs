@@ -91,6 +91,7 @@
             this.dgvEdit.MinimumWidth = 8;
             this.dgvEdit.Name = "dgvEdit";
             this.dgvEdit.Text = "Edit";
+            this.dgvEdit.UseColumnTextForButtonValue = true;
             // 
             // dgvDelete
             // 
@@ -98,6 +99,7 @@
             this.dgvDelete.MinimumWidth = 8;
             this.dgvDelete.Name = "dgvDelete";
             this.dgvDelete.Text = "Delete";
+            this.dgvDelete.UseColumnTextForButtonValue = true;
             // 
             // CategoryForm
             // 
