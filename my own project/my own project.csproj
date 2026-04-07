@@ -93,6 +93,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAL\MenuItemDAL.cs" />
+    <Compile Include="DAL\OrderDAL.cs" />
+    <Compile Include="DAL\OrderDetailDAL.cs" />
+    <Compile Include="DAL\PaymentDAL.cs" />
+    <Compile Include="DAL\IngredientDAL.cs" />
+    <Compile Include="DAL\RestaurantDAL.cs" />
+    <Compile Include="DAL\StaffDAL.cs" />
+    <Compile Include="DAL\DiningTableDAL.cs" />
+    <Compile Include="DAL\PromotionDAL.cs" />
+    <Compile Include="DAL\FeedbackDAL.cs" />
+    <Compile Include="DAL\RecipeDAL.cs" />
+    <Compile Include="DAL\InventoryTransactionDAL.cs" />
+    <Compile Include="DAL\CategoryDAL.cs" />
     <Compile Include="DAL\DataHelper.cs" />
     <Compile Include="DAL\DTO\MenuItemDTO.cs" />
     <Compile Include="DAL\DTO\OrderHistoryDTO.cs" />
@@ -110,6 +123,7 @@
     <Compile Include="DAL\DTO\RestaurantDTO.cs" />
     <Compile Include="DAL\DTO\StaffDTO.cs" />
     <Compile Include="DAL\DTO\UserDTO.cs" />
+    <Compile Include="DAL\UserDAL.cs" />
     <Compile Include="Helpers\CurrentUser.cs" />
     <Compile Include="VIEW\AddTable.cs">
       <SubType>Form</SubType>

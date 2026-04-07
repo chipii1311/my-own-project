@@ -11,16 +11,21 @@ namespace my_own_project.DAL
 {
     public class DataHelper
     {
-        private static readonly string connectionString =
+        // ========== CONNECTION STRING ==========
+        private static readonly string _connectionString =
             ConfigurationManager.ConnectionStrings["RestaurantDB"].ConnectionString;
 
-        // Lấy connection
+        /// <summary>
+        /// Lấy kết nối SQL (dùng để test)
+        /// </summary>
         public static SqlConnection GetConnection()
         {
-            return new SqlConnection(connectionString);
+            return new SqlConnection(_connectionString);
         }
 
-        // Kiểm tra kết nối
+        /// <summary>
+        /// Kiểm tra kết nối Database
+        /// </summary>
         public static bool TestConnection()
         {
             try
@@ -31,50 +36,161 @@ namespace my_own_project.DAL
                     return true;
                 }
             }
-            catch { return false; }
-        }
-
-        // ExecuteNonQuery: INSERT, UPDATE, DELETE
-        public static int ExecuteNonQuery(string sql, SqlParameter[] parameters = null)
-        {
-            using (SqlConnection conn = GetConnection())
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            catch (Exception ex)
             {
-                cmd.CommandType = CommandType.Text;
-                if (parameters != null)
-                    cmd.Parameters.AddRange(parameters);
-                conn.Open();
-                return cmd.ExecuteNonQuery();
+                Console.WriteLine("Connection Test Failed: " + ex.Message);
+                return false;
             }
         }
 
-        // ExecuteScalar: trả về 1 giá trị (COUNT, SUM, IDENTITY...)
-        public static object ExecuteScalar(string sql, SqlParameter[] parameters = null)
+        // ========== EXECUTE STORED PROCEDURES ==========
+
+        /// <summary>
+        /// Thực thi SP không trả về kết quả (INSERT, UPDATE, DELETE)
+        /// </summary>
+        public static int ExecuteSP(string spName, SqlParameter[] parameters = null)
         {
-            using (SqlConnection conn = GetConnection())
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            try
             {
-                cmd.CommandType = CommandType.Text;
-                if (parameters != null)
-                    cmd.Parameters.AddRange(parameters);
-                conn.Open();
-                return cmd.ExecuteScalar();
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(spName, conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 30;
+
+                        if (parameters != null && parameters.Length > 0)
+                            cmd.Parameters.AddRange(parameters);
+
+                        conn.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in {spName}: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteSP ({spName}): {ex.Message}");
+                throw;
             }
         }
 
-        // ExecuteQuery: trả về DataTable
-        public static DataTable ExecuteQuery(string sql, SqlParameter[] parameters = null)
+        /// <summary>
+        /// Thực thi SP trả về DataTable (SELECT)
+        /// </summary>
+        public static DataTable ExecuteSPGetTable(string spName, SqlParameter[] parameters = null)
         {
-            using (SqlConnection conn = GetConnection())
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
-            using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+            DataTable dt = new DataTable();
+
+            try
             {
-                cmd.CommandType = CommandType.Text;
-                if (parameters != null)
-                    cmd.Parameters.AddRange(parameters);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-                return dt;
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(spName, conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 30;
+
+                        if (parameters != null && parameters.Length > 0)
+                            cmd.Parameters.AddRange(parameters);
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in {spName}: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteSPGetTable ({spName}): {ex.Message}");
+                throw;
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// Thực thi SP trả về giá trị scalar (COUNT, SUM, v.v...)
+        /// </summary>
+        public static object ExecuteSPScalar(string spName, SqlParameter[] parameters = null)
+        {
+            try
+            {
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(spName, conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 30;
+
+                        if (parameters != null && parameters.Length > 0)
+                            cmd.Parameters.AddRange(parameters);
+
+                        conn.Open();
+                        return cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in {spName}: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteSPScalar ({spName}): {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Thực thi SP có OUTPUT parameter (lấy ID sau INSERT)
+        /// </summary>
+        public static int ExecuteSPWithOutput(string spName, SqlParameter[] parameters)
+        {
+            try
+            {
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(spName, conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 30;
+
+                        if (parameters != null && parameters.Length > 0)
+                            cmd.Parameters.AddRange(parameters);
+
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+
+                        // Lấy OUTPUT parameter (thường là ID cuối cùng)
+                        SqlParameter outputParam = cmd.Parameters["@ID"];
+                        if (outputParam != null)
+                            return (int)outputParam.Value;
+
+                        return 0;
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in {spName}: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteSPWithOutput ({spName}): {ex.Message}");
+                throw;
             }
         }
     }
