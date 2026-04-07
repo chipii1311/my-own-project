@@ -92,64 +92,64 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DesignForms\CategoryAddForm.cs">
+    <Compile Include="VIEW\CategoryAddForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\CategoryAddForm.Designer.cs">
+    <Compile Include="VIEW\CategoryAddForm.Designer.cs">
       <DependentUpon>CategoryAddForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\CategoryForm.cs">
+    <Compile Include="VIEW\CategoryForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\CategoryForm.Designer.cs">
+    <Compile Include="VIEW\CategoryForm.Designer.cs">
       <DependentUpon>CategoryForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\LoginForm.cs">
+    <Compile Include="VIEW\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\LoginForm.Designer.cs">
+    <Compile Include="VIEW\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\MainForm.cs">
+    <Compile Include="VIEW\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\MainForm.Designer.cs">
+    <Compile Include="VIEW\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\MenuForm.cs">
+    <Compile Include="VIEW\MenuForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\MenuForm.Designer.cs">
+    <Compile Include="VIEW\MenuForm.Designer.cs">
       <DependentUpon>MenuForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\POSForm.cs">
+    <Compile Include="VIEW\POSForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\POSForm.Designer.cs">
+    <Compile Include="VIEW\POSForm.Designer.cs">
       <DependentUpon>POSForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\ProductAddForm.cs">
+    <Compile Include="VIEW\ProductAddForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\ProductAddForm.Designer.cs">
+    <Compile Include="VIEW\ProductAddForm.Designer.cs">
       <DependentUpon>ProductAddForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\ProductForm.cs">
+    <Compile Include="VIEW\ProductForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\ProductForm.Designer.cs">
+    <Compile Include="VIEW\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\SampleAdd.cs">
+    <Compile Include="VIEW\SampleAdd.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\SampleAdd.Designer.cs">
+    <Compile Include="VIEW\SampleAdd.Designer.cs">
       <DependentUpon>SampleAdd.cs</DependentUpon>
     </Compile>
-    <Compile Include="DesignForms\SampleView.cs">
+    <Compile Include="VIEW\SampleView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DesignForms\SampleView.Designer.cs">
+    <Compile Include="VIEW\SampleView.Designer.cs">
       <DependentUpon>SampleView.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
@@ -160,31 +160,31 @@
     <Compile Include="UCFoodItem.Designer.cs">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="DesignForms\CategoryAddForm.resx">
+    <EmbeddedResource Include="VIEW\CategoryAddForm.resx">
       <DependentUpon>CategoryAddForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\CategoryForm.resx">
+    <EmbeddedResource Include="VIEW\CategoryForm.resx">
       <DependentUpon>CategoryForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\LoginForm.resx">
+    <EmbeddedResource Include="VIEW\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\MainForm.resx">
+    <EmbeddedResource Include="VIEW\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\POSForm.resx">
+    <EmbeddedResource Include="VIEW\POSForm.resx">
       <DependentUpon>POSForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\ProductAddForm.resx">
+    <EmbeddedResource Include="VIEW\ProductAddForm.resx">
       <DependentUpon>ProductAddForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\ProductForm.resx">
+    <EmbeddedResource Include="VIEW\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\SampleAdd.resx">
+    <EmbeddedResource Include="VIEW\SampleAdd.resx">
       <DependentUpon>SampleAdd.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DesignForms\SampleView.resx">
+    <EmbeddedResource Include="VIEW\SampleView.resx">
       <DependentUpon>SampleView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -249,6 +249,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\icons8-take-away-food-94.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BLL\" />
+    <Folder Include="DAL\" />
+    <Folder Include="DTO\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
