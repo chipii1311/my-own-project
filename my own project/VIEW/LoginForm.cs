@@ -26,5 +26,10 @@ namespace my_own_project.DesignForms
         {
 
         }
+
+        private void txtPass_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

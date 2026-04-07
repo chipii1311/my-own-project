@@ -142,6 +142,24 @@
     <Compile Include="DAL\DTO\UserDTO.cs" />
     <Compile Include="DAL\UserDAL.cs" />
     <Compile Include="Helpers\CurrentUser.cs" />
+    <Compile Include="VIEW Việt\frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW Việt\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEW Việt\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW Việt\frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEW Việt\frmMenuItem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW Việt\frmMenuItem.Designer.cs">
+      <DependentUpon>frmMenuItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\AddTable.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,6 +240,15 @@
     <Compile Include="VIEW\TableForm.Designer.cs">
       <DependentUpon>TableForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="VIEW Việt\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW Việt\frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW Việt\frmMenuItem.resx">
+      <DependentUpon>frmMenuItem.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="VIEW\AddTable.resx">
       <DependentUpon>AddTable.cs</DependentUpon>
     </EmbeddedResource>
