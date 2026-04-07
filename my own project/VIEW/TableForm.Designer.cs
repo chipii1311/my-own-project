@@ -35,6 +35,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
+            // label1
+            // 
+            this.label1.Size = new System.Drawing.Size(176, 45);
+            this.label1.Text = "Table Form";
+            // 
             // btnAdd
             // 
             this.btnAdd.FlatAppearance.BorderSize = 0;
@@ -51,7 +56,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.Size = new System.Drawing.Size(611, 390);
+            this.dataGridView1.Size = new System.Drawing.Size(677, 390);
             this.dataGridView1.TabIndex = 4;
             // 
             // dgvID
