@@ -31,7 +31,6 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgvID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvStatus = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -50,8 +49,7 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dgvID,
-            this.dgvQuantity,
-            this.dgvStatus});
+            this.dgvQuantity});
             this.dataGridView1.Location = new System.Drawing.Point(176, 214);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 62;
@@ -70,12 +68,6 @@
             this.dgvQuantity.HeaderText = "So luong";
             this.dgvQuantity.MinimumWidth = 8;
             this.dgvQuantity.Name = "dgvQuantity";
-            // 
-            // dgvStatus
-            // 
-            this.dgvStatus.HeaderText = "Trang thai";
-            this.dgvStatus.MinimumWidth = 8;
-            this.dgvStatus.Name = "dgvStatus";
             // 
             // TableForm
             // 
@@ -101,6 +93,5 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvID;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvQuantity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvStatus;
     }
 }
