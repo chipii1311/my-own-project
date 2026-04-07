@@ -86,5 +86,10 @@ namespace my_own_project
             ActivateButton(sender);
             AddControls(new POSForm());
         }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }

@@ -196,6 +196,12 @@
     <Compile Include="VIEW\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\RegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\RegisterForm.Designer.cs">
+      <DependentUpon>RegisterForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\SampleAdd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -245,6 +251,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\RegisterForm.resx">
+      <DependentUpon>RegisterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\SampleAdd.resx">
       <DependentUpon>SampleAdd.cs</DependentUpon>
@@ -320,6 +329,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\1000_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\register.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
