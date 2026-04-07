@@ -63,6 +63,16 @@ namespace my_own_project.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _1000_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv {
+            get {
+                object obj = ResourceManager.GetObject("1000_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icons8_add_100 {
             get {
                 object obj = ResourceManager.GetObject("icons8-add-100", resourceCulture);
