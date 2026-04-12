@@ -52,10 +52,5 @@ namespace my_own_project.DesignForms
             registerform.Show();
             this.Hide();
         }
-
-        private void txtPass_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

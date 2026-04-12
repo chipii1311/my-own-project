@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using my_own_project.VIEW_Việt;
 
 namespace my_own_project
 {
@@ -18,7 +17,7 @@ namespace my_own_project
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmLogin());
+            Application.Run(new LoginForm());
         }
     }
 }
