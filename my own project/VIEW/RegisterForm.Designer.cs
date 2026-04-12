@@ -303,7 +303,7 @@
             this.diaSth.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
             this.diaSth.Caption = "Error";
             this.diaSth.Icon = Guna.UI2.WinForms.MessageDialogIcon.None;
-            this.diaSth.Parent = null;
+            this.diaSth.Parent = this;
             this.diaSth.Style = Guna.UI2.WinForms.MessageDialogStyle.Default;
             this.diaSth.Text = null;
             // 
