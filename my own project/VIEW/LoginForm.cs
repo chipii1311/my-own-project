@@ -1,5 +1,5 @@
 ﻿using my_own_project.BLL;
-using my_own_project.DAL.DTO;
+using my_own_project.DTO;
 using my_own_project.Helpers;
 using my_own_project.VIEW;
 using System;

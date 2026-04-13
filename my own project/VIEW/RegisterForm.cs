@@ -1,5 +1,5 @@
 ﻿using my_own_project.BLL;
-using my_own_project.DAL.DTO;
+using my_own_project.DTO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
