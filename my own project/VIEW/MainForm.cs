@@ -66,9 +66,6 @@ namespace my_own_project
             AddControls(new CategoryForm());
             
         }
-
-        
-
         private void btnTable_Click(object sender, EventArgs e)
         {
             ActivateButton(sender);
@@ -104,5 +101,6 @@ namespace my_own_project
                 lblUserName.Text = "Welcome, Guest";
             }
         }
+
     }
 }
