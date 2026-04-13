@@ -41,7 +41,7 @@ namespace my_own_project
 
                 // 2. "Bôi xanh" nút vừa được bấm
                 currentButton = (Button)btnSender;
-                currentButton.BackColor = Color.FromArgb(241,85,126); // Màu xanh đậm hiện đại
+                currentButton.BackColor = Color.FromArgb(241, 85, 126); // Màu xanh đậm hiện đại
                 currentButton.ForeColor = Color.White; // Chữ trắng cho nổi
             }
         }
@@ -54,7 +54,7 @@ namespace my_own_project
                 // Nếu là nút bấm thì trả về màu nền tối ban đầu
                 if (previousBtn.GetType() == typeof(Button))
                 {
-                    previousBtn.BackColor = Color.FromArgb(50,55,89); // Màu tối mặc định của bạn
+                    previousBtn.BackColor = Color.FromArgb(50, 55, 89); // Màu tối mặc định của bạn
                     previousBtn.ForeColor = Color.Gainsboro; // Màu chữ xám nhạt
                 }
             }
@@ -64,7 +64,7 @@ namespace my_own_project
         {
             ActivateButton(sender);
             AddControls(new CategoryForm());
-            
+
         }
         private void btnTable_Click(object sender, EventArgs e)
         {
@@ -102,5 +102,15 @@ namespace my_own_project
             }
         }
 
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            if (logoutDialog.Show() == DialogResult.Yes)
+            {
+                this.Hide();
+                LoginForm login = new LoginForm();
+                login.Show();
+            }
+
+        }
     }
 }

@@ -44,6 +44,7 @@
             this.btn = new Guna.UI2.WinForms.Guna2ControlBox();
             this.btnExit = new Guna.UI2.WinForms.Guna2ControlBox();
             this.ControlsPanel = new System.Windows.Forms.Panel();
+            this.logoutDialog = new Guna.UI2.WinForms.Guna2MessageDialog();
             this.pnlFunction.SuspendLayout();
             this.pnlLogo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
@@ -127,6 +128,7 @@
             this.btnLogout.Size = new System.Drawing.Size(186, 55);
             this.btnLogout.TabIndex = 5;
             this.btnLogout.Text = "Logout";
+            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
             // btnTable
             // 
@@ -293,6 +295,15 @@
             this.ControlsPanel.Size = new System.Drawing.Size(832, 497);
             this.ControlsPanel.TabIndex = 2;
             // 
+            // logoutDialog
+            // 
+            this.logoutDialog.Buttons = Guna.UI2.WinForms.MessageDialogButtons.YesNo;
+            this.logoutDialog.Caption = null;
+            this.logoutDialog.Icon = Guna.UI2.WinForms.MessageDialogIcon.Question;
+            this.logoutDialog.Parent = this;
+            this.logoutDialog.Style = Guna.UI2.WinForms.MessageDialogStyle.Default;
+            this.logoutDialog.Text = "Are you sure you want to log out?";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -336,6 +347,7 @@
         private System.Windows.Forms.Label lblUserName;
         private Guna.UI2.WinForms.Guna2Button btnLogout;
         private System.Windows.Forms.Button btnSettings;
+        private Guna.UI2.WinForms.Guna2MessageDialog logoutDialog;
     }
 }
 
