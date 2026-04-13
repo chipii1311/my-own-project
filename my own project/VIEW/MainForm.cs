@@ -67,6 +67,7 @@ namespace my_own_project
             {
                 lblUserName.Text = "Welcome, Guest";
             }
+            AddControls(new DashboardForm());
         }
 
 
@@ -90,9 +91,7 @@ namespace my_own_project
 
         private void btnDashboard_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            DashboardForm dashboardForm = new DashboardForm();
-            dashboardForm.Show();
+            AddControls(new DashboardForm());
         }
     }
 }

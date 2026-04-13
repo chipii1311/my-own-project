@@ -200,6 +200,7 @@
             this.btnDashboard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
             this.btnDashboard.BorderColor = System.Drawing.Color.Transparent;
             this.btnDashboard.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
+            this.btnDashboard.Checked = true;
             this.btnDashboard.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(85)))), ((int)(((byte)(126)))));
             this.btnDashboard.CheckedState.Image = global::my_own_project.Properties.Resources.png_qyvkgj;
             this.btnDashboard.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
