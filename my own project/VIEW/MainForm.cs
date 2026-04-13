@@ -32,56 +32,23 @@ namespace my_own_project
 
         }
 
-        private void ActivateButton(object btnSender)
-        {
-            if (btnSender != null)
-            {
-                // 1. Trả tất cả các nút trong menu về màu mặc định
-                DisableButton();
-
-                // 2. "Bôi xanh" nút vừa được bấm
-                currentButton = (Button)btnSender;
-                currentButton.BackColor = Color.FromArgb(241, 85, 126); // Màu xanh đậm hiện đại
-                currentButton.ForeColor = Color.White; // Chữ trắng cho nổi
-            }
-        }
-
-        private void DisableButton()
-        {
-            // Duyệt qua tất cả linh kiện trong panelMenu
-            foreach (Control previousBtn in pnlFunction.Controls)
-            {
-                // Nếu là nút bấm thì trả về màu nền tối ban đầu
-                if (previousBtn.GetType() == typeof(Button))
-                {
-                    previousBtn.BackColor = Color.FromArgb(50, 55, 89); // Màu tối mặc định của bạn
-                    previousBtn.ForeColor = Color.Gainsboro; // Màu chữ xám nhạt
-                }
-            }
-        }
-
         private void btnCategory_Click(object sender, EventArgs e)
         {
-            ActivateButton(sender);
             AddControls(new CategoryForm());
 
         }
         private void btnTable_Click(object sender, EventArgs e)
         {
-            ActivateButton(sender);
             AddControls(new TableForm());
         }
 
         private void btnProducts_Click(object sender, EventArgs e)
         {
-            ActivateButton(sender);
             AddControls(new ProductForm());
         }
 
         private void btnPOS_Click(object sender, EventArgs e)
         {
-
-            ActivateButton(sender);
             AddControls(new POSForm());
         }
 
@@ -102,6 +69,7 @@ namespace my_own_project
             }
         }
 
+
         private void btnLogout_Click(object sender, EventArgs e)
         {
             if (logoutDialog.Show() == DialogResult.Yes)
@@ -111,6 +79,20 @@ namespace my_own_project
                 login.Show();
             }
 
+        }
+
+        private void btnSettings_Click_1(object sender, EventArgs e)
+        {
+            this.Hide();
+            MenuForm menu = new MenuForm();
+            menu.Show();
+        }
+
+        private void btnDashboard_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            DashboardForm dashboardForm = new DashboardForm();
+            dashboardForm.Show();
         }
     }
 }

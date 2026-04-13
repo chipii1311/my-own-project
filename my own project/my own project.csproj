@@ -165,6 +165,12 @@
     <Compile Include="VIEW\CategoryForm.Designer.cs">
       <DependentUpon>CategoryForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\DashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\DashboardForm.Designer.cs">
+      <DependentUpon>DashboardForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -241,6 +247,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\CategoryForm.resx">
       <DependentUpon>CategoryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\DashboardForm.resx">
+      <DependentUpon>DashboardForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
@@ -341,6 +350,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\settings1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_lygt3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_qyvkgj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_volxm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_3uobt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_ptf1o.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_tk9qn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_ya24i.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_mfsyuj.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_hkai8h.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_zhyc2h.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_gc7ve.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_sqhph.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png_u0iyai.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
