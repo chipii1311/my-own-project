@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace my_own_project.DAL.DTO
+namespace my_own_project.DTO
 {
     public class RecipeDTO
     {
