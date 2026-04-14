@@ -32,8 +32,8 @@
             this.dgvSTT = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvEdit = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dgvDelete = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.dgvEdit = new System.Windows.Forms.DataGridViewImageColumn();
+            this.dgvDelete = new System.Windows.Forms.DataGridViewImageColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -90,16 +90,14 @@
             this.dgvEdit.HeaderText = "";
             this.dgvEdit.MinimumWidth = 8;
             this.dgvEdit.Name = "dgvEdit";
-            this.dgvEdit.Text = "Edit";
-            this.dgvEdit.UseColumnTextForButtonValue = true;
+            this.dgvEdit.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // dgvDelete
             // 
             this.dgvDelete.HeaderText = "";
             this.dgvDelete.MinimumWidth = 8;
             this.dgvDelete.Name = "dgvDelete";
-            this.dgvDelete.Text = "Delete";
-            this.dgvDelete.UseColumnTextForButtonValue = true;
+            this.dgvDelete.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // CategoryForm
             // 
@@ -127,7 +125,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvSTT;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvID;
         private System.Windows.Forms.DataGridViewTextBoxColumn dgvName;
-        private System.Windows.Forms.DataGridViewButtonColumn dgvEdit;
-        private System.Windows.Forms.DataGridViewButtonColumn dgvDelete;
+        private System.Windows.Forms.DataGridViewImageColumn dgvEdit;
+        private System.Windows.Forms.DataGridViewImageColumn dgvDelete;
     }
 }
