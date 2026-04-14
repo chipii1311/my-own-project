@@ -1,8 +1,0 @@
-﻿# Mỗi người tự tạo file này trên máy mình
-connections.config
-
-# Visual Studio
-.vs/
-bin/
-obj/
-*.user
