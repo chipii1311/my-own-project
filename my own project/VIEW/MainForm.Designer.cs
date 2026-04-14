@@ -337,6 +337,7 @@
             // ControlsPanel
             // 
             this.ControlsPanel.BackColor = System.Drawing.Color.White;
+            this.ControlsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ControlsPanel.Location = new System.Drawing.Point(207, 60);
             this.ControlsPanel.Margin = new System.Windows.Forms.Padding(2);
             this.ControlsPanel.Name = "ControlsPanel";

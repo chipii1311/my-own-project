@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Guna.Charts.WinForms;
 
 namespace my_own_project.VIEW
 {
@@ -16,5 +17,12 @@ namespace my_own_project.VIEW
         {
             InitializeComponent();
         }
+
+        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+
     }
 }
