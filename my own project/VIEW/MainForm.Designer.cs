@@ -351,7 +351,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ControlsPanel.BackColor = System.Drawing.Color.White;
-            this.ControlsPanel.Location = new System.Drawing.Point(310, 92);
+            this.ControlsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ControlsPanel.Location = new System.Drawing.Point(207, 60);
+            this.ControlsPanel.Margin = new System.Windows.Forms.Padding(2);
             this.ControlsPanel.Name = "ControlsPanel";
             this.ControlsPanel.Size = new System.Drawing.Size(1572, 1120);
             this.ControlsPanel.TabIndex = 2;
