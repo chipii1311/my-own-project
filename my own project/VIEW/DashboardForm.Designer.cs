@@ -28,39 +28,39 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Guna.Charts.WinForms.ChartFont chartFont1 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.ChartFont chartFont2 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.ChartFont chartFont3 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.ChartFont chartFont4 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Grid grid1 = new Guna.Charts.WinForms.Grid();
-            Guna.Charts.WinForms.Tick tick1 = new Guna.Charts.WinForms.Tick();
-            Guna.Charts.WinForms.ChartFont chartFont5 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Grid grid2 = new Guna.Charts.WinForms.Grid();
-            Guna.Charts.WinForms.Tick tick2 = new Guna.Charts.WinForms.Tick();
-            Guna.Charts.WinForms.ChartFont chartFont6 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Grid grid3 = new Guna.Charts.WinForms.Grid();
-            Guna.Charts.WinForms.PointLabel pointLabel1 = new Guna.Charts.WinForms.PointLabel();
-            Guna.Charts.WinForms.ChartFont chartFont7 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Tick tick3 = new Guna.Charts.WinForms.Tick();
-            Guna.Charts.WinForms.ChartFont chartFont8 = new Guna.Charts.WinForms.ChartFont();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            Guna.Charts.WinForms.ChartFont chartFont9 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.ChartFont chartFont10 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.ChartFont chartFont11 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.ChartFont chartFont12 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Grid grid4 = new Guna.Charts.WinForms.Grid();
-            Guna.Charts.WinForms.Tick tick4 = new Guna.Charts.WinForms.Tick();
-            Guna.Charts.WinForms.ChartFont chartFont13 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Grid grid5 = new Guna.Charts.WinForms.Grid();
-            Guna.Charts.WinForms.Tick tick5 = new Guna.Charts.WinForms.Tick();
-            Guna.Charts.WinForms.ChartFont chartFont14 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Grid grid6 = new Guna.Charts.WinForms.Grid();
-            Guna.Charts.WinForms.PointLabel pointLabel2 = new Guna.Charts.WinForms.PointLabel();
-            Guna.Charts.WinForms.ChartFont chartFont15 = new Guna.Charts.WinForms.ChartFont();
-            Guna.Charts.WinForms.Tick tick6 = new Guna.Charts.WinForms.Tick();
-            Guna.Charts.WinForms.ChartFont chartFont16 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont97 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont98 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont99 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont100 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Grid grid37 = new Guna.Charts.WinForms.Grid();
+            Guna.Charts.WinForms.Tick tick37 = new Guna.Charts.WinForms.Tick();
+            Guna.Charts.WinForms.ChartFont chartFont101 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Grid grid38 = new Guna.Charts.WinForms.Grid();
+            Guna.Charts.WinForms.Tick tick38 = new Guna.Charts.WinForms.Tick();
+            Guna.Charts.WinForms.ChartFont chartFont102 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Grid grid39 = new Guna.Charts.WinForms.Grid();
+            Guna.Charts.WinForms.PointLabel pointLabel13 = new Guna.Charts.WinForms.PointLabel();
+            Guna.Charts.WinForms.ChartFont chartFont103 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Tick tick39 = new Guna.Charts.WinForms.Tick();
+            Guna.Charts.WinForms.ChartFont chartFont104 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont105 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont106 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont107 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.ChartFont chartFont108 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Grid grid40 = new Guna.Charts.WinForms.Grid();
+            Guna.Charts.WinForms.Tick tick40 = new Guna.Charts.WinForms.Tick();
+            Guna.Charts.WinForms.ChartFont chartFont109 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Grid grid41 = new Guna.Charts.WinForms.Grid();
+            Guna.Charts.WinForms.Tick tick41 = new Guna.Charts.WinForms.Tick();
+            Guna.Charts.WinForms.ChartFont chartFont110 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Grid grid42 = new Guna.Charts.WinForms.Grid();
+            Guna.Charts.WinForms.PointLabel pointLabel14 = new Guna.Charts.WinForms.PointLabel();
+            Guna.Charts.WinForms.ChartFont chartFont111 = new Guna.Charts.WinForms.ChartFont();
+            Guna.Charts.WinForms.Tick tick42 = new Guna.Charts.WinForms.Tick();
+            Guna.Charts.WinForms.ChartFont chartFont112 = new Guna.Charts.WinForms.ChartFont();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             this.btnConfirm = new Guna.UI2.WinForms.Guna2Button();
             this.dateEnd = new Guna.UI2.WinForms.Guna2DateTimePicker();
@@ -72,11 +72,18 @@
             this.btn7days = new Guna.UI2.WinForms.Guna2Button();
             this.btn30days = new Guna.UI2.WinForms.Guna2Button();
             this.gunaAreaDataset1 = new Guna.Charts.WinForms.GunaAreaDataset();
+            this.chartRevenue = new Guna.Charts.WinForms.GunaChart();
             this.gunaDoughnutDataset1 = new Guna.Charts.WinForms.GunaDoughnutDataset();
+            this.chartProduct = new Guna.Charts.WinForms.GunaChart();
             this.guna2Panel5 = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2Panel8 = new Guna.UI2.WinForms.Guna2Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.chartRevenue = new Guna.Charts.WinForms.GunaChart();
+            this.dataRecent = new Guna.UI2.WinForms.Guna2DataGridView();
+            this.OrderID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Customer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
             this.lblRevenue = new System.Windows.Forms.Label();
@@ -87,22 +94,15 @@
             this.guna2Panel4 = new Guna.UI2.WinForms.Guna2Panel();
             this.lblCustomers = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.dataRecent = new Guna.UI2.WinForms.Guna2DataGridView();
-            this.OrderID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Customer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.chartProduct = new Guna.Charts.WinForms.GunaChart();
             this.guna2Panel1.SuspendLayout();
             this.guna2Panel5.SuspendLayout();
             this.guna2Panel8.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataRecent)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.guna2Panel2.SuspendLayout();
             this.guna2Panel3.SuspendLayout();
             this.guna2Panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataRecent)).BeginInit();
             this.SuspendLayout();
             // 
             // guna2Panel1
@@ -140,6 +140,7 @@
             this.btnConfirm.Size = new System.Drawing.Size(62, 45);
             this.btnConfirm.TabIndex = 3;
             this.btnConfirm.Text = "Ok";
+            this.btnConfirm.Click += new System.EventHandler(this.btnConfirm_Click);
             // 
             // dateEnd
             // 
@@ -201,6 +202,7 @@
             this.btnMonth.Size = new System.Drawing.Size(134, 45);
             this.btnMonth.TabIndex = 3;
             this.btnMonth.Text = "This month";
+            this.btnMonth.Click += new System.EventHandler(this.btnMonth_Click);
             // 
             // btnCustom
             // 
@@ -220,6 +222,7 @@
             this.btnCustom.Size = new System.Drawing.Size(134, 45);
             this.btnCustom.TabIndex = 3;
             this.btnCustom.Text = "Custom";
+            this.btnCustom.Click += new System.EventHandler(this.btnCustom_Click);
             // 
             // btnToday
             // 
@@ -239,6 +242,7 @@
             this.btnToday.Size = new System.Drawing.Size(134, 45);
             this.btnToday.TabIndex = 3;
             this.btnToday.Text = "Today";
+            this.btnToday.Click += new System.EventHandler(this.btnToday_Click);
             // 
             // btn7days
             // 
@@ -258,6 +262,7 @@
             this.btn7days.Size = new System.Drawing.Size(134, 45);
             this.btn7days.TabIndex = 3;
             this.btn7days.Text = "Lasts 7 days";
+            this.btn7days.Click += new System.EventHandler(this.btn7days_Click);
             // 
             // btn30days
             // 
@@ -277,6 +282,7 @@
             this.btn30days.Size = new System.Drawing.Size(134, 45);
             this.btn30days.TabIndex = 3;
             this.btn30days.Text = "Lasts 30 days";
+            this.btn30days.Click += new System.EventHandler(this.btn30days_Click);
             // 
             // gunaAreaDataset1
             // 
@@ -285,10 +291,95 @@
             this.gunaAreaDataset1.Label = "Area1";
             this.gunaAreaDataset1.TargetChart = this.chartRevenue;
             // 
+            // chartRevenue
+            // 
+            this.chartRevenue.Datasets.AddRange(new Guna.Charts.Interfaces.IGunaDataset[] {
+            this.gunaAreaDataset1});
+            this.chartRevenue.Dock = System.Windows.Forms.DockStyle.Fill;
+            chartFont97.FontName = "Segoe UI";
+            chartFont97.Size = 10;
+            chartFont97.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
+            this.chartRevenue.Legend.LabelFont = chartFont97;
+            this.chartRevenue.Legend.Position = Guna.Charts.WinForms.LegendPosition.Bottom;
+            this.chartRevenue.Location = new System.Drawing.Point(3, 3);
+            this.chartRevenue.Name = "chartRevenue";
+            this.chartRevenue.Size = new System.Drawing.Size(877, 320);
+            this.chartRevenue.TabIndex = 0;
+            chartFont98.FontName = "Segoe UI";
+            chartFont98.Size = 15;
+            chartFont98.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
+            this.chartRevenue.Title.Font = chartFont98;
+            this.chartRevenue.Title.ForeColor = System.Drawing.Color.Black;
+            this.chartRevenue.Title.Text = "Gross Revenue";
+            chartFont99.FontName = "Arial";
+            this.chartRevenue.Tooltips.BodyFont = chartFont99;
+            chartFont100.FontName = "Arial";
+            chartFont100.Size = 9;
+            chartFont100.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
+            this.chartRevenue.Tooltips.TitleFont = chartFont100;
+            this.chartRevenue.XAxes.Display = false;
+            this.chartRevenue.XAxes.GridLines = grid37;
+            chartFont101.FontName = "Arial";
+            tick37.Font = chartFont101;
+            this.chartRevenue.XAxes.Ticks = tick37;
+            this.chartRevenue.YAxes.GridLines = grid38;
+            chartFont102.FontName = "Arial";
+            tick38.Font = chartFont102;
+            this.chartRevenue.YAxes.Ticks = tick38;
+            this.chartRevenue.ZAxes.GridLines = grid39;
+            chartFont103.FontName = "Arial";
+            pointLabel13.Font = chartFont103;
+            this.chartRevenue.ZAxes.PointLabels = pointLabel13;
+            chartFont104.FontName = "Arial";
+            tick39.Font = chartFont104;
+            this.chartRevenue.ZAxes.Ticks = tick39;
+            // 
             // gunaDoughnutDataset1
             // 
             this.gunaDoughnutDataset1.Label = "Doughnut1";
             this.gunaDoughnutDataset1.TargetChart = this.chartProduct;
+            // 
+            // chartProduct
+            // 
+            this.chartProduct.Datasets.AddRange(new Guna.Charts.Interfaces.IGunaDataset[] {
+            this.gunaDoughnutDataset1});
+            this.chartProduct.Dock = System.Windows.Forms.DockStyle.Fill;
+            chartFont105.FontName = "Segoe UI";
+            chartFont105.Size = 10;
+            chartFont105.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
+            this.chartProduct.Legend.LabelFont = chartFont105;
+            this.chartProduct.Legend.Position = Guna.Charts.WinForms.LegendPosition.Bottom;
+            this.chartProduct.Location = new System.Drawing.Point(0, 0);
+            this.chartProduct.Name = "chartProduct";
+            this.chartProduct.Size = new System.Drawing.Size(391, 467);
+            this.chartProduct.TabIndex = 0;
+            chartFont106.FontName = "Segoe UI";
+            chartFont106.Size = 15;
+            chartFont106.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
+            this.chartProduct.Title.Font = chartFont106;
+            this.chartProduct.Title.ForeColor = System.Drawing.Color.Black;
+            this.chartProduct.Title.Text = "Top 5 Product";
+            chartFont107.FontName = "Arial";
+            this.chartProduct.Tooltips.BodyFont = chartFont107;
+            chartFont108.FontName = "Arial";
+            chartFont108.Size = 9;
+            chartFont108.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
+            this.chartProduct.Tooltips.TitleFont = chartFont108;
+            this.chartProduct.XAxes.GridLines = grid40;
+            chartFont109.FontName = "Arial";
+            tick40.Font = chartFont109;
+            this.chartProduct.XAxes.Ticks = tick40;
+            this.chartProduct.YAxes.GridLines = grid41;
+            chartFont110.FontName = "Arial";
+            tick41.Font = chartFont110;
+            this.chartProduct.YAxes.Ticks = tick41;
+            this.chartProduct.ZAxes.GridLines = grid42;
+            chartFont111.FontName = "Arial";
+            pointLabel14.Font = chartFont111;
+            this.chartProduct.ZAxes.PointLabels = pointLabel14;
+            chartFont112.FontName = "Arial";
+            tick42.Font = chartFont112;
+            this.chartProduct.ZAxes.Ticks = tick42;
             // 
             // guna2Panel5
             // 
@@ -324,50 +415,88 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(883, 467);
             this.tableLayoutPanel2.TabIndex = 6;
-            this.tableLayoutPanel2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel2_Paint);
             // 
-            // chartRevenue
+            // dataRecent
             // 
-            this.chartRevenue.Datasets.AddRange(new Guna.Charts.Interfaces.IGunaDataset[] {
-            this.gunaAreaDataset1});
-            this.chartRevenue.Dock = System.Windows.Forms.DockStyle.Fill;
-            chartFont1.FontName = "Segoe UI";
-            chartFont1.Size = 10;
-            chartFont1.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
-            this.chartRevenue.Legend.LabelFont = chartFont1;
-            this.chartRevenue.Legend.Position = Guna.Charts.WinForms.LegendPosition.Bottom;
-            this.chartRevenue.Location = new System.Drawing.Point(3, 3);
-            this.chartRevenue.Name = "chartRevenue";
-            this.chartRevenue.Size = new System.Drawing.Size(877, 320);
-            this.chartRevenue.TabIndex = 0;
-            chartFont2.FontName = "Segoe UI";
-            chartFont2.Size = 15;
-            chartFont2.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
-            this.chartRevenue.Title.Font = chartFont2;
-            this.chartRevenue.Title.ForeColor = System.Drawing.Color.Black;
-            this.chartRevenue.Title.Text = "Gross Revenue";
-            chartFont3.FontName = "Arial";
-            this.chartRevenue.Tooltips.BodyFont = chartFont3;
-            chartFont4.FontName = "Arial";
-            chartFont4.Size = 9;
-            chartFont4.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
-            this.chartRevenue.Tooltips.TitleFont = chartFont4;
-            this.chartRevenue.XAxes.Display = false;
-            this.chartRevenue.XAxes.GridLines = grid1;
-            chartFont5.FontName = "Arial";
-            tick1.Font = chartFont5;
-            this.chartRevenue.XAxes.Ticks = tick1;
-            this.chartRevenue.YAxes.GridLines = grid2;
-            chartFont6.FontName = "Arial";
-            tick2.Font = chartFont6;
-            this.chartRevenue.YAxes.Ticks = tick2;
-            this.chartRevenue.ZAxes.GridLines = grid3;
-            chartFont7.FontName = "Arial";
-            pointLabel1.Font = chartFont7;
-            this.chartRevenue.ZAxes.PointLabels = pointLabel1;
-            chartFont8.FontName = "Arial";
-            tick3.Font = chartFont8;
-            this.chartRevenue.ZAxes.Ticks = tick3;
+            dataGridViewCellStyle19.BackColor = System.Drawing.Color.White;
+            this.dataRecent.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle20.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle20.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle20.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle20.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle20.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataRecent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle20;
+            this.dataRecent.ColumnHeadersHeight = 15;
+            this.dataRecent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            this.dataRecent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.OrderID,
+            this.Customer,
+            this.Product,
+            this.Total,
+            this.Status});
+            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle21.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle21.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle21.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle21.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle21.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataRecent.DefaultCellStyle = dataGridViewCellStyle21;
+            this.dataRecent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataRecent.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dataRecent.Location = new System.Drawing.Point(3, 329);
+            this.dataRecent.Name = "dataRecent";
+            this.dataRecent.RowHeadersVisible = false;
+            this.dataRecent.Size = new System.Drawing.Size(877, 135);
+            this.dataRecent.TabIndex = 1;
+            this.dataRecent.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
+            this.dataRecent.ThemeStyle.AlternatingRowsStyle.Font = null;
+            this.dataRecent.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
+            this.dataRecent.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
+            this.dataRecent.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
+            this.dataRecent.ThemeStyle.BackColor = System.Drawing.Color.White;
+            this.dataRecent.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dataRecent.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
+            this.dataRecent.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dataRecent.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dataRecent.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
+            this.dataRecent.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            this.dataRecent.ThemeStyle.HeaderStyle.Height = 15;
+            this.dataRecent.ThemeStyle.ReadOnly = false;
+            this.dataRecent.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
+            this.dataRecent.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dataRecent.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dataRecent.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.dataRecent.ThemeStyle.RowsStyle.Height = 22;
+            this.dataRecent.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dataRecent.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            // 
+            // OrderID
+            // 
+            this.OrderID.HeaderText = "OrderID";
+            this.OrderID.Name = "OrderID";
+            // 
+            // Customer
+            // 
+            this.Customer.HeaderText = "Customer";
+            this.Customer.Name = "Customer";
+            // 
+            // Product
+            // 
+            this.Product.HeaderText = "Product";
+            this.Product.Name = "Product";
+            // 
+            // Total
+            // 
+            this.Total.HeaderText = "Total";
+            this.Total.Name = "Total";
+            // 
+            // Status
+            // 
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
             // 
             // tableLayoutPanel1
             // 
@@ -485,129 +614,6 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Total Customers";
             // 
-            // dataRecent
-            // 
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
-            this.dataRecent.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataRecent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dataRecent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataRecent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.OrderID,
-            this.Customer,
-            this.Product,
-            this.Total,
-            this.Status});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataRecent.DefaultCellStyle = dataGridViewCellStyle3;
-            this.dataRecent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataRecent.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dataRecent.Location = new System.Drawing.Point(3, 329);
-            this.dataRecent.Name = "dataRecent";
-            this.dataRecent.RowHeadersVisible = false;
-            this.dataRecent.Size = new System.Drawing.Size(877, 135);
-            this.dataRecent.TabIndex = 1;
-            this.dataRecent.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
-            this.dataRecent.ThemeStyle.AlternatingRowsStyle.Font = null;
-            this.dataRecent.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
-            this.dataRecent.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
-            this.dataRecent.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
-            this.dataRecent.ThemeStyle.BackColor = System.Drawing.Color.White;
-            this.dataRecent.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dataRecent.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
-            this.dataRecent.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.dataRecent.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dataRecent.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dataRecent.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataRecent.ThemeStyle.HeaderStyle.Height = 15;
-            this.dataRecent.ThemeStyle.ReadOnly = false;
-            this.dataRecent.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
-            this.dataRecent.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            this.dataRecent.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dataRecent.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            this.dataRecent.ThemeStyle.RowsStyle.Height = 22;
-            this.dataRecent.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dataRecent.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            // 
-            // OrderID
-            // 
-            this.OrderID.HeaderText = "OrderID";
-            this.OrderID.Name = "OrderID";
-            // 
-            // Customer
-            // 
-            this.Customer.HeaderText = "Customer";
-            this.Customer.Name = "Customer";
-            // 
-            // Product
-            // 
-            this.Product.HeaderText = "Product";
-            this.Product.Name = "Product";
-            // 
-            // Total
-            // 
-            this.Total.HeaderText = "Total";
-            this.Total.Name = "Total";
-            // 
-            // Status
-            // 
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            // 
-            // chartProduct
-            // 
-            this.chartProduct.Datasets.AddRange(new Guna.Charts.Interfaces.IGunaDataset[] {
-            this.gunaDoughnutDataset1});
-            this.chartProduct.Dock = System.Windows.Forms.DockStyle.Fill;
-            chartFont9.FontName = "Segoe UI";
-            chartFont9.Size = 10;
-            chartFont9.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
-            this.chartProduct.Legend.LabelFont = chartFont9;
-            this.chartProduct.Legend.Position = Guna.Charts.WinForms.LegendPosition.Bottom;
-            this.chartProduct.Location = new System.Drawing.Point(0, 0);
-            this.chartProduct.Name = "chartProduct";
-            this.chartProduct.Size = new System.Drawing.Size(391, 467);
-            this.chartProduct.TabIndex = 0;
-            chartFont10.FontName = "Segoe UI";
-            chartFont10.Size = 15;
-            chartFont10.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
-            this.chartProduct.Title.Font = chartFont10;
-            this.chartProduct.Title.ForeColor = System.Drawing.Color.Black;
-            this.chartProduct.Title.Text = "Top 5 Product";
-            chartFont11.FontName = "Arial";
-            this.chartProduct.Tooltips.BodyFont = chartFont11;
-            chartFont12.FontName = "Arial";
-            chartFont12.Size = 9;
-            chartFont12.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
-            this.chartProduct.Tooltips.TitleFont = chartFont12;
-            this.chartProduct.XAxes.GridLines = grid4;
-            chartFont13.FontName = "Arial";
-            tick4.Font = chartFont13;
-            this.chartProduct.XAxes.Ticks = tick4;
-            this.chartProduct.YAxes.GridLines = grid5;
-            chartFont14.FontName = "Arial";
-            tick5.Font = chartFont14;
-            this.chartProduct.YAxes.Ticks = tick5;
-            this.chartProduct.ZAxes.GridLines = grid6;
-            chartFont15.FontName = "Arial";
-            pointLabel2.Font = chartFont15;
-            this.chartProduct.ZAxes.PointLabels = pointLabel2;
-            chartFont16.FontName = "Arial";
-            tick6.Font = chartFont16;
-            this.chartProduct.ZAxes.Ticks = tick6;
-            // 
             // DashboardForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -619,11 +625,13 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "DashboardForm";
             this.Text = "DashboardForm";
+            this.Load += new System.EventHandler(this.DashboardForm_Load);
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();
             this.guna2Panel5.ResumeLayout(false);
             this.guna2Panel8.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataRecent)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.guna2Panel2.ResumeLayout(false);
             this.guna2Panel2.PerformLayout();
@@ -631,7 +639,6 @@
             this.guna2Panel3.PerformLayout();
             this.guna2Panel4.ResumeLayout(false);
             this.guna2Panel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataRecent)).EndInit();
             this.ResumeLayout(false);
 
         }

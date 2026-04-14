@@ -68,6 +68,7 @@ namespace my_own_project
                 lblUserName.Text = "Welcome, Guest";
             }
             AddControls(new DashboardForm());
+            lblDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
         }
 
 
