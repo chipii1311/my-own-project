@@ -32,16 +32,18 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.button13 = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvQuantity = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel6 = new System.Windows.Forms.Panel();
             this.flpTables = new System.Windows.Forms.FlowLayoutPanel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.lsvBill = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.txtTotalPrice = new Guna.UI2.WinForms.Guna2TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.flpMenu = new System.Windows.Forms.FlowLayoutPanel();
             this.panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -64,72 +66,30 @@
             // 
             // panel4
             // 
+            this.panel4.Controls.Add(this.label1);
+            this.panel4.Controls.Add(this.txtTotalPrice);
+            this.panel4.Controls.Add(this.lsvBill);
             this.panel4.Controls.Add(this.button13);
-            this.panel4.Controls.Add(this.dataGridView1);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel4.Location = new System.Drawing.Point(1388, 49);
+            this.panel4.Location = new System.Drawing.Point(1288, 49);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(691, 865);
+            this.panel4.Size = new System.Drawing.Size(791, 865);
             this.panel4.TabIndex = 4;
             // 
             // button13
             // 
-            this.button13.Location = new System.Drawing.Point(240, 730);
+            this.button13.Location = new System.Drawing.Point(249, 783);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(181, 48);
             this.button13.TabIndex = 12;
             this.button13.Text = "Thanh toan";
             this.button13.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dgvName,
-            this.dgvPrice,
-            this.dgvQuantity,
-            this.dgvTotal});
-            this.dataGridView1.Location = new System.Drawing.Point(17, 71);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(662, 637);
-            this.dataGridView1.TabIndex = 0;
-            // 
-            // dgvName
-            // 
-            this.dgvName.HeaderText = "Ten mon";
-            this.dgvName.MinimumWidth = 8;
-            this.dgvName.Name = "dgvName";
-            this.dgvName.ReadOnly = true;
-            // 
-            // dgvPrice
-            // 
-            this.dgvPrice.HeaderText = "Gia tien";
-            this.dgvPrice.MinimumWidth = 8;
-            this.dgvPrice.Name = "dgvPrice";
-            this.dgvPrice.ReadOnly = true;
-            // 
-            // dgvQuantity
-            // 
-            this.dgvQuantity.HeaderText = "So luong";
-            this.dgvQuantity.MinimumWidth = 8;
-            this.dgvQuantity.Name = "dgvQuantity";
-            // 
-            // dgvTotal
-            // 
-            this.dgvTotal.HeaderText = "Thanh tien";
-            this.dgvTotal.MinimumWidth = 8;
-            this.dgvTotal.Name = "dgvTotal";
-            this.dgvTotal.ReadOnly = true;
-            // 
             // panel6
             // 
             this.panel6.BackColor = System.Drawing.Color.DimGray;
             this.panel6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel6.Location = new System.Drawing.Point(1386, 49);
+            this.panel6.Location = new System.Drawing.Point(1286, 49);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(2, 865);
             this.panel6.TabIndex = 6;
@@ -139,23 +99,100 @@
             this.flpTables.Dock = System.Windows.Forms.DockStyle.Left;
             this.flpTables.Location = new System.Drawing.Point(0, 49);
             this.flpTables.Name = "flpTables";
-            this.flpTables.Size = new System.Drawing.Size(367, 865);
+            this.flpTables.Size = new System.Drawing.Size(347, 865);
             this.flpTables.TabIndex = 7;
             // 
             // panel3
             // 
             this.panel3.BackColor = System.Drawing.Color.DimGray;
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(367, 49);
+            this.panel3.Location = new System.Drawing.Point(347, 49);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(2, 865);
             this.panel3.TabIndex = 8;
+            // 
+            // lsvBill
+            // 
+            this.lsvBill.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4});
+            this.lsvBill.FullRowSelect = true;
+            this.lsvBill.GridLines = true;
+            this.lsvBill.HideSelection = false;
+            this.lsvBill.Location = new System.Drawing.Point(26, 178);
+            this.lsvBill.Name = "lsvBill";
+            this.lsvBill.Size = new System.Drawing.Size(738, 499);
+            this.lsvBill.TabIndex = 13;
+            this.lsvBill.UseCompatibleStateImageBehavior = false;
+            this.lsvBill.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Tên món";
+            this.columnHeader1.Width = 150;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Số Lượng";
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Đơn giá";
+            this.columnHeader3.Width = 80;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Thành tiền";
+            this.columnHeader4.Width = 100;
+            // 
+            // txtTotalPrice
+            // 
+            this.txtTotalPrice.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtTotalPrice.DefaultText = "";
+            this.txtTotalPrice.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtTotalPrice.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtTotalPrice.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtTotalPrice.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtTotalPrice.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtTotalPrice.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTotalPrice.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtTotalPrice.Location = new System.Drawing.Point(446, 890);
+            this.txtTotalPrice.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.txtTotalPrice.Name = "txtTotalPrice";
+            this.txtTotalPrice.PlaceholderText = "";
+            this.txtTotalPrice.ReadOnly = true;
+            this.txtTotalPrice.SelectedText = "";
+            this.txtTotalPrice.Size = new System.Drawing.Size(240, 41);
+            this.txtTotalPrice.TabIndex = 14;
+            this.txtTotalPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(209, 695);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(117, 32);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Tổng tiền";
+            // 
+            // flpMenu
+            // 
+            this.flpMenu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flpMenu.Location = new System.Drawing.Point(349, 49);
+            this.flpMenu.Name = "flpMenu";
+            this.flpMenu.Size = new System.Drawing.Size(937, 865);
+            this.flpMenu.TabIndex = 9;
             // 
             // POSForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(2079, 971);
+            this.Controls.Add(this.flpMenu);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.flpTables);
             this.Controls.Add(this.panel6);
@@ -166,7 +203,7 @@
             this.Name = "POSForm";
             this.Text = "POSForm";
             this.panel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -176,14 +213,17 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvPrice;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvQuantity;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvTotal;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.FlowLayoutPanel flpTables;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.ListView lsvBill;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private Guna.UI2.WinForms.Guna2TextBox txtTotalPrice;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.FlowLayoutPanel flpMenu;
     }
 }
