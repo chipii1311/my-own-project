@@ -100,6 +100,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\DashboardBLL.cs" />
     <Compile Include="BLL\UserBLL.cs" />
     <Compile Include="BLL\MenuItemBLL.cs" />
     <Compile Include="BLL\CategoryBLL.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="BLL\FeedbackBLL.cs" />
     <Compile Include="BLL\RecipeBLL.cs" />
     <Compile Include="BLL\InventoryTransactionBLL.cs" />
+    <Compile Include="DAL\DashboardDAL.cs" />
     <Compile Include="DAL\MenuItemDAL.cs" />
     <Compile Include="DAL\OrderDAL.cs" />
     <Compile Include="DAL\OrderDetailDAL.cs" />
