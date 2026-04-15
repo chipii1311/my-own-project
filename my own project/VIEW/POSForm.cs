@@ -1,4 +1,5 @@
 ﻿using my_own_project.BLL;
+using my_own_project.DAL;
 using my_own_project.DTO;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,10 @@ namespace my_own_project.DesignForms
 {
     public partial class POSForm : Form
     {
+
+        // Khai báo 2 biến toàn cục để lưu dữ liệu và trạng thái lọc
+        private DataTable dtAllMenu;
+        private int selectedCategoryID = 0; // 0 nghĩa là đang chọn "Tất cả"
 
         private int currentTableID = -1;
         private int currentOrderID = -1;
@@ -165,46 +170,80 @@ namespace my_own_project.DesignForms
 
         private void LoadMenuItems()
         {
-            flpMenu.Controls.Clear();
-            DataTable dt = MenuItemBLL.GetAllAvailableItems(); // Giả sử bạn có hàm này trong BLL
+            // 1. Chỉ gọi Database đúng 1 lần duy nhất để lấy toàn bộ món ăn
+            dtAllMenu = MenuItemBLL.GetAllAvailableItems();
 
-            foreach (DataRow row in dt.Rows)
-            {
-                // 1. Khởi tạo một "Thẻ món ăn" từ bản thiết kế UC
-                UCFoodItem uc = new UCFoodItem();
+            // 2. Tải các nút Danh mục (Category)
+            LoadCategories();
 
-                // 2. Đổ dữ liệu vào thẻ
-                uc.SetData(
-                    Convert.ToInt32(row["MenuItemID"]),
-                    row["ItemName"].ToString(),
-                    Convert.ToDecimal(row["Price"]),
-                    row["ImageUrl"].ToString()
-                );
-
-                // 3. Đăng ký sự kiện: Khi bấm "Thêm" trên thẻ này thì chạy hàm xử lý bên dưới
-                uc.OnSelect += Uc_OnSelect;
-
-                // 4. Ném thẻ vào flowLayoutPanel
-                flpMenu.Controls.Add(uc);
-            }
+            // 3. Hiển thị toàn bộ món ăn lên màn hình (Mặc định ID = 0, Từ khóa = rỗng)
+            FilterMenu(0, "");
         }
 
 
+        // ==========================================================
+        // HÀM XỬ LÝ KHI BẤM NÚT "THÊM" TRÊN TỪNG THẺ MÓN ĂN
+        // ==========================================================
         private void Uc_OnSelect(object sender, EventArgs e)
         {
             if (currentTableID == -1)
             {
-                MessageBox.Show("Chưa chọn bàn!");
+                MessageBox.Show("Vui lòng chọn một Bàn ở cột trái trước khi gọi món!", "Nhắc nhở");
                 return;
             }
 
+            // Lấy cái thẻ món ăn (UCFoodItem) vừa bị bấm
             UCFoodItem uc = (UCFoodItem)sender;
+
+            // Lấy thông tin ID, Giá và Số lượng từ thẻ đó ra
+            int menuItemID = uc.FoodID;
+            decimal price = uc.Price;
             int quantity = uc.GetQuantity();
 
-            // Thực hiện logic thêm món vào Database y như cũ...
-            // Sau khi thêm xong, gọi:
-            uc.ResetQuantity();
-            ShowBill(currentTableID);
+            // Nếu thu ngân gõ số 0 rồi bấm Thêm thì bỏ qua
+            if (quantity == 0) return;
+
+            try
+            {
+                // 1. TẠO HÓA ĐƠN MỚI (Nếu bàn đang trống)
+                if (currentOrderID == -1)
+                {
+                    OrderDTO newOrder = new OrderDTO();
+                    newOrder.TableID = currentTableID;
+                    newOrder.RestaurantID = 1;
+                    newOrder.OrderType = "DineIn";
+                    newOrder.Status = "Pending";
+                    newOrder.OrderDate = DateTime.Now;
+
+                    currentOrderID = OrderBLL.CreateOrder(newOrder);
+
+                    // Đổi màu bàn sang đỏ (Đang dùng)
+                    DiningTableDTO table = DiningTableBLL.GetTableByID(currentTableID);
+                    if (table != null)
+                    {
+                        table.Status = "Đang dùng";
+                        DiningTableBLL.UpdateTable(table);
+                        LoadTables();
+                    }
+                }
+
+                // 2. THÊM MÓN VÀO DATABASE
+                OrderDetailDTO detail = new OrderDetailDTO();
+                detail.OrderID = currentOrderID;
+                detail.MenuItemID = menuItemID;
+                detail.Quantity = quantity; // Bắn số dương (cộng) hoặc âm (trừ) xuống SQL
+                detail.UnitPrice = price;
+
+                OrderDetailBLL.AddOrderDetail(detail);
+
+                // 3. CẬP NHẬT LẠI GIAO DIỆN
+                ShowBill(currentTableID); // Tải lại bảng hóa đơn bên phải
+                uc.ResetQuantity();       // Trả ô chọn số lượng trên thẻ về lại số 1
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi thêm món: " + ex.Message);
+            }
         }
 
         // Hàm xử lý khi Thu ngân click chọn 1 Món ăn
@@ -257,6 +296,7 @@ namespace my_own_project.DesignForms
                     OrderDetailDTO detail = new OrderDetailDTO();
                     detail.OrderID = currentOrderID;
                     detail.MenuItemID = menuItemID;
+                    detail.MenuItemID = menuItemID;
                     detail.Quantity = quantity; // Bắn 10 lon bia hoặc -2 lon bia xuống SQL
                     detail.UnitPrice = price;
 
@@ -275,5 +315,143 @@ namespace my_own_project.DesignForms
             }
         }
         #endregion
+        #region Xử lý hiển thị Thực Đơn
+
+        // Hàm này giờ chỉ đóng vai trò "khởi động" lúc mới mở Form
+        
+
+        // ==========================================
+        // TẠO CÁC NÚT DANH MỤC ĐỘNG
+        // ==========================================
+        private void LoadCategories()
+        {
+            flpCategories.Controls.Clear();
+
+            // Tạo nút "Tất cả" mặc định nằm ở đầu tiên
+            Button btnAll = new Button();
+            btnAll.Text = "Tất cả";
+            btnAll.Width = 80; btnAll.Height = 35;
+            btnAll.Tag = 0;
+            btnAll.BackColor = Color.LightSkyBlue; // Nút đang chọn có màu xanh
+            btnAll.FlatStyle = FlatStyle.Flat;
+            btnAll.Click += CategoryButton_Click;
+            flpCategories.Controls.Add(btnAll);
+
+            try
+            {
+                // Gọi BLL/DAL lấy danh sách Category (Giả sử bạn có hàm CategoryDAL.GetAll())
+                DataTable dtCategories = CategoryDAL.GetAll();
+
+                foreach (DataRow row in dtCategories.Rows)
+                {
+                    Button btn = new Button();
+                    btn.Text = row["CategoryName"].ToString();
+                    btn.Width = 80; btnAll.Height = 35;
+                    btn.Tag = Convert.ToInt32(row["CategoryID"]);
+                    btn.BackColor = Color.White;
+                    btn.FlatStyle = FlatStyle.Flat;
+                    btn.Click += CategoryButton_Click;
+
+                    flpCategories.Controls.Add(btn);
+                }
+            }
+            catch { /* Bỏ qua nếu chưa có bảng Category */ }
+        }
+
+        // Sự kiện khi thu ngân bấm vào một Nút Danh Mục
+        private void CategoryButton_Click(object sender, EventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                selectedCategoryID = Convert.ToInt32(btn.Tag);
+
+                // Đổi màu: Nút được bấm thành Xanh, các nút khác về Trắng
+                foreach (Control ctrl in flpCategories.Controls)
+                {
+                    ctrl.BackColor = Color.White;
+                }
+                btn.BackColor = Color.LightSkyBlue;
+
+                // Tiến hành lọc lại món ăn bên dưới
+                FilterMenu(selectedCategoryID, txtSearch.Text);
+            }
+        }
+
+        // ==========================================
+        // SỰ KIỆN TÌM KIẾM THEO TÊN (LIVE SEARCH)
+        // ==========================================
+        // (Nhớ click đúp vào txtSearch trên Form Design để VS tự tạo hàm này)
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            FilterMenu(selectedCategoryID, txtSearch.Text);
+        }
+
+        // ==========================================
+        // CỖ MÁY LỌC MÓN ĂN SIÊU TỐC
+        // ==========================================
+        private void FilterMenu(int categoryID, string keyword)
+        {
+            flpMenu.Controls.Clear();
+
+            // Nếu dữ liệu chưa tải xong thì không làm gì cả
+            if (dtAllMenu == null) return;
+
+            // Sử dụng DataView để lọc trực tiếp trên RAM, không cần gọi SQL
+            DataView dv = new DataView(dtAllMenu);
+            string filterStr = "";
+
+            // Nếu đang chọn một danh mục cụ thể (khác "Tất cả")
+            if (categoryID > 0)
+            {
+                filterStr = $"CategoryID = {categoryID}";
+            }
+
+            // Nếu có gõ chữ vào ô tìm kiếm
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                if (filterStr != "") filterStr += " AND ";
+                // Lọc gần đúng, chứa chữ gõ vào là hiện lên
+                filterStr += $"ItemName LIKE '%{keyword}%'";
+            }
+
+            dv.RowFilter = filterStr;
+
+            // Vẽ lại các thẻ món ăn từ kết quả vừa lọc được
+            foreach (DataRowView rowView in dv)
+            {
+                DataRow row = rowView.Row;
+                UCFoodItem uc = new UCFoodItem();
+
+                uc.SetData(
+                    Convert.ToInt32(row["MenuItemID"]),
+                    row["ItemName"].ToString(),
+                    Convert.ToDecimal(row["Price"]),
+                    row["ImageUrl"].ToString()
+                );
+
+                uc.OnSelect += Uc_OnSelect;
+                flpMenu.Controls.Add(uc);
+            }
+        }
+
+
+        #endregion
+
+        private void lsvBill_SizeChanged(object sender, EventArgs e)
+        {
+            // Đảm bảo bảng phải có ít nhất 4 cột thì mới chạy
+            if (lsvBill.Columns.Count >= 4)
+            {
+                // Tính tổng chiều rộng của 3 cột cố định (Số lượng, Đơn giá, Thành tiền)
+                int fixedWidth = lsvBill.Columns[1].Width + lsvBill.Columns[2].Width + lsvBill.Columns[3].Width;
+
+                // Trừ hao khoảng 25px cho thanh cuộn dọc (Scrollbar) để không bị xuất hiện thanh cuộn ngang xấu xí
+                int scrollBarWidth = 25;
+
+                // Ép cột "Tên món" (cột số 0) giãn ra bằng phần đất còn lại
+                lsvBill.Columns[0].Width = lsvBill.Width - fixedWidth - scrollBarWidth;
+            }
+        }
     }
 }

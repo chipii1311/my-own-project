@@ -42,7 +42,7 @@
             this.picImage.Dock = System.Windows.Forms.DockStyle.Top;
             this.picImage.Location = new System.Drawing.Point(0, 0);
             this.picImage.Name = "picImage";
-            this.picImage.Size = new System.Drawing.Size(170, 134);
+            this.picImage.Size = new System.Drawing.Size(170, 170);
             this.picImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picImage.TabIndex = 0;
             this.picImage.TabStop = false;
@@ -51,7 +51,7 @@
             // 
             this.lblFoodName.BackColor = System.Drawing.SystemColors.Control;
             this.lblFoodName.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblFoodName.Location = new System.Drawing.Point(0, 134);
+            this.lblFoodName.Location = new System.Drawing.Point(0, 170);
             this.lblFoodName.Name = "lblFoodName";
             this.lblFoodName.Size = new System.Drawing.Size(170, 20);
             this.lblFoodName.TabIndex = 3;
@@ -62,9 +62,9 @@
             // 
             this.lblPrice.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblPrice.ForeColor = System.Drawing.Color.Blue;
-            this.lblPrice.Location = new System.Drawing.Point(0, 154);
+            this.lblPrice.Location = new System.Drawing.Point(0, 190);
             this.lblPrice.Name = "lblPrice";
-            this.lblPrice.Size = new System.Drawing.Size(170, 20);
+            this.lblPrice.Size = new System.Drawing.Size(170, 25);
             this.lblPrice.TabIndex = 4;
             this.lblPrice.Text = "label1";
             this.lblPrice.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -74,8 +74,13 @@
             this.nudQuantity.BackColor = System.Drawing.Color.Transparent;
             this.nudQuantity.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.nudQuantity.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.nudQuantity.Location = new System.Drawing.Point(4, 176);
+            this.nudQuantity.Location = new System.Drawing.Point(4, 212);
             this.nudQuantity.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.nudQuantity.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.nudQuantity.Name = "nudQuantity";
             this.nudQuantity.Size = new System.Drawing.Size(63, 33);
             this.nudQuantity.TabIndex = 6;
@@ -88,7 +93,7 @@
             this.btnBuy.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnBuy.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnBuy.ForeColor = System.Drawing.Color.White;
-            this.btnBuy.Location = new System.Drawing.Point(74, 176);
+            this.btnBuy.Location = new System.Drawing.Point(71, 212);
             this.btnBuy.Name = "btnBuy";
             this.btnBuy.Size = new System.Drawing.Size(96, 33);
             this.btnBuy.TabIndex = 7;
@@ -104,7 +109,7 @@
             this.Controls.Add(this.lblFoodName);
             this.Controls.Add(this.picImage);
             this.Name = "UCFoodItem";
-            this.Size = new System.Drawing.Size(170, 212);
+            this.Size = new System.Drawing.Size(170, 250);
             ((System.ComponentModel.ISupportInitialize)(this.picImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudQuantity)).EndInit();
             this.ResumeLayout(false);

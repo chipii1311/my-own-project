@@ -1120,3 +1120,27 @@ BEGIN
     WHERE o.TableID = @TableID AND o.Status IN (N'Đang dùng', N'Chưa thanh toán')
 END;
 GO
+
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'Beefsteak.png' WHERE ItemName = N'Bò bít tết';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'CocaCola.png' WHERE ItemName = N'Coca Cola';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'ComChienDuongChau.png' WHERE ItemName = N'Cơm chiên Dương Châu';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'Flan.png' WHERE ItemName = N'Bánh flan';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'GaNuongMatOng.jpg' WHERE ItemName = N'Gà nướng mật ong';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'KemDau.png' WHERE ItemName = N'Kem dâu';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'NuocCam.png' WHERE ItemName = N'Nước cam ép';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'Salad.png' WHERE ItemName = N'Salad trộn';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'SupCua.jpg' WHERE ItemName = N'Súp cua';
+        UPDATE [dbo].[MenuItem] SET ImageUrl = 'Tiger.png' WHERE ItemName = N'Bia Tiger';
+
+
+
+        ALTER PROCEDURE [dbo].[sp_MenuItem_GetAllAvailable]
+AS
+BEGIN
+    SET NOCOUNT ON;
+    -- Bổ sung thêm CategoryID vào danh sách lấy lên
+    SELECT MenuItemID, CategoryID, ItemName, Price, ImageUrl 
+    FROM [dbo].[MenuItem] 
+    WHERE IsAvailable = 1;
+END;
+GO

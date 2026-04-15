@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace my_own_project
-{
+namespace my_own_project                
+{           
     public partial class UCFoodItem : UserControl
     {
         // Tạo một sự kiện để báo cho POSForm biết khi nào nút "Thêm" được bấm
@@ -18,29 +19,42 @@ namespace my_own_project
         // Các thuộc tính để chứa dữ liệu món ăn
         public int FoodID { get; set; }
         public decimal Price { get; set; }
-
+                
         public UCFoodItem()
         {
             InitializeComponent();
+            btnBuy.Click += btnBuy_Click;
         }
 
         // Hàm này dùng để đổ dữ liệu từ SQL vào cái thẻ này
-        public void SetData(int id, string name, decimal price, string imgPath)
+        public void SetData(int id, string name, decimal price, string imgFileName)
         {
-            this.FoodID = id;
-            this.Price = price;
             lblFoodName.Text = name;
             lblPrice.Text = price.ToString("N0") + "đ";
+            this.FoodID = id;
+            this.Price = price;
 
             try
             {
-                if (System.IO.File.Exists(imgPath))
-                    picImage.Image = Image.FromFile(imgPath);
-            }
-            catch { }
-        }
+                if (!string.IsNullOrEmpty(imgFileName))
+                {
+                    // Tự động tìm thư mục MenuImages nằm cùng cấp với file .exe
+                    string fullPath = Path.Combine(Application.StartupPath, "MenuImages", imgFileName);
 
-        // Lấy số lượng hiện tại đang chọn trên thẻ
+                    if (File.Exists(fullPath))
+                    {
+                        // Giải phóng ảnh cũ nếu có để tránh tràn bộ nhớ
+                        if (picImage.Image != null) picImage.Image.Dispose();
+
+                        picImage.Image = Image.FromFile(fullPath);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Nếu lỗi hoặc không thấy ảnh, có thể hiện một ảnh mặc định
+            }
+        }
         public int GetQuantity()
         {
             return (int)nudQuantity.Value;
@@ -58,6 +72,8 @@ namespace my_own_project
             if (OnSelect != null)
                 OnSelect(this, e);
         }
+
+
     }
 
 }
