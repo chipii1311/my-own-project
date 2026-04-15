@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.pnlFunction = new System.Windows.Forms.Panel();
             this.btnSettings = new Guna.UI2.WinForms.Guna2Button();
             this.btnPOS = new Guna.UI2.WinForms.Guna2Button();
@@ -47,6 +48,7 @@
             this.btnExit = new Guna.UI2.WinForms.Guna2ControlBox();
             this.ControlsPanel = new System.Windows.Forms.Panel();
             this.logoutDialog = new Guna.UI2.WinForms.Guna2MessageDialog();
+            this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
             this.pnlFunction.SuspendLayout();
             this.pnlLogo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.guna2PictureBox1)).BeginInit();
@@ -66,7 +68,7 @@
             this.pnlFunction.Controls.Add(this.pnlLogo);
             this.pnlFunction.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlFunction.Location = new System.Drawing.Point(0, 0);
-            this.pnlFunction.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlFunction.Margin = new System.Windows.Forms.Padding(2);
             this.pnlFunction.Name = "pnlFunction";
             this.pnlFunction.Size = new System.Drawing.Size(207, 715);
             this.pnlFunction.TabIndex = 0;
@@ -249,7 +251,7 @@
             this.pnlLogo.Controls.Add(this.guna2PictureBox1);
             this.pnlLogo.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlLogo.Location = new System.Drawing.Point(0, 0);
-            this.pnlLogo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlLogo.Margin = new System.Windows.Forms.Padding(2);
             this.pnlLogo.Name = "pnlLogo";
             this.pnlLogo.Size = new System.Drawing.Size(207, 113);
             this.pnlLogo.TabIndex = 0;
@@ -286,7 +288,7 @@
             this.panel1.Controls.Add(this.btnExit);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(207, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1048, 60);
             this.panel1.TabIndex = 1;
@@ -330,6 +332,7 @@
             // btn
             // 
             this.btn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn.BackColor = System.Drawing.Color.Transparent;
             this.btn.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MaximizeBox;
             this.btn.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(152)))), ((int)(((byte)(166)))));
             this.btn.IconColor = System.Drawing.Color.White;
@@ -337,6 +340,7 @@
             this.btn.Name = "btn";
             this.btn.Size = new System.Drawing.Size(45, 29);
             this.btn.TabIndex = 0;
+            this.btn.UseTransparentBackground = true;
             // 
             // btnExit
             // 
@@ -355,7 +359,7 @@
             this.ControlsPanel.BackColor = System.Drawing.Color.White;
             this.ControlsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ControlsPanel.Location = new System.Drawing.Point(207, 60);
-            this.ControlsPanel.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            this.ControlsPanel.Margin = new System.Windows.Forms.Padding(1);
             this.ControlsPanel.Name = "ControlsPanel";
             this.ControlsPanel.Size = new System.Drawing.Size(1048, 655);
             this.ControlsPanel.TabIndex = 2;
@@ -369,6 +373,13 @@
             this.logoutDialog.Style = Guna.UI2.WinForms.MessageDialogStyle.Default;
             this.logoutDialog.Text = "Are you sure you want to log out?";
             // 
+            // guna2DragControl1
+            // 
+            this.guna2DragControl1.DockIndicatorTransparencyValue = 1D;
+            this.guna2DragControl1.DragStartTransparencyValue = 1D;
+            this.guna2DragControl1.TargetControl = this.panel1;
+            this.guna2DragControl1.UseTransparentDrag = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -379,7 +390,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.pnlFunction);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MainForm";
@@ -416,6 +427,7 @@
         private Guna.UI2.WinForms.Guna2Button btnProducts;
         private Guna.UI2.WinForms.Guna2Button btnCategory;
         private System.Windows.Forms.Label lblDate;
+        private Guna.UI2.WinForms.Guna2DragControl guna2DragControl1;
     }
 }
 
