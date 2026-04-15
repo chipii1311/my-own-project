@@ -175,5 +175,19 @@ namespace my_own_project.DAL
                 RestaurantName = row["RestaurantName"]?.ToString() ?? ""
             };
         }
+
+        public static DataTable GetAllAvailableItems()
+        {
+            try
+            {
+                // Sử dụng DataHelper chuẩn của nhóm để gọi Stored Procedure
+                return DataHelper.ExecuteSPGetTable("sp_MenuItem_GetAllAvailable");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"MenuItemDAL.GetAllAvailableItems Error: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

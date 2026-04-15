@@ -19,7 +19,7 @@ namespace my_own_project.BLL
             if (detail.MenuItemID <= 0)
                 throw new Exception("MenuItemID không hợp lệ!");
 
-            if (detail.Quantity <= 0)
+            if (detail.Quantity == 0)
                 throw new Exception("Số lượng phải lớn hơn 0!");
 
             if (detail.UnitPrice < 0)

@@ -197,5 +197,9 @@ namespace my_own_project.BLL
                 throw;
             }
         }
+        public static DataTable GetAllAvailableItems()
+        {
+            return MenuItemDAL.GetAllAvailableItems();
+        }
     }
 }

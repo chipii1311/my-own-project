@@ -25,7 +25,7 @@ namespace my_own_project.DAL
                 };
 
                 DataHelper.ExecuteSPWithOutput("sp_OrderDetail_Insert", parameters);
-                return (int)parameters[4].Value;
+                return Convert.ToInt32(parameters[4].Value);
             }
             catch (Exception ex)
             {

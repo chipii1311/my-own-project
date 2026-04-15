@@ -37,7 +37,6 @@ namespace my_own_project.DesignForms
 
             try
             {
-                // Gọi BLL của nhóm lấy danh sách bàn
                 DataTable dtTables = DiningTableBLL.GetAllTables();
 
                 foreach (DataRow row in dtTables.Rows)
@@ -48,18 +47,22 @@ namespace my_own_project.DesignForms
 
                     int tableID = Convert.ToInt32(row["TableID"]);
                     string tableNum = row["TableNumber"].ToString();
-                    string status = row["Status"] != DBNull.Value ? row["Status"].ToString() : "Trống";
+
+                    // Dữ liệu DB của bạn đang là tiếng Việt, ta lấy thẳng ra luôn
+                    // Dùng Trim() để đề phòng trong DB bạn lỡ gõ dư dấu cách
+                    string status = row["Status"] != DBNull.Value ? row["Status"].ToString().Trim() : "Trống";
 
                     btn.Text = "Bàn " + tableNum + Environment.NewLine + "(" + status + ")";
                     btn.Tag = tableID;
 
+                    // Kiểm tra chính xác chữ tiếng Việt trong DB của bạn
                     switch (status)
                     {
                         case "Trống":
                             btn.BackColor = Color.LightGreen;
                             break;
                         case "Đang dùng":
-                        case "Có khách":
+                        case "Có khách": // Tôi thấy Bàn 4 của bạn ghi chữ "Có khách"
                             btn.BackColor = Color.LightCoral;
                             break;
                         case "Đã đặt":
@@ -74,7 +77,6 @@ namespace my_own_project.DesignForms
                     btn.FlatAppearance.BorderSize = 1;
                     btn.FlatAppearance.BorderColor = Color.Gray;
 
-                    // Gắn sự kiện click
                     btn.Click += BtnTable_Click;
                     flpTables.Controls.Add(btn);
                 }
@@ -86,18 +88,15 @@ namespace my_own_project.DesignForms
         }
 
         // Hàm xử lý khi Thu ngân click vào 1 Bàn
-        private void BtnTable_Click(object sender, EventArgs e)
-        {
-            Button clickedBtn = sender as Button;
-            if (clickedBtn != null)
-            {
-                // Ghi nhớ lại ID của bàn đang chọn
-                currentTableID = Convert.ToInt32(clickedBtn.Tag);
-
-                // Hiển thị Hóa đơn của bàn đó
-                ShowBill(currentTableID);
-            }
-        }
+       private void BtnTable_Click(object sender, EventArgs e)
+{
+    Button clickedBtn = sender as Button;
+    if (clickedBtn != null)
+    {
+        currentTableID = Convert.ToInt32(clickedBtn.Tag);
+        ShowBill(currentTableID); // Tải hóa đơn (nếu có)
+    }
+}
         #endregion
 
         // ==========================================
@@ -105,29 +104,32 @@ namespace my_own_project.DesignForms
         // ==========================================
         #region Xử lý hiển thị Hóa Đơn
 
+
+
+
         private void ShowBill(int tableID)
         {
             lsvBill.Items.Clear();
             decimal totalAmount = 0;
-            currentOrderID = -1;
+            currentOrderID = -1; // Reset OrderID
 
             try
             {
-                // Tìm Order đang mở của bàn này
                 DataTable dtOrders = OrderBLL.GetOrdersByTable(tableID);
                 DataRow activeOrder = null;
 
                 foreach (DataRow row in dtOrders.Rows)
                 {
-                    string status = row["Status"].ToString();
-                    if (status != "Completed" && status != "Cancelled" && status != "Đã thanh toán")
+                    string status = row["Status"].ToString().Trim();
+                    if (!status.Equals("Completed", StringComparison.OrdinalIgnoreCase) &&
+                        !status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
                     {
                         activeOrder = row;
                         break;
                     }
                 }
 
-                // Nếu có Order, lấy chi tiết món ăn hiển thị lên
+                // Nếu tìm thấy hóa đơn, mới bắt đầu lôi món ăn ra
                 if (activeOrder != null)
                 {
                     currentOrderID = Convert.ToInt32(activeOrder["OrderID"]);
@@ -137,25 +139,23 @@ namespace my_own_project.DesignForms
                     {
                         ListViewItem lvi = new ListViewItem(row["ItemName"].ToString());
                         lvi.SubItems.Add(row["Quantity"].ToString());
-
-                        decimal price = Convert.ToDecimal(row["UnitPrice"]);
-                        lvi.SubItems.Add(price.ToString("N0"));
-
-                        decimal subTotal = Convert.ToDecimal(row["SubTotal"]);
-                        lvi.SubItems.Add(subTotal.ToString("N0"));
+                        lvi.SubItems.Add(Convert.ToDecimal(row["UnitPrice"]).ToString("N0"));
+                        lvi.SubItems.Add(Convert.ToDecimal(row["SubTotal"]).ToString("N0"));
 
                         lsvBill.Items.Add(lvi);
-                        totalAmount += subTotal;
+                        totalAmount += Convert.ToDecimal(row["SubTotal"]);
                     }
                 }
 
-                txtTotalPrice.Text = totalAmount.ToString("N0") + " VNĐ";
+                txtTotalAmount.Text = totalAmount.ToString("N0") + " VNĐ";
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi hiển thị hóa đơn: " + ex.Message);
             }
         }
+
+
         #endregion
 
         // ==========================================
@@ -166,76 +166,114 @@ namespace my_own_project.DesignForms
         private void LoadMenuItems()
         {
             flpMenu.Controls.Clear();
+            DataTable dt = MenuItemBLL.GetAllAvailableItems(); // Giả sử bạn có hàm này trong BLL
 
-            try
+            foreach (DataRow row in dt.Rows)
             {
-                // Tạm thời vẫn dùng Sql connection cho nhanh để xem giao diện
-                string connString = ConfigurationManager.ConnectionStrings["RestaurantDB"].ConnectionString;
-                using (SqlConnection conn = new SqlConnection(connString))
-                {
-                    string query = "SELECT MenuItemID, ItemName, Price, ImageUrl FROM MenuItem WHERE IsAvailable = 1";
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    conn.Open();
+                // 1. Khởi tạo một "Thẻ món ăn" từ bản thiết kế UC
+                UCFoodItem uc = new UCFoodItem();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        Button btn = new Button();
-                        btn.Width = 140;
-                        btn.Height = 160;
-                        btn.BackColor = Color.White;
-                        btn.FlatStyle = FlatStyle.Flat;
-                        btn.FlatAppearance.BorderColor = Color.LightGray;
+                // 2. Đổ dữ liệu vào thẻ
+                uc.SetData(
+                    Convert.ToInt32(row["MenuItemID"]),
+                    row["ItemName"].ToString(),
+                    Convert.ToDecimal(row["Price"]),
+                    row["ImageUrl"].ToString()
+                );
 
-                        string name = reader["ItemName"].ToString();
-                        string price = Convert.ToDecimal(reader["Price"]).ToString("N0");
-                        btn.Text = name + Environment.NewLine + price + "đ";
-                        btn.TextAlign = ContentAlignment.BottomCenter;
-                        btn.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+                // 3. Đăng ký sự kiện: Khi bấm "Thêm" trên thẻ này thì chạy hàm xử lý bên dưới
+                uc.OnSelect += Uc_OnSelect;
 
-                        string imgPath = reader["ImageUrl"].ToString();
-                        try
-                        {
-                            if (!string.IsNullOrEmpty(imgPath) && System.IO.File.Exists(imgPath))
-                            {
-                                btn.Image = Image.FromFile(imgPath);
-                            }
-                        }
-                        catch { }
-
-                        btn.ImageAlign = ContentAlignment.TopCenter;
-                        btn.TextImageRelation = TextImageRelation.ImageAboveText;
-
-                        // Giấu ID món
-                        btn.Tag = reader["MenuItemID"];
-
-                        // Gắn sự kiện click
-                        btn.Click += BtnMenuItem_Click;
-
-                        flpMenu.Controls.Add(btn);
-                    }
-                }
+                // 4. Ném thẻ vào flowLayoutPanel
+                flpMenu.Controls.Add(uc);
             }
-            catch (Exception ex)
+        }
+
+
+        private void Uc_OnSelect(object sender, EventArgs e)
+        {
+            if (currentTableID == -1)
             {
-                MessageBox.Show("Lỗi tải thực đơn: " + ex.Message);
+                MessageBox.Show("Chưa chọn bàn!");
+                return;
             }
+
+            UCFoodItem uc = (UCFoodItem)sender;
+            int quantity = uc.GetQuantity();
+
+            // Thực hiện logic thêm món vào Database y như cũ...
+            // Sau khi thêm xong, gọi:
+            uc.ResetQuantity();
+            ShowBill(currentTableID);
         }
 
         // Hàm xử lý khi Thu ngân click chọn 1 Món ăn
-        private void BtnMenuItem_Click(object sender, EventArgs e)
+        private void BtnAddDynamic_Click(object sender, EventArgs e)
         {
+            if (currentTableID == -1)
+            {
+                MessageBox.Show("Vui lòng chọn một Bàn ở cột trái trước khi gọi món!", "Nhắc nhở");
+                return;
+            }
+
             Button btn = sender as Button;
             if (btn != null)
             {
-                int menuItemID = Convert.ToInt32(btn.Tag);
-                string itemName = btn.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None)[0];
+                // Khui dữ liệu từ Tag ra
+                var itemData = btn.Tag as Tuple<int, decimal, NumericUpDown>;
+                int menuItemID = itemData.Item1;
+                decimal price = itemData.Item2;
+                NumericUpDown nud = itemData.Item3;
 
-                // Tạm thời báo thông báo để chương trình không bị lỗi
-                MessageBox.Show("Bạn vừa chọn món: " + itemName + ". Tính năng thêm vào Hóa đơn sẽ được làm tiếp theo!");
+                // Lấy chính xác số lượng mà thu ngân vừa gõ/bấm
+                int quantity = (int)nud.Value;
+
+                if (quantity == 0) return; // Nếu số lượng = 0 thì không làm gì cả
+
+                try
+                {
+                    // 1. Tạo Hóa đơn nếu bàn đang trống
+                    if (currentOrderID == -1)
+                    {
+                        OrderDTO newOrder = new OrderDTO();
+                        newOrder.TableID = currentTableID;
+                        newOrder.RestaurantID = 1;
+                        newOrder.OrderType = "DineIn";
+                        newOrder.Status = "Pending";
+                        newOrder.OrderDate = DateTime.Now;
+
+                        currentOrderID = OrderBLL.CreateOrder(newOrder);
+
+                        DiningTableDTO table = DiningTableBLL.GetTableByID(currentTableID);
+                        if (table != null)
+                        {
+                            table.Status = "Đang dùng";
+                            DiningTableBLL.UpdateTable(table);
+                            LoadTables();
+                        }
+                    }
+
+                    // 2. Thêm món vào hóa đơn với Số Lượng tùy chọn
+                    OrderDetailDTO detail = new OrderDetailDTO();
+                    detail.OrderID = currentOrderID;
+                    detail.MenuItemID = menuItemID;
+                    detail.Quantity = quantity; // Bắn 10 lon bia hoặc -2 lon bia xuống SQL
+                    detail.UnitPrice = price;
+
+                    OrderDetailBLL.AddOrderDetail(detail);
+
+                    // 3. Tải lại bảng Hóa đơn
+                    ShowBill(currentTableID);
+
+                    // 4. Trả ô số lượng về lại số 1 để chuẩn bị cho lần bấm tiếp theo
+                    nud.Value = 1;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi thêm món: " + ex.Message);
+                }
             }
         }
         #endregion
-
     }
 }
