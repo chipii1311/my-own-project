@@ -87,7 +87,7 @@ namespace my_own_project.VIEW
 
         private void btnToday_Click(object sender, EventArgs e)
         {
-            ToggleCustomDateControls(false); // Ẩn đi cho đỡ rối
+            ToggleCustomDateControls(false);
             dateStart.Value = DateTime.Today;
             dateEnd.Value = DateTime.Now;
             LoadDashboardData();
