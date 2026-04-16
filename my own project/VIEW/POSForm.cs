@@ -1,6 +1,7 @@
 ﻿using my_own_project.BLL;
 using my_own_project.DAL;
 using my_own_project.DTO;
+using my_own_project.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,14 +25,72 @@ namespace my_own_project.DesignForms
 
         private int currentTableID = -1;
         private int currentOrderID = -1;
+        private ContextMenuStrip tableMenu;
+
         public POSForm()
         {
             InitializeComponent();
 
-            // Lệnh này bắt buộc phải nằm dưới InitializeComponent
-            // Nó sẽ tự động vẽ bàn ra ngay khi form vừa hiện lên
+            // 1. Phải tạo cái Menu chuột phải RA TRƯỚC
+            InitializeTableMenu();
+
+            // 2. Sau đó mới gọi hàm xây Bàn (để bàn có cái mà gán vào)
             LoadTables();
+
+            // 3. Cuối cùng tải món ăn
             LoadMenuItems();
+            flpMenu.Enabled = false;
+        }
+
+        private void InitializeTableMenu()
+        {
+            tableMenu = new ContextMenuStrip();
+
+            // Thêm các tuỳ chọn trạng thái (Tên hiển thị, Icon, Hàm xử lý sự kiện)
+            tableMenu.Items.Add("Trống", null, ChangeTableStatus_Click);
+            tableMenu.Items.Add("Đã đặt", null, ChangeTableStatus_Click);
+            tableMenu.Items.Add("Bảo trì", null, ChangeTableStatus_Click);
+        }
+
+        // Hàm xử lý khi Thu ngân bấm chọn 1 trạng thái trong Menu
+        private void ChangeTableStatus_Click(object sender, EventArgs e)
+        {
+            // Tìm xem thu ngân vừa click vào trạng thái nào
+            ToolStripItem clickedItem = sender as ToolStripItem;
+
+            // Tìm xem cái Menu đó đang được mở ra từ cái Bàn (Button) nào
+            ContextMenuStrip menu = clickedItem.Owner as ContextMenuStrip;
+            Button btnTable = menu.SourceControl as Button;
+
+            if (btnTable != null)
+            {
+                int tableID = Convert.ToInt32(btnTable.Tag);
+                string newStatus = clickedItem.Text; // Chữ "Đã đặt", "Trống",...
+
+                try
+                {
+                    // Lôi bàn đó từ Database lên và đổi trạng thái
+                    DiningTableDTO table = DiningTableBLL.GetTableByID(tableID);
+                    if (table != null)
+                    {
+                        // Ràng buộc nhỏ: Nếu bàn đang có người ăn thì không cho đổi lung tung
+                        if (table.Status.Trim() == "Đang dùng" || table.Status.Trim() == "Có khách")
+                        {
+                            MessageBox.Show("Bàn đang có khách, không thể đổi trạng thái thủ công! Vui lòng thanh toán để trống bàn.", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        table.Status = newStatus;
+                        DiningTableBLL.UpdateTable(table);
+
+                        LoadTables(); // Load lại để cập nhật màu sắc ngay lập tức
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi đổi trạng thái bàn: " + ex.Message);
+                }
+            }
         }
 
         #region Xử lý hiển thị Sơ đồ Bàn ăn (Cột Trái)
@@ -81,6 +140,7 @@ namespace my_own_project.DesignForms
                     btn.FlatStyle = FlatStyle.Flat;
                     btn.FlatAppearance.BorderSize = 1;
                     btn.FlatAppearance.BorderColor = Color.Gray;
+                    btn.ContextMenuStrip = tableMenu;
 
                     btn.Click += BtnTable_Click;
                     flpTables.Controls.Add(btn);
@@ -93,15 +153,65 @@ namespace my_own_project.DesignForms
         }
 
         // Hàm xử lý khi Thu ngân click vào 1 Bàn
-       private void BtnTable_Click(object sender, EventArgs e)
-{
-    Button clickedBtn = sender as Button;
-    if (clickedBtn != null)
-    {
-        currentTableID = Convert.ToInt32(clickedBtn.Tag);
-        ShowBill(currentTableID); // Tải hóa đơn (nếu có)
-    }
-}
+        private void BtnTable_Click(object sender, EventArgs e)
+        {
+            Button clickedBtn = sender as Button;
+            if (clickedBtn != null)
+            {
+                currentTableID = Convert.ToInt32(clickedBtn.Tag);
+
+                // --- 1. TẠO HIỆU ỨNG HIGHLIGHT CHO BÀN ---
+                // Quét qua tất cả các bàn, trả viền về bình thường (1px màu xám mờ)
+                foreach (Control ctrl in flpTables.Controls)
+                {
+                    if (ctrl is Button)
+                    {
+                        Button btn = (Button)ctrl;
+                        btn.FlatAppearance.BorderSize = 1;
+                        btn.FlatAppearance.BorderColor = Color.Gray;
+                    }
+                }
+
+                // Trét viền thật đậm cho cái Bàn vừa bị click (3px màu Xanh dương)
+                clickedBtn.FlatAppearance.BorderSize = 3;
+                clickedBtn.FlatAppearance.BorderColor = Color.Blue;
+
+                // --- 2. CẬP NHẬT TÊN BÀN LÊN HÓA ĐƠN ---
+                // Cắt lấy đoạn "Bàn 1", "Bàn 2" (bỏ đi chữ "Trống" hay "Đang dùng" ở dòng dưới)
+                string tableName = clickedBtn.Text.Replace("\r", "").Split('\n')[0];
+                lblTableName.Text = "Đang phục vụ: " + tableName;
+
+                // --- 3. MỞ KHÓA MENU ĐỂ BẮT ĐẦU GỌI MÓN ---
+                flpMenu.Enabled = true;
+
+                // --- 4. TẢI HÓA ĐƠN TỪ SQL LÊN ---
+                ShowBill(currentTableID);
+
+                // --- 5. LOGIC ẨN HIỆN NÚT VÀ KHÓA MENU ---
+                string status = clickedBtn.Text; // Lấy text của nút để xét
+
+                if (status.Contains("Trống"))
+                {
+                    // Bàn trống thì khóa Menu lại, bắt phải bấm Mở bàn mới được gọi món
+                    flpMenu.Enabled = false;
+                    btnMoBan.Visible = true;
+                    btnThanhToan.Visible = false;
+                }
+                else if (status.Contains("Đang dùng") || status.Contains("Có khách"))
+                {
+                    // Bàn đang có khách thì mở Menu ra cho gọi thêm món
+                    flpMenu.Enabled = true;
+                    btnMoBan.Visible = false;
+                    btnThanhToan.Visible = true;
+                }
+                else // Các trạng thái khác như Đã đặt, Bảo trì...
+                {
+                    flpMenu.Enabled = false;
+                    btnMoBan.Visible = false;
+                    btnThanhToan.Visible = false;
+                }
+            }
+        }   
         #endregion
 
         // ==========================================
@@ -115,8 +225,26 @@ namespace my_own_project.DesignForms
         private void ShowBill(int tableID)
         {
             lsvBill.Items.Clear();
-            decimal totalAmount = 0;
-            currentOrderID = -1; // Reset OrderID
+            decimal subTotal = 0; // Tạm tính (Tiền hàng)
+            currentOrderID = -1;
+
+            // 1. Reset trắng các thông tin trên giao diện
+            lblOrderID.Text = "Mã HĐ: ---";
+            lblCheckInTime.Text = "Giờ vào: ---";     
+
+            // Tự động lấy tên người dùng đã đăng nhập (Giống bên MainForm của bạn)
+            if (CurrentUser.IsLoggedIn)
+            {
+                lblStaff.Text = "Thu ngân: " + CurrentUser.FullName;
+            }
+            else
+            {
+                lblStaff.Text = "Thu ngân: Guest";
+            }
+
+            lblSubTotal.Text = "0 đ";
+            lblVAT.Text = "0 đ";
+            lblFinalTotal.Text = "0 đ";
 
             try
             {
@@ -134,10 +262,21 @@ namespace my_own_project.DesignForms
                     }
                 }
 
-                // Nếu tìm thấy hóa đơn, mới bắt đầu lôi món ăn ra
+                // Nếu bàn này đang có khách và có Hóa đơn
                 if (activeOrder != null)
                 {
                     currentOrderID = Convert.ToInt32(activeOrder["OrderID"]);
+
+                    // --- ĐỔ DỮ LIỆU LÊN HEADER ---
+                    lblOrderID.Text = "Mã HĐ: HĐ-" + currentOrderID.ToString("D5");
+
+                    if (activeOrder["OrderDate"] != DBNull.Value)
+                    {
+                        DateTime checkIn = Convert.ToDateTime(activeOrder["OrderDate"]);
+                        lblCheckInTime.Text = "Giờ vào: " + checkIn.ToString("HH:mm - dd/MM");
+                    }
+
+                    // --- LẤY DANH SÁCH MÓN ĂN ---
                     DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
 
                     foreach (DataRow row in dtDetails.Rows)
@@ -145,21 +284,28 @@ namespace my_own_project.DesignForms
                         ListViewItem lvi = new ListViewItem(row["ItemName"].ToString());
                         lvi.SubItems.Add(row["Quantity"].ToString());
                         lvi.SubItems.Add(Convert.ToDecimal(row["UnitPrice"]).ToString("N0"));
-                        lvi.SubItems.Add(Convert.ToDecimal(row["SubTotal"]).ToString("N0"));
+
+                        decimal rowTotal = Convert.ToDecimal(row["SubTotal"]);
+                        lvi.SubItems.Add(rowTotal.ToString("N0"));
 
                         lsvBill.Items.Add(lvi);
-                        totalAmount += Convert.ToDecimal(row["SubTotal"]);
+                        subTotal += rowTotal; // Cộng dồn tiền hàng
                     }
-                }
 
-                txtTotalAmount.Text = totalAmount.ToString("N0") + " VNĐ";
+                    // --- TÍNH TOÁN FOOTER (VAT & TỔNG TIỀN) ---
+                    decimal vat = subTotal * 0.08m; // VAT 8%
+                    decimal finalTotal = subTotal + vat;
+
+                    lblSubTotal.Text = subTotal.ToString("N0") + " đ";
+                    lblVAT.Text = vat.ToString("N0") + " đ (8%)";
+                    lblFinalTotal.Text = finalTotal.ToString("N0") + " đ";
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi hiển thị hóa đơn: " + ex.Message);
             }
         }
-
 
         #endregion
 
@@ -453,5 +599,45 @@ namespace my_own_project.DesignForms
                 lsvBill.Columns[0].Width = lsvBill.Width - fixedWidth - scrollBarWidth;
             }
         }
+
+        private void btnMoBan_Click(object sender, EventArgs e)
+        {
+            if (currentTableID == -1) return;
+
+            try
+            {
+                // 1. Tạo mới một Hóa đơn (Order) rỗng, chưa có món ăn
+                OrderDTO newOrder = new OrderDTO();
+                newOrder.TableID = currentTableID;
+                newOrder.RestaurantID = 1;
+                newOrder.OrderType = "DineIn";
+                newOrder.Status = "Pending";
+                newOrder.OrderDate = DateTime.Now;
+
+                currentOrderID = OrderBLL.CreateOrder(newOrder);
+
+                // 2. Cập nhật trạng thái Bàn sang "Đang dùng"
+                DiningTableDTO table = DiningTableBLL.GetTableByID(currentTableID);
+                if (table != null)
+                {
+                    table.Status = "Đang dùng";
+                    DiningTableBLL.UpdateTable(table);
+                }
+
+                // 3. Tải lại giao diện
+                LoadTables(); // Đổi bàn thành màu Đỏ
+                ShowBill(currentTableID); // Hiển thị mã HĐ và Giờ vào
+                flpMenu.Enabled = true;   // Mở khóa Menu để bắt đầu chọn món
+
+                // 4. Tráo đổi 2 nút bấm
+                btnMoBan.Visible = false;
+                btnThanhToan.Visible = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở bàn: " + ex.Message);
+            }
+        }
     }
 }
+    
