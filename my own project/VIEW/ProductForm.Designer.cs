@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dgvID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dgvCategory = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged_1);
             // 
             // label1
             // 
@@ -51,41 +51,12 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dgvID,
-            this.dgvName,
-            this.dgvPrice,
-            this.dgvCategory});
             this.dataGridView1.Location = new System.Drawing.Point(74, 253);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.Size = new System.Drawing.Size(878, 336);
             this.dataGridView1.TabIndex = 4;
-            // 
-            // dgvID
-            // 
-            this.dgvID.HeaderText = "ID";
-            this.dgvID.MinimumWidth = 8;
-            this.dgvID.Name = "dgvID";
-            // 
-            // dgvName
-            // 
-            this.dgvName.HeaderText = "Name";
-            this.dgvName.MinimumWidth = 8;
-            this.dgvName.Name = "dgvName";
-            // 
-            // dgvPrice
-            // 
-            this.dgvPrice.HeaderText = "Price";
-            this.dgvPrice.MinimumWidth = 8;
-            this.dgvPrice.Name = "dgvPrice";
-            // 
-            // dgvCategory
-            // 
-            this.dgvCategory.HeaderText = "Category";
-            this.dgvCategory.MinimumWidth = 8;
-            this.dgvCategory.Name = "dgvCategory";
             // 
             // ProductForm
             // 
@@ -95,6 +66,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Name = "ProductForm";
             this.Text = "ProductForm";
+            this.Load += new System.EventHandler(this.ProductForm_Load);
             this.Controls.SetChildIndex(this.label1, 0);
             this.Controls.SetChildIndex(this.btnAdd, 0);
             this.Controls.SetChildIndex(this.lblSearch, 0);
@@ -109,9 +81,5 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvName;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvPrice;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dgvCategory;
     }
 }

@@ -29,14 +29,14 @@
         private void InitializeComponent()
         {
             this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtName = new System.Windows.Forms.TextBox();
+            this.txtPrice = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.btnBrowseImage = new System.Windows.Forms.Button();
+            this.cbbCategory = new Guna.UI2.WinForms.Guna2ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -68,6 +68,10 @@
             // 
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click_1);
             // 
+            // btnSave
+            // 
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click_1);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -78,19 +82,19 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Name";
             // 
-            // textBox1
+            // txtName
             // 
-            this.textBox1.Location = new System.Drawing.Point(64, 218);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(362, 34);
-            this.textBox1.TabIndex = 3;
+            this.txtName.Location = new System.Drawing.Point(64, 218);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(362, 34);
+            this.txtName.TabIndex = 3;
             // 
-            // textBox2
+            // txtPrice
             // 
-            this.textBox2.Location = new System.Drawing.Point(574, 218);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(362, 34);
-            this.textBox2.TabIndex = 5;
+            this.txtPrice.Location = new System.Drawing.Point(574, 218);
+            this.txtPrice.Name = "txtPrice";
+            this.txtPrice.Size = new System.Drawing.Size(362, 34);
+            this.txtPrice.TabIndex = 5;
             // 
             // label3
             // 
@@ -101,13 +105,6 @@
             this.label3.Size = new System.Drawing.Size(89, 45);
             this.label3.TabIndex = 4;
             this.label3.Text = "Price";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(64, 422);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(362, 34);
-            this.textBox3.TabIndex = 7;
             // 
             // label4
             // 
@@ -147,20 +144,36 @@
             this.btnBrowseImage.TabIndex = 10;
             this.btnBrowseImage.Text = "Browse Image";
             this.btnBrowseImage.UseVisualStyleBackColor = true;
+            this.btnBrowseImage.Click += new System.EventHandler(this.btnBrowseImage_Click);
+            // 
+            // cbbCategory
+            // 
+            this.cbbCategory.BackColor = System.Drawing.Color.Transparent;
+            this.cbbCategory.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbbCategory.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cbbCategory.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cbbCategory.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cbbCategory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
+            this.cbbCategory.ItemHeight = 30;
+            this.cbbCategory.Location = new System.Drawing.Point(76, 436);
+            this.cbbCategory.Name = "cbbCategory";
+            this.cbbCategory.Size = new System.Drawing.Size(350, 36);
+            this.cbbCategory.TabIndex = 11;
             // 
             // ProductAddForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1179, 688);
+            this.Controls.Add(this.cbbCategory);
             this.Controls.Add(this.btnBrowseImage);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.textBox3);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.txtPrice);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtName);
             this.Controls.Add(this.label2);
             this.Name = "ProductAddForm";
             this.Text = "ProductAddForm";
@@ -168,14 +181,14 @@
             this.Controls.SetChildIndex(this.panel1, 0);
             this.Controls.SetChildIndex(this.panel2, 0);
             this.Controls.SetChildIndex(this.label2, 0);
-            this.Controls.SetChildIndex(this.textBox1, 0);
+            this.Controls.SetChildIndex(this.txtName, 0);
             this.Controls.SetChildIndex(this.label3, 0);
-            this.Controls.SetChildIndex(this.textBox2, 0);
+            this.Controls.SetChildIndex(this.txtPrice, 0);
             this.Controls.SetChildIndex(this.label4, 0);
-            this.Controls.SetChildIndex(this.textBox3, 0);
             this.Controls.SetChildIndex(this.label5, 0);
             this.Controls.SetChildIndex(this.pictureBox2, 0);
             this.Controls.SetChildIndex(this.btnBrowseImage, 0);
+            this.Controls.SetChildIndex(this.cbbCategory, 0);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -189,13 +202,13 @@
         #endregion
 
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.TextBox txtPrice;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.Button btnBrowseImage;
+        private Guna.UI2.WinForms.Guna2ComboBox cbbCategory;
     }
 }
