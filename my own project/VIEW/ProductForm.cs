@@ -22,31 +22,37 @@ namespace my_own_project.DesignForms
 
         private void btnAdd_Click_1(object sender, EventArgs e)
         {
-            ProductAddForm f = new ProductAddForm();
+            ProductAddForm form = new ProductAddForm();
+            form.editItemID = -1; // -1 báo hiệu là chế độ THÊM MỚI
+            form.ShowDialog();
 
-            // Dòng 2: Lệnh hiển thị form lên màn hình
-            f.ShowDialog();
+            LoadData(); // Load lại bảng sau khi tắt form
         }
 
         private void LoadData()
         {
             try
             {
-                // Gán dữ liệu lôi từ SQL vào biến toàn cục
                 dtProducts = MenuItemBLL.GetAllMenuItems();
-
-                // Đổ dữ liệu vào bảng
                 dataGridView1.DataSource = dtProducts;
 
-                // Tinh chỉnh cho bảng đẹp hơn
                 dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
                 dataGridView1.AllowUserToAddRows = false;
 
-                // Ẩn 2 cột dữ liệu thô đi (ID Danh mục và Tên file ảnh)
+                // 1. Ẩn các cột dữ liệu thô
                 if (dataGridView1.Columns["CategoryID"] != null)
                     dataGridView1.Columns["CategoryID"].Visible = false;
+
                 if (dataGridView1.Columns["ImageUrl"] != null)
                     dataGridView1.Columns["ImageUrl"].Visible = false;
+
+                // (ĐÃ XÓA dòng ẩn cột IsAvailable cũ ở đây)
+
+                // 2. THÊM MỚI: Đổi tên tiêu đề cột ItemStatus thành tiếng Việt
+                if (dataGridView1.Columns["ItemStatus"] != null)
+                {
+                    dataGridView1.Columns["ItemStatus"].HeaderText = "Trạng thái";
+                }
 
 
                 // TẠO CỘT NÚT "SỬA" (Nếu chưa có)
@@ -105,20 +111,21 @@ namespace my_own_project.DesignForms
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Nếu bấm vào tiêu đề cột (RowIndex = -1) thì bỏ qua, chống lỗi văng app
             if (e.RowIndex < 0) return;
 
-            // Lấy tên của cái cột mà người dùng vừa bấm vào
             string colName = dataGridView1.Columns[e.ColumnIndex].Name;
-
-            // Lấy ID của món ăn ở cái dòng vừa bấm (Để biết đang thao tác với món nào)
             int itemID = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["ID"].Value);
 
-            // XỬ LÝ KHI BẤM NÚT SỬA
+            // NẾU BẤM NÚT SỬA
             if (colName == "colEdit")
             {
-                // TODO: Chút nữa chúng ta sẽ gọi ProductAddForm lên và truyền cái itemID này qua
-                MessageBox.Show("Bạn muốn Sửa món có ID: " + itemID);
+                ProductAddForm editForm = new ProductAddForm();
+
+                // TRUYỀN ID CỦA MÓN ĐANG CHỌN QUA FORM KIA
+                editForm.editItemID = itemID;
+
+                editForm.ShowDialog();
+                LoadData(); // F5 lại bảng sau khi sửa xong
             }
             // XỬ LÝ KHI BẤM NÚT KHÓA (NGỪNG BÁN)
             else if (colName == "colDelete")
@@ -139,6 +146,36 @@ namespace my_own_project.DesignForms
                         MessageBox.Show("Lỗi: " + ex.Message);
                     }
                 }
+            }
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            // Kiểm tra xem có đúng là đang vẽ cột "ItemStatus" không
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "ItemStatus" && e.Value != null)
+            {
+                int status = Convert.ToInt32(e.Value);
+
+                // Ép kiểu chữ in đậm cho dễ nhìn
+                e.CellStyle.Font = new Font(dataGridView1.Font, FontStyle.Bold);
+
+                if (status == 1)
+                {
+                    e.Value = "Đang phục vụ";
+                    e.CellStyle.ForeColor = Color.Green;
+                }
+                else if (status == 2)
+                {
+                    e.Value = "Tạm hết";
+                    e.CellStyle.ForeColor = Color.DarkOrange;
+                }
+                else if (status == 0)
+                {
+                    e.Value = "Ngừng bán";
+                    e.CellStyle.ForeColor = Color.Red;
+                }
+
+                e.FormattingApplied = true; // Báo cho C# biết là "Tô màu xong rồi, đừng tự vẽ số nữa"
             }
         }
 

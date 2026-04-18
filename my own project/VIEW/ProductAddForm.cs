@@ -15,11 +15,12 @@ using System.Xml.Linq;
 namespace my_own_project.DesignForms
 {
 
-    
+
     public partial class ProductAddForm : SampleAdd
     {
 
         private string selectedImageName = "";
+        public int editItemID = -1;
         public ProductAddForm()
         {
             InitializeComponent();
@@ -32,6 +33,44 @@ namespace my_own_project.DesignForms
             cbbCategory.DataSource = dtCategories;
             cbbCategory.DisplayMember = "CategoryName"; // Chữ hiện lên cho người ta đọc
             cbbCategory.ValueMember = "CategoryID";     // ID ngầm bên dưới để lưu SQL
+
+            cbbStatus.Items.Clear();
+            cbbStatus.Items.Add("Ngừng kinh doanh"); // Index 0
+            cbbStatus.Items.Add("Đang phục vụ");     // Index 1
+            cbbStatus.Items.Add("Tạm hết hàng");     // Index 2
+            cbbStatus.SelectedIndex = 1; // Mặc định mở lên là "Đang phục vụ"
+
+            // 2. NẾU LÀ CHẾ ĐỘ SỬA (editItemID khác -1) -> Lôi dữ liệu cũ lên
+            if (editItemID != -1)
+            {
+                // Đổi tiêu đề Form cho chuyên nghiệp
+                this.Text = "Sửa món ăn";
+
+                // Lấy dữ liệu từ DB lên
+                MenuItemDTO item = MenuItemDAL.GetByID(editItemID);
+                if (item != null)
+                {
+                    // Điền vào các ô trống
+                    txtName.Text = item.ItemName;
+                    txtPrice.Text = item.Price.ToString();
+                    cbbCategory.SelectedValue = item.CategoryID;
+
+                    // Mẹo cực hay: Vì Index của ComboBox là 0,1,2 khớp y xì đúc với trạng thái trong DB!
+                    cbbStatus.SelectedIndex = item.ItemStatus;
+
+                    // Hiển thị ảnh cũ (nếu có)
+                    if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        selectedImageName = item.ImageUrl; // Giữ lại tên file cũ để lỡ họ không đổi ảnh
+                        string imagePath = Application.StartupPath + "\\MenuImages\\" + item.ImageUrl;
+                        if (System.IO.File.Exists(imagePath))
+                        {
+                            pictureBox1.Image = Image.FromFile(imagePath);
+                            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+                        }
+                    }
+                }
+            }
         }
 
         private void btnClose_Click_1(object sender, EventArgs e)
@@ -67,30 +106,40 @@ namespace my_own_project.DesignForms
         {
             try
             {
-                // 1. Kiểm tra nhập liệu
                 if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPrice.Text))
                 {
-                    MessageBox.Show("Vui lòng nhập đủ Tên món và Giá tiền!");
+                    MessageBox.Show("Vui lòng nhập đủ Tên và Giá!");
                     return;
                 }
 
-                // 2. Gom dữ liệu vào DTO
-                MenuItemDTO newItem = new MenuItemDTO();
-                newItem.ItemName = txtName.Text;
-                newItem.Price = Convert.ToDecimal(txtPrice.Text);
-                newItem.CategoryID = Convert.ToInt32(cbbCategory.SelectedValue);
-                newItem.ImageUrl = selectedImageName; // Cái tên file ảnh vừa tạo ở trên
-                newItem.IsAvailable = true; // (Hoặc lấy từ CheckBox nếu bạn có thêm vào)
+                // Gom dữ liệu từ trên giao diện xuống
+                MenuItemDTO item = new MenuItemDTO();
+                item.ItemName = txtName.Text;
+                item.Price = Convert.ToDecimal(txtPrice.Text);
+                item.CategoryID = Convert.ToInt32(cbbCategory.SelectedValue);
+                item.ItemStatus = cbbStatus.SelectedIndex; // Lấy đúng số 0, 1, 2
+                item.ImageUrl = selectedImageName;
 
-                // 3. Gọi BLL lưu xuống DB
-                MenuItemBLL.AddMenuItem(newItem);
+                // RẼ NHÁNH: THÊM HAY SỬA?
+                if (editItemID == -1)
+                {
+                    // CHẾ ĐỘ THÊM
+                    MenuItemDAL.Insert(item);
+                    MessageBox.Show("Đã thêm món ăn thành công!");
+                }
+                else
+                {
+                    // CHẾ ĐỘ SỬA
+                    item.MenuItemID = editItemID; // Gắn ID vào để DB biết sửa dòng nào
+                    MenuItemDAL.Update(item);
+                    MessageBox.Show("Đã cập nhật thông tin món ăn!");
+                }
 
-                MessageBox.Show("Thêm món ăn thành công!");
-                this.Close(); // Đóng form lại
+                this.Close(); // Đóng form
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi lưu: " + ex.Message);
+                MessageBox.Show("Lỗi: " + ex.Message);
             }
         }
     }

@@ -118,11 +118,13 @@ namespace my_own_project.DAL
                 SqlParameter[] parameters = new SqlParameter[]
                 {
                     new SqlParameter("@MenuItemID", item.MenuItemID),
+                    new SqlParameter("@CategoryID", item.CategoryID),
                     new SqlParameter("@ItemName", item.ItemName ?? ""),
                     new SqlParameter("@Description", item.Description ?? ""),
                     new SqlParameter("@Price", item.Price),
                     new SqlParameter("@Status", item.Status ?? "Active"),
-                    new SqlParameter("@IsAvailable", item.IsAvailable)
+                    new SqlParameter("@ImageUrl", item.ImageUrl ?? ""),
+                    new SqlParameter("@ItemStatus", item.ItemStatus)
                 };
 
                 DataHelper.ExecuteSP("sp_MenuItem_Update", parameters);
@@ -168,7 +170,7 @@ namespace my_own_project.DAL
                 Price = (decimal)row["Price"],
                 Status = row["Status"]?.ToString() ?? "Active",
                 ImageUrl = row["ImageUrl"]?.ToString() ?? "",
-                IsAvailable = row["IsAvailable"] != DBNull.Value && (bool)row["IsAvailable"],
+                ItemStatus = row["ItemStatus"] != DBNull.Value ? Convert.ToInt32(row["ItemStatus"]) : 1,
                 CreatedAt = row["CreatedAt"] != DBNull.Value ? (DateTime)row["CreatedAt"] : DateTime.Now,
                 UpdatedAt = row["UpdatedAt"] != DBNull.Value ? (DateTime?)row["UpdatedAt"] : null,
                 CategoryName = row["CategoryName"]?.ToString() ?? "",
