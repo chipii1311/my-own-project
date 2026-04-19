@@ -34,7 +34,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.picProduct = new System.Windows.Forms.PictureBox();
             this.btnBrowseImage = new System.Windows.Forms.Button();
             this.cbbCategory = new Guna.UI2.WinForms.Guna2ComboBox();
             this.cbbStatus = new Guna.UI2.WinForms.Guna2ComboBox();
@@ -42,7 +42,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picProduct)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -127,15 +127,15 @@
             this.label5.Size = new System.Drawing.Size(0, 45);
             this.label5.TabIndex = 8;
             // 
-            // pictureBox2
+            // picProduct
             // 
-            this.pictureBox2.Image = global::my_own_project.Properties.Resources.icons8_image_100;
-            this.pictureBox2.Location = new System.Drawing.Point(574, 289);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(187, 208);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 9;
-            this.pictureBox2.TabStop = false;
+            this.picProduct.Image = global::my_own_project.Properties.Resources.icons8_image_100;
+            this.picProduct.Location = new System.Drawing.Point(574, 289);
+            this.picProduct.Name = "picProduct";
+            this.picProduct.Size = new System.Drawing.Size(187, 208);
+            this.picProduct.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picProduct.TabIndex = 9;
+            this.picProduct.TabStop = false;
             // 
             // btnBrowseImage
             // 
@@ -197,7 +197,7 @@
             this.Controls.Add(this.label6);
             this.Controls.Add(this.cbbCategory);
             this.Controls.Add(this.btnBrowseImage);
-            this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.picProduct);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtPrice);
@@ -215,7 +215,7 @@
             this.Controls.SetChildIndex(this.txtPrice, 0);
             this.Controls.SetChildIndex(this.label4, 0);
             this.Controls.SetChildIndex(this.label5, 0);
-            this.Controls.SetChildIndex(this.pictureBox2, 0);
+            this.Controls.SetChildIndex(this.picProduct, 0);
             this.Controls.SetChildIndex(this.btnBrowseImage, 0);
             this.Controls.SetChildIndex(this.cbbCategory, 0);
             this.Controls.SetChildIndex(this.label6, 0);
@@ -224,7 +224,7 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.picProduct)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -238,7 +238,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox picProduct;
         private System.Windows.Forms.Button btnBrowseImage;
         private Guna.UI2.WinForms.Guna2ComboBox cbbCategory;
         private Guna.UI2.WinForms.Guna2ComboBox cbbStatus;

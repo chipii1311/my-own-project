@@ -25,6 +25,7 @@ namespace my_own_project.DAL
                     new SqlParameter("@Price", item.Price),
                     new SqlParameter("@Status", item.Status ?? "Active"),
                     new SqlParameter("@ImageUrl", item.ImageUrl ?? ""),
+                    new SqlParameter("@ItemStatus", item.ItemStatus),
                     new SqlParameter("@ID", SqlDbType.Int) { Direction = ParameterDirection.Output }
                 };
 

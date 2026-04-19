@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace my_own_project.DesignForms
 
         private string selectedImageName = "";
         public int editItemID = -1;
+        private string sourceImagePath = "";
         public ProductAddForm()
         {
             InitializeComponent();
@@ -87,8 +89,9 @@ namespace my_own_project.DesignForms
             if (open.ShowDialog() == DialogResult.OK)
             {
                 // 1. Hiển thị ảnh lên PictureBox cho người dùng xem trước
-                pictureBox1.Image = Image.FromFile(open.FileName);
-                pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+                picProduct.Image = Image.FromFile(open.FileName);
+                picProduct.SizeMode = PictureBoxSizeMode.Zoom;
+                sourceImagePath = open.FileName;
 
                 // 2. Tạo một cái tên file mới tinh không bị trùng (dùng ngày giờ)
                 string extension = System.IO.Path.GetExtension(open.FileName);
@@ -97,8 +100,7 @@ namespace my_own_project.DesignForms
                 // 3. Đường dẫn đích: Thư mục MenuImages của project
                 string targetPath = Application.StartupPath + "\\MenuImages\\" + selectedImageName;
 
-                // 4. Copy cái ảnh người dùng vừa chọn vào thư mục của phần mềm
-                System.IO.File.Copy(open.FileName, targetPath, true);
+              
             }
         }
 
@@ -114,12 +116,29 @@ namespace my_own_project.DesignForms
 
                 // Gom dữ liệu từ trên giao diện xuống
                 MenuItemDTO item = new MenuItemDTO();
+                item.RestaurantID = 1;
                 item.ItemName = txtName.Text;
                 item.Price = Convert.ToDecimal(txtPrice.Text);
                 item.CategoryID = Convert.ToInt32(cbbCategory.SelectedValue);
                 item.ItemStatus = cbbStatus.SelectedIndex; // Lấy đúng số 0, 1, 2
                 item.ImageUrl = selectedImageName;
 
+                // 2. CHÈN CODE COPY ẢNH VÀO ĐÂY (TRƯỚC KHI LƯU DB)
+                if (!string.IsNullOrEmpty(sourceImagePath)) // Kiểm tra xem người dùng có vừa bấm Browse chọn ảnh không
+                {
+                    string folderPath = Path.Combine(Application.StartupPath, "MenuImages");
+                    string targetPath = Path.Combine(folderPath, selectedImageName);
+
+                    // Tạo thư mục nếu chưa tồn tại
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    // Copy file từ đường dẫn gốc (máy tính khách) vào thư mục phần mềm
+                    File.Copy(sourceImagePath, targetPath, true);
+                }
+                // ============================================================
                 // RẼ NHÁNH: THÊM HAY SỬA?
                 if (editItemID == -1)
                 {
