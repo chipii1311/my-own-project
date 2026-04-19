@@ -67,17 +67,7 @@ namespace my_own_project.DesignForms
                     dataGridView1.Columns.Add(btnEdit);
                 }
 
-                // TẠO CỘT NÚT "KHÓA/XÓA" (Nếu chưa có)
-                if (dataGridView1.Columns["colDelete"] == null)
-                {
-                    DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn();
-                    btnDelete.Name = "colDelete";
-                    btnDelete.HeaderText = "Trạng thái";
-                    btnDelete.Text = "🗑️ Khóa";
-                    btnDelete.UseColumnTextForButtonValue = true;
-                    btnDelete.Width = 80;
-                    dataGridView1.Columns.Add(btnDelete);
-                }
+                
 
             }
             catch (Exception ex)
