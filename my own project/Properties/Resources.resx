@@ -127,9 +127,6 @@
   <data name="icons8-table-30" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icons8-table-30.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="png_sqhph" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\png_sqhph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="icons8-edit-161" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icons8-edit-161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -147,6 +144,9 @@
   </data>
   <data name="icons8-cart-30" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icons8-cart-30.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icons8-add-100" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icons8-add-100.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="png_ya24i" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\png_ya24i.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -166,14 +166,17 @@
   <data name="png_tk9qn" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\png_tk9qn.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="png_hkai8h" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\png_hkai8h.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="png_sqhph" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\png_sqhph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="icons8-image-100" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icons8-image-100.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="png_ptf1o" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\png_ptf1o.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="png_hkai8h" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\png_hkai8h.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="png_zhyc2h" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\png_zhyc2h.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -184,9 +187,6 @@
   <data name="png_volxm" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\png_volxm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="png_qyvkgj" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\png_qyvkgj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="png_3uobt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\png_3uobt.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -196,13 +196,16 @@
   <data name="icons8-edit-16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icons8-edit-16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="icons8-add-100" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\icons8-add-100.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="png_qyvkgj" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\png_qyvkgj.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="png_u0iyai" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\png_u0iyai.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="icons8-cart-24 (1)" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\icons8-cart-24 (1).png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="png_u0iyai" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\png_u0iyai.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="icons8-discount-30" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icons8-discount-30.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

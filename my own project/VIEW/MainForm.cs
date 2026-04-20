@@ -94,5 +94,15 @@ namespace my_own_project
         {
             AddControls(new DashboardForm());
         }
+
+        private void btnCategor_Click(object sender, EventArgs e)
+        {
+            AddControls(new POSForm());
+        }
+
+        private void btnPromotion_Click(object sender, EventArgs e)
+        {
+            AddControls(new PromotionForm());
+        }
     }
 }

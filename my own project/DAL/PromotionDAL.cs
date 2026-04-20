@@ -23,6 +23,7 @@ namespace my_own_project.DAL
                     new SqlParameter("@StartDate", promotion.StartDate),
                     new SqlParameter("@EndDate", promotion.EndDate),
                     new SqlParameter("@Status", promotion.Status ?? "Active"),
+                    new SqlParameter("@ApplyType", promotion.ApplyType), // <-- BỔ SUNG DÒNG NÀY
                     new SqlParameter("@ID", SqlDbType.Int) { Direction = ParameterDirection.Output }
                 };
 
@@ -143,5 +144,30 @@ namespace my_own_project.DAL
                 Status = row["Status"]?.ToString() ?? "Active"
             };
         }
+
+
+
+        public static void InsertPromotionDetail(PromotionDetailDTO detail)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@PromotionID", detail.PromotionID),
+                    new SqlParameter("@MenuItemID", detail.MenuItemID)
+                };
+
+                // Gọi hàm ExecuteSP thay vì lệnh SQL thuần
+                DataHelper.ExecuteSP("sp_PromotionDetail_Insert", parameters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PromotionDAL.InsertDetail Error: {ex.Message}");
+                throw;
+            }
+        
+           
+        }
     }
 }
+    

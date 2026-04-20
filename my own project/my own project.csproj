@@ -219,6 +219,18 @@
     <Compile Include="VIEW\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\PromotionAddForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\PromotionAddForm.Designer.cs">
+      <DependentUpon>PromotionAddForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEW\PromotionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\PromotionForm.Designer.cs">
+      <DependentUpon>PromotionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -280,6 +292,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\PromotionAddForm.resx">
+      <DependentUpon>PromotionAddForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\PromotionForm.resx">
+      <DependentUpon>PromotionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\RegisterForm.resx">
       <DependentUpon>RegisterForm.cs</DependentUpon>
@@ -438,6 +456,7 @@
     <Content Include="MenuImages\Tiger.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\icons8-discount-30.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
