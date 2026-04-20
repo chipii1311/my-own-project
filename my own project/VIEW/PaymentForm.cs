@@ -90,51 +90,61 @@ namespace my_own_project.VIEW
         }
 
         private void btnPrint_Click(object sender, EventArgs e)
-        {
-            // Nối công cụ xem trước với công cụ in
+        {// 1. Thiết lập khổ giấy 80mm
+            printDocument1.DefaultPageSettings.PaperSize = new System.Drawing.Printing.PaperSize("ThermalBill", 315, 600);
+
+            printPreviewDialog1.Width = 450;  // Kéo rộng cửa sổ ra
+            printPreviewDialog1.Height = 700; // Kéo dài cửa sổ xuống
+            printPreviewDialog1.StartPosition = FormStartPosition.CenterScreen; // Hiển thị ngay chính giữa màn hình
+
+            // 2. Phóng to trên màn hình xem trước
+            printPreviewDialog1.PrintPreviewControl.Zoom = 1.5;
+
+            // 3. Nối công cụ và hiển thị
             printPreviewDialog1.Document = printDocument1;
-            // Mở màn hình xem trước hóa đơn
             printPreviewDialog1.ShowDialog();
         }
 
         private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
+            // Dòng này bây giờ sẽ không bị lỗi nữa vì biến 'e' ở đây là PrintPageEventArgs
             Graphics graphic = e.Graphics;
 
-            // Cài đặt các loại font chữ
-            Font fontTitle = new Font("Courier New", 18, FontStyle.Bold);
-            Font fontNormal = new Font("Courier New", 12, FontStyle.Regular);
-            Font fontItalic = new Font("Courier New", 12, FontStyle.Italic);
+            // Cài đặt font chữ
+            Font fontTitle = new Font("Courier New", 14, FontStyle.Bold);
+            Font fontNormal = new Font("Courier New", 9, FontStyle.Regular);
+            Font fontItalic = new Font("Courier New", 9, FontStyle.Italic);
             SolidBrush brush = new SolidBrush(Color.Black);
 
-            // Tọa độ bắt đầu vẽ
             int startX = 10;
             int startY = 10;
-            int offset = 40; // Khoảng cách giữa các dòng
+            int offset = 15;
 
-            // 1. VẼ TIÊU ĐỀ QUÁN
-            graphic.DrawString("NHÀ HÀNG CỦA BẠN", fontTitle, brush, startX + 40, startY);
-            offset += 30;
-            graphic.DrawString("Địa chỉ: Đà Nẵng, Việt Nam", fontNormal, brush, startX, startY + offset);
-            offset += 30;
-            graphic.DrawString("HÓA ĐƠN THANH TOÁN", fontTitle, brush, startX + 30, startY + offset);
+            // Vẽ Tiêu đề
+            graphic.DrawString("NHÀ HÀNG CỦA BẠN", fontTitle, brush, startX + 45, startY);
+            offset += 25;
+            graphic.DrawString("Địa chỉ: Đà Nẵng, Việt Nam", fontNormal, brush, startX + 25, startY + offset);
+            offset += 25;
+            graphic.DrawString("HÓA ĐƠN THANH TOÁN", fontTitle, brush, startX + 35, startY + offset);
 
-            // 2. VẼ THÔNG TIN ĐƠN HÀNG
-            offset += 40;
+            // Vẽ thông tin đơn
+            offset += 30;
             graphic.DrawString("Mã đơn: #" + currentOrderID, fontNormal, brush, startX, startY + offset);
-            graphic.DrawString("Ngày: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), fontNormal, brush, startX + 150, startY + offset);
-            offset += 20;
-            graphic.DrawString("---------------------------------------", fontNormal, brush, startX, startY + offset);
+            graphic.DrawString("Ngày: " + DateTime.Now.ToString("dd/MM/yy HH:mm"), fontNormal, brush, startX + 130, startY + offset);
 
-            // 3. VẼ TIÊU ĐỀ CỘT
+            offset += 20;
+            graphic.DrawString("--------------------------------------", fontNormal, brush, startX, startY + offset);
+
+            // Vẽ tiêu đề cột
             offset += 20;
             graphic.DrawString("Tên món", fontNormal, brush, startX, startY + offset);
-            graphic.DrawString("SL", fontNormal, brush, startX + 160, startY + offset);
-            graphic.DrawString("Thành tiền", fontNormal, brush, startX + 220, startY + offset);
-            offset += 20;
-            graphic.DrawString("---------------------------------------", fontNormal, brush, startX, startY + offset);
+            graphic.DrawString("SL", fontNormal, brush, startX + 170, startY + offset);
+            graphic.DrawString("Thành tiền", fontNormal, brush, startX + 210, startY + offset);
 
-            // 4. VẼ DANH SÁCH MÓN ĂN (Lấy từ dgvBill)
+            offset += 20;
+            graphic.DrawString("--------------------------------------", fontNormal, brush, startX, startY + offset);
+
+            // Vẽ danh sách món
             offset += 20;
             foreach (DataGridViewRow row in dgvBill.Rows)
             {
@@ -142,29 +152,27 @@ namespace my_own_project.VIEW
                 string sl = row.Cells["Quantity"].Value.ToString();
                 string thanhTien = Convert.ToDecimal(row.Cells["SubTotal"].Value).ToString("N0");
 
-                // Cắt bớt tên món nếu nó quá dài để khỏi bị tràn chữ
-                if (tenMon.Length > 15)
+                if (tenMon.Length > 18)
                 {
-                    tenMon = tenMon.Substring(0, 15) + "...";
+                    tenMon = tenMon.Substring(0, 18) + "...";
                 }
 
                 graphic.DrawString(tenMon, fontNormal, brush, startX, startY + offset);
-                graphic.DrawString(sl, fontNormal, brush, startX + 160, startY + offset);
-                graphic.DrawString(thanhTien, fontNormal, brush, startX + 220, startY + offset);
-                offset += 25;
+                graphic.DrawString(sl, fontNormal, brush, startX + 170, startY + offset);
+                graphic.DrawString(thanhTien, fontNormal, brush, startX + 210, startY + offset);
+                offset += 20;
             }
 
-            // 5. VẼ TỔNG TIỀN VÀ LỜI CẢM ƠN
+            // Vẽ Tổng tiền
             offset += 10;
-            graphic.DrawString("---------------------------------------", fontNormal, brush, startX, startY + offset);
+            graphic.DrawString("--------------------------------------", fontNormal, brush, startX, startY + offset);
             offset += 25;
 
-            Font fontTotal = new Font("Courier New", 14, FontStyle.Bold);
-            // Lấy số tiền từ label có sẵn trên form của bạn
-            graphic.DrawString("TỔNG TIỀN: " + lblFinalTotal.Text, fontTotal, brush, startX + 20, startY + offset);
+            Font fontTotal = new Font("Courier New", 11, FontStyle.Bold);
+            graphic.DrawString("TỔNG TIỀN: " + lblFinalTotal.Text, fontTotal, brush, startX + 70, startY + offset);
 
-            offset += 40;
-            graphic.DrawString("Cảm ơn quý khách và hẹn gặp lại!", fontItalic, brush, startX + 10, startY + offset);
+            offset += 35;
+            graphic.DrawString("Cảm ơn quý khách và hẹn gặp lại!", fontItalic, brush, startX + 15, startY + offset);    
         }
     }
 }
