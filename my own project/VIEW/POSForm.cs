@@ -2,6 +2,7 @@
 using my_own_project.DAL;
 using my_own_project.DTO;
 using my_own_project.Helpers;
+using my_own_project.VIEW;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -637,6 +638,34 @@ namespace my_own_project.DesignForms
             {
                 MessageBox.Show("Lỗi khi mở bàn: " + ex.Message);
             }
+        }
+
+        private void btnThanhToan_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra xem người dùng đã chọn bàn nào chưa?
+            if (currentTableID == 0 || currentOrderID == 0)
+            {
+                MessageBox.Show("Vui lòng chọn một bàn đang có khách để thanh toán!");
+                return;
+            }
+
+            // 2. TẠO VÀ MỞ FORM THANH TOÁN (Chính là đoạn code lúc nãy)
+            // Thay vì số 1024, ta truyền biến currentOrderID thật vào
+            // Thay vì "Số 3", ta truyền tên bàn thật vào
+            PaymentForm frm = new PaymentForm(currentOrderID, currentTableID);
+
+            // Lệnh này sẽ làm Form Thanh toán BẬT LÊN.
+            // Dùng ShowDialog() thay vì Show() để khóa màn hình POS ở dưới lại, 
+            // bắt buộc thu ngân phải xử lý xong hóa đơn rồi mới được bấm tiếp.
+            frm.ShowDialog();
+
+            // 3. ĐOẠN NÀY CHỈ CHẠY KHI FORM THANH TOÁN ĐÃ TẮT
+            // Lúc này khách đã trả tiền xong, ta load lại danh sách bàn để bàn đó đổi màu về "Trống"
+            LoadTables();
+
+            // Xóa trắng danh sách món trên màn hình POS    
+            lsvBill.Items.Clear() ;
+            lblFinalTotal.Text = "0";
         }
     }
 }

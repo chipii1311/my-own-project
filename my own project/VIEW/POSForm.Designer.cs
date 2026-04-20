@@ -31,7 +31,18 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.btnMoBan = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lblFinalTotal = new System.Windows.Forms.Label();
+            this.lblVAT = new System.Windows.Forms.Label();
+            this.lblSubTotal = new System.Windows.Forms.Label();
             this.panel = new System.Windows.Forms.Panel();
+            this.lblTableName = new System.Windows.Forms.Label();
+            this.lblStaff = new System.Windows.Forms.Label();
+            this.lblCheckInTime = new System.Windows.Forms.Label();
+            this.lblOrderID = new System.Windows.Forms.Label();
             this.lsvBill = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -47,17 +58,6 @@
             this.flpCategories = new System.Windows.Forms.FlowLayoutPanel();
             this.txtSearch = new Guna.UI2.WinForms.Guna2TextBox();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.lblOrderID = new System.Windows.Forms.Label();
-            this.lblCheckInTime = new System.Windows.Forms.Label();
-            this.lblStaff = new System.Windows.Forms.Label();
-            this.lblSubTotal = new System.Windows.Forms.Label();
-            this.lblVAT = new System.Windows.Forms.Label();
-            this.lblFinalTotal = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.lblTableName = new System.Windows.Forms.Label();
-            this.btnMoBan = new System.Windows.Forms.Button();
             this.panel4.SuspendLayout();
             this.panel.SuspendLayout();
             this.guna2Panel1.SuspendLayout();
@@ -100,6 +100,82 @@
             this.panel4.Size = new System.Drawing.Size(898, 866);
             this.panel4.TabIndex = 4;
             // 
+            // btnMoBan
+            // 
+            this.btnMoBan.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.btnMoBan.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMoBan.ForeColor = System.Drawing.Color.Black;
+            this.btnMoBan.Location = new System.Drawing.Point(310, 799);
+            this.btnMoBan.Name = "btnMoBan";
+            this.btnMoBan.Size = new System.Drawing.Size(217, 61);
+            this.btnMoBan.TabIndex = 22;
+            this.btnMoBan.Text = "Mở bàn";
+            this.btnMoBan.UseVisualStyleBackColor = false;
+            this.btnMoBan.Click += new System.EventHandler(this.btnMoBan_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(442, 704);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(147, 30);
+            this.label6.TabIndex = 21;
+            this.label6.Text = "Khách cần trả:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(503, 664);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(86, 30);
+            this.label5.TabIndex = 20;
+            this.label5.Text = "VAT 8%";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(487, 619);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(102, 30);
+            this.label3.TabIndex = 19;
+            this.label3.Text = "Tạm tính:";
+            // 
+            // lblFinalTotal
+            // 
+            this.lblFinalTotal.AutoSize = true;
+            this.lblFinalTotal.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFinalTotal.Location = new System.Drawing.Point(662, 704);
+            this.lblFinalTotal.Name = "lblFinalTotal";
+            this.lblFinalTotal.Size = new System.Drawing.Size(25, 30);
+            this.lblFinalTotal.TabIndex = 18;
+            this.lblFinalTotal.Text = "0";
+            this.lblFinalTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblVAT
+            // 
+            this.lblVAT.AutoSize = true;
+            this.lblVAT.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVAT.Location = new System.Drawing.Point(662, 664);
+            this.lblVAT.Name = "lblVAT";
+            this.lblVAT.Size = new System.Drawing.Size(25, 30);
+            this.lblVAT.TabIndex = 17;
+            this.lblVAT.Text = "0";
+            this.lblVAT.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblSubTotal
+            // 
+            this.lblSubTotal.AutoSize = true;
+            this.lblSubTotal.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSubTotal.Location = new System.Drawing.Point(662, 619);
+            this.lblSubTotal.Name = "lblSubTotal";
+            this.lblSubTotal.Size = new System.Drawing.Size(25, 30);
+            this.lblSubTotal.TabIndex = 3;
+            this.lblSubTotal.Text = "0";
+            this.lblSubTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // panel
             // 
             this.panel.Controls.Add(this.lblTableName);
@@ -111,6 +187,46 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(898, 141);
             this.panel.TabIndex = 16;
+            // 
+            // lblTableName
+            // 
+            this.lblTableName.AutoSize = true;
+            this.lblTableName.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTableName.Location = new System.Drawing.Point(62, 33);
+            this.lblTableName.Name = "lblTableName";
+            this.lblTableName.Size = new System.Drawing.Size(162, 30);
+            this.lblTableName.TabIndex = 3;
+            this.lblTableName.Text = "Bàn đang chọn:";
+            // 
+            // lblStaff
+            // 
+            this.lblStaff.AutoSize = true;
+            this.lblStaff.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStaff.Location = new System.Drawing.Point(62, 99);
+            this.lblStaff.Name = "lblStaff";
+            this.lblStaff.Size = new System.Drawing.Size(56, 30);
+            this.lblStaff.TabIndex = 2;
+            this.lblStaff.Text = "Staff";
+            // 
+            // lblCheckInTime
+            // 
+            this.lblCheckInTime.AutoSize = true;
+            this.lblCheckInTime.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCheckInTime.Location = new System.Drawing.Point(62, 69);
+            this.lblCheckInTime.Name = "lblCheckInTime";
+            this.lblCheckInTime.Size = new System.Drawing.Size(138, 30);
+            this.lblCheckInTime.TabIndex = 1;
+            this.lblCheckInTime.Text = "CheckInTime";
+            // 
+            // lblOrderID
+            // 
+            this.lblOrderID.AutoSize = true;
+            this.lblOrderID.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOrderID.Location = new System.Drawing.Point(62, 3);
+            this.lblOrderID.Name = "lblOrderID";
+            this.lblOrderID.Size = new System.Drawing.Size(130, 30);
+            this.lblOrderID.TabIndex = 0;
+            this.lblOrderID.Text = "Mã hóa đơn";
             // 
             // lsvBill
             // 
@@ -152,12 +268,13 @@
             // 
             // btnThanhToan
             // 
-            this.btnThanhToan.Location = new System.Drawing.Point(333, 812);
+            this.btnThanhToan.Location = new System.Drawing.Point(310, 804);
             this.btnThanhToan.Name = "btnThanhToan";
-            this.btnThanhToan.Size = new System.Drawing.Size(181, 48);
+            this.btnThanhToan.Size = new System.Drawing.Size(204, 56);
             this.btnThanhToan.TabIndex = 12;
             this.btnThanhToan.Text = "Thanh toan";
             this.btnThanhToan.UseVisualStyleBackColor = true;
+            this.btnThanhToan.Click += new System.EventHandler(this.btnThanhToan_Click);
             // 
             // panel6
             // 
@@ -251,121 +368,6 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(863, 866);
             this.panel5.TabIndex = 9;
-            // 
-            // lblOrderID
-            // 
-            this.lblOrderID.AutoSize = true;
-            this.lblOrderID.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOrderID.Location = new System.Drawing.Point(62, 3);
-            this.lblOrderID.Name = "lblOrderID";
-            this.lblOrderID.Size = new System.Drawing.Size(130, 30);
-            this.lblOrderID.TabIndex = 0;
-            this.lblOrderID.Text = "Mã hóa đơn";
-            // 
-            // lblCheckInTime
-            // 
-            this.lblCheckInTime.AutoSize = true;
-            this.lblCheckInTime.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCheckInTime.Location = new System.Drawing.Point(62, 69);
-            this.lblCheckInTime.Name = "lblCheckInTime";
-            this.lblCheckInTime.Size = new System.Drawing.Size(138, 30);
-            this.lblCheckInTime.TabIndex = 1;
-            this.lblCheckInTime.Text = "CheckInTime";
-            // 
-            // lblStaff
-            // 
-            this.lblStaff.AutoSize = true;
-            this.lblStaff.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStaff.Location = new System.Drawing.Point(62, 99);
-            this.lblStaff.Name = "lblStaff";
-            this.lblStaff.Size = new System.Drawing.Size(56, 30);
-            this.lblStaff.TabIndex = 2;
-            this.lblStaff.Text = "Staff";
-            // 
-            // lblSubTotal
-            // 
-            this.lblSubTotal.AutoSize = true;
-            this.lblSubTotal.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSubTotal.Location = new System.Drawing.Point(662, 619);
-            this.lblSubTotal.Name = "lblSubTotal";
-            this.lblSubTotal.Size = new System.Drawing.Size(25, 30);
-            this.lblSubTotal.TabIndex = 3;
-            this.lblSubTotal.Text = "0";
-            this.lblSubTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lblVAT
-            // 
-            this.lblVAT.AutoSize = true;
-            this.lblVAT.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVAT.Location = new System.Drawing.Point(662, 664);
-            this.lblVAT.Name = "lblVAT";
-            this.lblVAT.Size = new System.Drawing.Size(25, 30);
-            this.lblVAT.TabIndex = 17;
-            this.lblVAT.Text = "0";
-            this.lblVAT.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lblFinalTotal
-            // 
-            this.lblFinalTotal.AutoSize = true;
-            this.lblFinalTotal.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFinalTotal.Location = new System.Drawing.Point(662, 704);
-            this.lblFinalTotal.Name = "lblFinalTotal";
-            this.lblFinalTotal.Size = new System.Drawing.Size(25, 30);
-            this.lblFinalTotal.TabIndex = 18;
-            this.lblFinalTotal.Text = "0";
-            this.lblFinalTotal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(487, 619);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(102, 30);
-            this.label3.TabIndex = 19;
-            this.label3.Text = "Tạm tính:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(503, 664);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(86, 30);
-            this.label5.TabIndex = 20;
-            this.label5.Text = "VAT 8%";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(442, 704);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(147, 30);
-            this.label6.TabIndex = 21;
-            this.label6.Text = "Khách cần trả:";
-            // 
-            // lblTableName
-            // 
-            this.lblTableName.AutoSize = true;
-            this.lblTableName.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTableName.Location = new System.Drawing.Point(62, 33);
-            this.lblTableName.Name = "lblTableName";
-            this.lblTableName.Size = new System.Drawing.Size(162, 30);
-            this.lblTableName.TabIndex = 3;
-            this.lblTableName.Text = "Bàn đang chọn:";
-            // 
-            // btnMoBan
-            // 
-            this.btnMoBan.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
-            this.btnMoBan.ForeColor = System.Drawing.Color.Black;
-            this.btnMoBan.Location = new System.Drawing.Point(333, 812);
-            this.btnMoBan.Name = "btnMoBan";
-            this.btnMoBan.Size = new System.Drawing.Size(181, 48);
-            this.btnMoBan.TabIndex = 22;
-            this.btnMoBan.Text = "Mở bàn";
-            this.btnMoBan.UseVisualStyleBackColor = false;
-            this.btnMoBan.Click += new System.EventHandler(this.btnMoBan_Click);
             // 
             // POSForm
             // 
