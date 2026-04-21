@@ -41,6 +41,7 @@
             this.clbMenuItems = new System.Windows.Forms.CheckedListBox();
             this.label7 = new System.Windows.Forms.Label();
             this.cbbStatus = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -182,7 +183,7 @@
             this.cbbApplyType.ItemHeight = 30;
             this.cbbApplyType.Location = new System.Drawing.Point(571, 194);
             this.cbbApplyType.Name = "cbbApplyType";
-            this.cbbApplyType.Size = new System.Drawing.Size(145, 36);
+            this.cbbApplyType.Size = new System.Drawing.Size(246, 36);
             this.cbbApplyType.TabIndex = 14;
             this.cbbApplyType.SelectedIndexChanged += new System.EventHandler(this.cbbApplyType_SelectedIndexChanged);
             // 
@@ -199,9 +200,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(88, 287);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(101, 28);
+            this.label7.Size = new System.Drawing.Size(250, 28);
             this.label7.TabIndex = 16;
-            this.label7.Text = "Tên ưu đãi";
+            this.label7.Text = "Danh sách món ăn áp dụng";
             // 
             // cbbStatus
             // 
@@ -213,16 +214,26 @@
             this.cbbStatus.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cbbStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cbbStatus.ItemHeight = 30;
-            this.cbbStatus.Location = new System.Drawing.Point(619, 394);
+            this.cbbStatus.Location = new System.Drawing.Point(581, 450);
             this.cbbStatus.Name = "cbbStatus";
             this.cbbStatus.Size = new System.Drawing.Size(140, 36);
             this.cbbStatus.TabIndex = 17;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(586, 410);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(98, 28);
+            this.label8.TabIndex = 18;
+            this.label8.Text = "Trạng thái";
             // 
             // PromotionAddForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1178, 786);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.cbbStatus);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.clbMenuItems);
@@ -254,6 +265,7 @@
             this.Controls.SetChildIndex(this.clbMenuItems, 0);
             this.Controls.SetChildIndex(this.label7, 0);
             this.Controls.SetChildIndex(this.cbbStatus, 0);
+            this.Controls.SetChildIndex(this.label8, 0);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -279,5 +291,6 @@
         private System.Windows.Forms.CheckedListBox clbMenuItems;
         private System.Windows.Forms.Label label7;
         private Guna.UI2.WinForms.Guna2ComboBox cbbStatus;
+        private System.Windows.Forms.Label label8;
     }
 }
