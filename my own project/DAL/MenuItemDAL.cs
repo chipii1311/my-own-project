@@ -18,7 +18,7 @@ namespace my_own_project.DAL
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@RestaurantID", item.RestaurantID),
+                   
                     new SqlParameter("@CategoryID", item.CategoryID),
                     new SqlParameter("@ItemName", item.ItemName ?? ""),
                     new SqlParameter("@Description", item.Description ?? ""),
@@ -164,7 +164,7 @@ namespace my_own_project.DAL
             return new MenuItemDTO
             {
                 MenuItemID = (int)row["MenuItemID"],
-                RestaurantID = (int)row["RestaurantID"],
+              
                 CategoryID = (int)row["CategoryID"],
                 ItemName = row["ItemName"]?.ToString() ?? "",
                 Description = row["Description"]?.ToString() ?? "",
@@ -175,7 +175,7 @@ namespace my_own_project.DAL
                 CreatedAt = row["CreatedAt"] != DBNull.Value ? (DateTime)row["CreatedAt"] : DateTime.Now,
                 UpdatedAt = row["UpdatedAt"] != DBNull.Value ? (DateTime?)row["UpdatedAt"] : null,
                 CategoryName = row["CategoryName"]?.ToString() ?? "",
-                RestaurantName = row["RestaurantName"]?.ToString() ?? ""
+                
             };
         }
 

@@ -79,11 +79,6 @@
             this.guna2Panel8 = new Guna.UI2.WinForms.Guna2Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.dataRecent = new Guna.UI2.WinForms.Guna2DataGridView();
-            this.OrderID = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Customer = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
             this.lblRevenue = new System.Windows.Forms.Label();
@@ -94,6 +89,12 @@
             this.guna2Panel4 = new Guna.UI2.WinForms.Guna2Panel();
             this.lblCustomers = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.guna2MessageDialog1 = new Guna.UI2.WinForms.Guna2MessageDialog();
+            this.OrderID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Staff = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Product = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Total = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.guna2Panel1.SuspendLayout();
             this.guna2Panel5.SuspendLayout();
             this.guna2Panel8.SuspendLayout();
@@ -303,7 +304,7 @@
             this.chartRevenue.Legend.Position = Guna.Charts.WinForms.LegendPosition.Bottom;
             this.chartRevenue.Location = new System.Drawing.Point(3, 3);
             this.chartRevenue.Name = "chartRevenue";
-            this.chartRevenue.Size = new System.Drawing.Size(877, 320);
+            this.chartRevenue.Size = new System.Drawing.Size(976, 320);
             this.chartRevenue.TabIndex = 0;
             chartFont2.FontName = "Segoe UI";
             chartFont2.Size = 15;
@@ -317,11 +318,12 @@
             chartFont4.Size = 9;
             chartFont4.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
             this.chartRevenue.Tooltips.TitleFont = chartFont4;
-            this.chartRevenue.XAxes.Display = false;
+            grid1.Display = false;
             this.chartRevenue.XAxes.GridLines = grid1;
             chartFont5.FontName = "Arial";
             tick1.Font = chartFont5;
             this.chartRevenue.XAxes.Ticks = tick1;
+            grid2.Display = false;
             this.chartRevenue.YAxes.GridLines = grid2;
             chartFont6.FontName = "Arial";
             tick2.Font = chartFont6;
@@ -351,7 +353,7 @@
             this.chartProduct.Legend.Position = Guna.Charts.WinForms.LegendPosition.Bottom;
             this.chartProduct.Location = new System.Drawing.Point(0, 0);
             this.chartProduct.Name = "chartProduct";
-            this.chartProduct.Size = new System.Drawing.Size(391, 467);
+            this.chartProduct.Size = new System.Drawing.Size(292, 467);
             this.chartProduct.TabIndex = 0;
             chartFont10.FontName = "Segoe UI";
             chartFont10.Size = 15;
@@ -366,11 +368,13 @@
             chartFont12.Style = Guna.Charts.WinForms.ChartFontStyle.Bold;
             this.chartProduct.Tooltips.TitleFont = chartFont12;
             this.chartProduct.XAxes.Display = false;
+            grid4.Display = false;
             this.chartProduct.XAxes.GridLines = grid4;
             chartFont13.FontName = "Arial";
             tick4.Font = chartFont13;
             this.chartProduct.XAxes.Ticks = tick4;
             this.chartProduct.YAxes.Display = false;
+            grid5.Display = false;
             this.chartProduct.YAxes.GridLines = grid5;
             chartFont14.FontName = "Arial";
             tick5.Font = chartFont14;
@@ -398,9 +402,9 @@
             // 
             this.guna2Panel8.Controls.Add(this.chartProduct);
             this.guna2Panel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.guna2Panel8.Location = new System.Drawing.Point(883, 100);
+            this.guna2Panel8.Location = new System.Drawing.Point(982, 100);
             this.guna2Panel8.Name = "guna2Panel8";
-            this.guna2Panel8.Size = new System.Drawing.Size(391, 467);
+            this.guna2Panel8.Size = new System.Drawing.Size(292, 467);
             this.guna2Panel8.TabIndex = 7;
             // 
             // tableLayoutPanel2
@@ -415,7 +419,7 @@
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(883, 467);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(982, 467);
             this.tableLayoutPanel2.TabIndex = 6;
             // 
             // dataRecent
@@ -434,7 +438,7 @@
             this.dataRecent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             this.dataRecent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.OrderID,
-            this.Customer,
+            this.Staff,
             this.Product,
             this.Total,
             this.Status});
@@ -451,7 +455,8 @@
             this.dataRecent.Location = new System.Drawing.Point(3, 329);
             this.dataRecent.Name = "dataRecent";
             this.dataRecent.RowHeadersVisible = false;
-            this.dataRecent.Size = new System.Drawing.Size(877, 135);
+            this.dataRecent.RowHeadersWidth = 62;
+            this.dataRecent.Size = new System.Drawing.Size(976, 135);
             this.dataRecent.TabIndex = 1;
             this.dataRecent.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.dataRecent.ThemeStyle.AlternatingRowsStyle.Font = null;
@@ -474,31 +479,6 @@
             this.dataRecent.ThemeStyle.RowsStyle.Height = 22;
             this.dataRecent.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dataRecent.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            // 
-            // OrderID
-            // 
-            this.OrderID.HeaderText = "OrderID";
-            this.OrderID.Name = "OrderID";
-            // 
-            // Customer
-            // 
-            this.Customer.HeaderText = "Customer";
-            this.Customer.Name = "Customer";
-            // 
-            // Product
-            // 
-            this.Product.HeaderText = "Product";
-            this.Product.Name = "Product";
-            // 
-            // Total
-            // 
-            this.Total.HeaderText = "Total";
-            this.Total.Name = "Total";
-            // 
-            // Status
-            // 
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
             // 
             // tableLayoutPanel1
             // 
@@ -616,6 +596,45 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Total Customers";
             // 
+            // guna2MessageDialog1
+            // 
+            this.guna2MessageDialog1.Buttons = Guna.UI2.WinForms.MessageDialogButtons.OK;
+            this.guna2MessageDialog1.Caption = null;
+            this.guna2MessageDialog1.Icon = Guna.UI2.WinForms.MessageDialogIcon.None;
+            this.guna2MessageDialog1.Parent = null;
+            this.guna2MessageDialog1.Style = Guna.UI2.WinForms.MessageDialogStyle.Default;
+            this.guna2MessageDialog1.Text = null;
+            // 
+            // OrderID
+            // 
+            this.OrderID.HeaderText = "OrderID";
+            this.OrderID.MinimumWidth = 8;
+            this.OrderID.Name = "OrderID";
+            // 
+            // Staff
+            // 
+            this.Staff.HeaderText = "Staff";
+            this.Staff.MinimumWidth = 8;
+            this.Staff.Name = "Staff";
+            // 
+            // Product
+            // 
+            this.Product.HeaderText = "Product";
+            this.Product.MinimumWidth = 8;
+            this.Product.Name = "Product";
+            // 
+            // Total
+            // 
+            this.Total.HeaderText = "Total";
+            this.Total.MinimumWidth = 8;
+            this.Total.Name = "Total";
+            // 
+            // Status
+            // 
+            this.Status.HeaderText = "Status";
+            this.Status.MinimumWidth = 8;
+            this.Status.Name = "Status";
+            // 
             // DashboardForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -674,11 +693,12 @@
         private Guna.UI2.WinForms.Guna2Panel guna2Panel8;
         private Guna.Charts.WinForms.GunaChart chartRevenue;
         private Guna.UI2.WinForms.Guna2DataGridView dataRecent;
+        private Guna.Charts.WinForms.GunaChart chartProduct;
+        private Guna.UI2.WinForms.Guna2MessageDialog guna2MessageDialog1;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Customer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Staff;
         private System.Windows.Forms.DataGridViewTextBoxColumn Product;
         private System.Windows.Forms.DataGridViewTextBoxColumn Total;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
-        private Guna.Charts.WinForms.GunaChart chartProduct;
     }
 }

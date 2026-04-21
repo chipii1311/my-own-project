@@ -10,7 +10,7 @@ namespace my_own_project.DTO
     {
         public int StaffID { get; set; }
         public int UserID { get; set; }
-        public int RestaurantID { get; set; }
+        
         public string Position { get; set; }  // Chef, Waiter, Cashier, Manager
         public decimal Salary { get; set; }
         public DateTime HireDate { get; set; }
@@ -20,7 +20,7 @@ namespace my_own_project.DTO
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string RestaurantName { get; set; }
+      
 
         public override string ToString()
         {

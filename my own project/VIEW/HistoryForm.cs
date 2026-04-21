@@ -35,8 +35,8 @@ namespace my_own_project.VIEW
 
                 // 2. ẨN CÁC CỘT KHÔNG CẦN THIẾT (Mã ID, ngày cập nhật...)
                 string[] hiddenColumns = {
-                    "CustomerID", "RestaurantID", "TableID", "StaffID",
-                    "PromotionID", "UpdatedAt", "RestaurantName", "Position"
+                    "CustomerID", "TableID", "StaffID",
+                    "PromotionID", "UpdatedAt",  "Position"
                 };
 
                 foreach (string col in hiddenColumns)

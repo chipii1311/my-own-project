@@ -9,7 +9,7 @@ namespace my_own_project.DTO
     public class MenuItemDTO
     {
         public int MenuItemID { get; set; }
-        public int RestaurantID { get; set; }
+      
         public int CategoryID { get; set; }
         public string ItemName { get; set; }
         public string Description { get; set; }
@@ -22,7 +22,7 @@ namespace my_own_project.DTO
 
         // Thông tin liên quan (để dễ hiển thị)
         public string CategoryName { get; set; }
-        public string RestaurantName { get; set; }
+        
 
         public override string ToString()
         {

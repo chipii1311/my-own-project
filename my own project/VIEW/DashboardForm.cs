@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI;
 using System.Windows.Forms;
 
 namespace my_own_project.VIEW
@@ -45,6 +46,11 @@ namespace my_own_project.VIEW
 
                 // 2. Load DataGridView (Đơn hàng gần đây)
                 dataRecent.AutoGenerateColumns = false;
+                dataRecent.Columns["OrderID"].DataPropertyName = "OrderID";
+                dataRecent.Columns["Staff"].DataPropertyName = "Staff"; // Hoặc "CustomerName" tùy SP của bạn
+                dataRecent.Columns["Product"].DataPropertyName = "Product";
+                dataRecent.Columns["Total"].DataPropertyName = "Total"; // Nếu SQL trả về là TotalAmount thì sửa chữ "Total" thành "TotalAmount"
+                dataRecent.Columns["Status"].DataPropertyName = "Status";
                 dataRecent.DataSource = DashboardBLL.GetRecentOrders(start, end);
 
                 // 3. Load Biểu đồ Doanh thu (Area Chart)
@@ -57,6 +63,7 @@ namespace my_own_project.VIEW
                     gunaAreaDataset1.DataPoints.Add(dateLabel, revenueVal);
                 }
                 chartRevenue.Update();
+                chartRevenue.Refresh();
 
                 // 4. Load Biểu đồ Top Sản phẩm (Doughnut Chart)
                 DataTable dtProducts = DashboardBLL.GetTopProducts(start, end);
@@ -68,6 +75,7 @@ namespace my_own_project.VIEW
                     gunaDoughnutDataset1.DataPoints.Add(productName, quantity);
                 }
                 chartProduct.Update();
+                chartProduct.Refresh();
             }
             catch (Exception ex)
             {

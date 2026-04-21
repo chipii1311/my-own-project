@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace my_own_project.BLL
 {
     public class DiningTableBLL
@@ -13,8 +14,7 @@ namespace my_own_project.BLL
         // ==================== VALIDATE ====================
         private static bool ValidateTable(DiningTableDTO table)
         {
-            if (table.RestaurantID <= 0)
-                throw new Exception("RestaurantID không hợp lệ!");
+            // Đã xóa check RestaurantID
 
             if (table.TableNumber <= 0)
                 throw new Exception("Số bàn phải lớn hơn 0!");
@@ -73,30 +73,14 @@ namespace my_own_project.BLL
             }
         }
 
-        public static DataTable GetTablesByRestaurant(int restaurantID)
+        // ĐÃ XÓA HÀM GetTablesByRestaurant VÌ KHÔNG CÒN TÁC DỤNG
+
+        // Đã gỡ tham số int restaurantID
+        public static DataTable GetAvailableTables()
         {
             try
             {
-                if (restaurantID <= 0)
-                    throw new Exception("RestaurantID không hợp lệ!");
-
-                return DiningTableDAL.GetByRestaurant(restaurantID);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DiningTableBLL.GetTablesByRestaurant Error: {ex.Message}");
-                throw;
-            }
-        }
-
-        public static DataTable GetAvailableTables(int restaurantID)
-        {
-            try
-            {
-                if (restaurantID <= 0)
-                    throw new Exception("RestaurantID không hợp lệ!");
-
-                return DiningTableDAL.GetAvailableTables(restaurantID);
+                return DiningTableDAL.GetAvailableTables();
             }
             catch (Exception ex)
             {
@@ -145,11 +129,11 @@ namespace my_own_project.BLL
         /// <summary>
         /// Lấy số bàn trống
         /// </summary>
-        public static int GetAvailableTableCount(int restaurantID)
+        public static int GetAvailableTableCount() // Đã gỡ tham số int restaurantID
         {
             try
             {
-                DataTable dt = DiningTableDAL.GetAvailableTables(restaurantID);
+                DataTable dt = DiningTableDAL.GetAvailableTables();
                 return dt.Rows.Count;
             }
             catch (Exception ex)
@@ -162,11 +146,11 @@ namespace my_own_project.BLL
         /// <summary>
         /// Tìm bàn trống với sức chứa yêu cầu
         /// </summary>
-        public static DataTable FindTableByCapacity(int restaurantID, int capacity)
+        public static DataTable FindTableByCapacity(int capacity) // Đã gỡ tham số int restaurantID
         {
             try
             {
-                DataTable availableTables = DiningTableDAL.GetAvailableTables(restaurantID);
+                DataTable availableTables = DiningTableDAL.GetAvailableTables();
                 DataTable result = availableTables.Clone();
 
                 foreach (DataRow row in availableTables.Rows)

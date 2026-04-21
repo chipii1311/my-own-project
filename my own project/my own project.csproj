@@ -201,6 +201,12 @@
     <Compile Include="VIEW\MenuForm.Designer.cs">
       <DependentUpon>MenuForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\OrderDetailView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\OrderDetailView.Designer.cs">
+      <DependentUpon>OrderDetailView.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\PaymentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -289,6 +295,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\OrderDetailView.resx">
+      <DependentUpon>OrderDetailView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\PaymentForm.resx">
       <DependentUpon>PaymentForm.cs</DependentUpon>

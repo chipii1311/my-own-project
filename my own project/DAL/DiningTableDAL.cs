@@ -17,7 +17,7 @@ namespace my_own_project.DAL
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@RestaurantID", table.RestaurantID),
+                    
                     new SqlParameter("@TableNumber", table.TableNumber),
                     new SqlParameter("@Capacity", table.Capacity),
                     new SqlParameter("@Status", table.Status ?? "Available"),
@@ -26,7 +26,7 @@ namespace my_own_project.DAL
                 };
 
                 DataHelper.ExecuteSPWithOutput("sp_DiningTable_Insert", parameters);
-                return (int)parameters[5].Value;
+                return (int)parameters[4].Value;
             }
             catch (Exception ex)
             {
@@ -71,31 +71,15 @@ namespace my_own_project.DAL
             }
         }
 
-        public static DataTable GetByRestaurant(int restaurantID)
+        
+
+        public static DataTable GetAvailableTables()
         {
             try
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    new SqlParameter("@RestaurantID", restaurantID)
-                };
-
-                return DataHelper.ExecuteSPGetTable("sp_DiningTable_GetByRestaurant", parameters);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DiningTableDAL.GetByRestaurant Error: {ex.Message}");
-                throw;
-            }
-        }
-
-        public static DataTable GetAvailableTables(int restaurantID)
-        {
-            try
-            {
-                SqlParameter[] parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@RestaurantID", restaurantID),
+                    
                     new SqlParameter("@Status", "Available")
                 };
 
@@ -158,12 +142,12 @@ namespace my_own_project.DAL
             return new DiningTableDTO
             {
                 TableID = (int)row["TableID"],
-                RestaurantID = (int)row["RestaurantID"],
+                
                 TableNumber = (int)row["TableNumber"],
                 Capacity = (int)row["Capacity"],
                 Status = row["Status"]?.ToString() ?? "Available",
                 Notes = row["Notes"]?.ToString() ?? "",
-                RestaurantName = row["RestaurantName"]?.ToString() ?? ""
+                
             };
         }
     }
