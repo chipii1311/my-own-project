@@ -13,8 +13,11 @@ using System.Windows.Forms;
 
 namespace my_own_project.VIEW
 {
-    public partial class PromotionAddForm : SampleAdd
+    public partial class PromotionAddForm : Form
     {
+        private DataTable menuItemsData;
+        
+
         public PromotionAddForm()
         {
             InitializeComponent();
@@ -22,94 +25,187 @@ namespace my_own_project.VIEW
 
         private void PromotionAddForm_Load(object sender, EventArgs e)
         {
-            // 1. Nạp dữ liệu cho ComboBox Loại áp dụng
-            cbbApplyType.Items.Add("Toàn bộ hóa đơn"); // Index = 0
-            cbbApplyType.Items.Add("Theo món cụ thể"); // Index = 1
-            cbbApplyType.SelectedIndex = 0; // Mặc định chọn cái đầu tiên
+            try
+            {
+                // 1. Nạp dữ liệu cho ComboBox Loại áp dụng
+                cbbApplyType.Items.Add("🏪 Toàn bộ hóa đơn"); // Index = 0
+                cbbApplyType.Items.Add("🍽️ Theo món cụ thể"); // Index = 1
+                cbbApplyType.SelectedIndex = 0;
 
-            // 2. Nạp dữ liệu cho ComboBox Trạng thái
-            cbbStatus.Items.Add("Active");
-            cbbStatus.Items.Add("Inactive");
-            cbbStatus.SelectedIndex = 0;
+                // 2. Nạp dữ liệu cho ComboBox Trạng thái
+                cbbStatus.Items.Add("Active");
+                cbbStatus.Items.Add("Inactive");
+                cbbStatus.SelectedIndex = 0;
 
-            // 3. Đổ danh sách món ăn vào CheckedListBox
-            LoadMenuItems();
+                // 3. Đổ danh sách món ăn vào CheckedListBox
+                LoadMenuItems();
+
+                // 4. Set mặc định
+                dtpStartDate.Value = DateTime.Now;
+                dtpEndDate.Value = DateTime.Now.AddMonths(1);
+                numDiscountPercent.Value = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("❌ Lỗi khởi tạo form: " + ex.Message, "Lỗi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-
+        // ============================================
+        // LOAD MENU ITEMS
+        // ============================================
         private void LoadMenuItems()
         {
             try
             {
-                // Gọi thẳng Stored Procedure thông qua DataHelper
-                DataTable dtMenu = DataHelper.ExecuteSPGetTable("sp_MenuItem_GetAllLite");
+                // Gọi Stored Procedure để lấy danh sách món ăn
+                menuItemsData = DataHelper.ExecuteSPGetTable("sp_MenuItem_GetAllLite");
 
-                // Ép kiểu CheckedListBox về ListBox
-                ((ListBox)clbMenuItems).DataSource = dtMenu;
-                ((ListBox)clbMenuItems).DisplayMember = "ItemName";
-                ((ListBox)clbMenuItems).ValueMember = "MenuItemID";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tải danh sách món: " + ex.Message);
-            }
-        }
+                if (menuItemsData == null || menuItemsData.Rows.Count == 0)
+                {
+                    MessageBox.Show("⚠️ Không có món ăn nào trong hệ thống!", "Thông báo",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-        private void cbbApplyType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cbbApplyType.SelectedIndex == 0) // Chọn Toàn bộ hóa đơn
-            {
-                clbMenuItems.Enabled = false; // Khóa mờ danh sách món
+                // Bind dữ liệu vào CheckedListBox
+                clbMenuItems.DataSource = menuItemsData;
+                clbMenuItems.DisplayMember = "ItemName";
+                clbMenuItems.ValueMember = "MenuItemID";
 
-                // Lệnh này giúp xóa bỏ mọi dấu tick nếu người dùng đổi ý từ "Theo món" sang "Toàn bill"
+                // Uncheck tất cả mặc định
                 for (int i = 0; i < clbMenuItems.Items.Count; i++)
                 {
                     clbMenuItems.SetItemChecked(i, false);
                 }
             }
-            else // Chọn Theo món cụ thể
+            catch (Exception ex)
             {
-                clbMenuItems.Enabled = true; // Mở khóa cho phép tick chọn
+                MessageBox.Show("❌ Lỗi tải danh sách món: " + ex.Message, "Lỗi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // ============================================
+        // COMBOBOX APPLY TYPE CHANGED
+        // ============================================
+        private void cbbApplyType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbbApplyType.SelectedIndex == 0) // Toàn bộ hóa đơn
+            {
+                clbMenuItems.Enabled = false;
+
+                // Uncheck tất cả
+                for (int i = 0; i < clbMenuItems.Items.Count; i++)
+                {
+                    clbMenuItems.SetItemChecked(i, false);
+                }
+
+                // Cập nhật label thông tin
+                lblApplyInfo.Text = "✓ Khuyến mãi sẽ áp dụng cho tất cả hóa đơn";
+                lblApplyInfo.ForeColor = Color.FromArgb(76, 175, 80);
+            }
+            else // Theo món cụ thể (Index = 1)
+            {
+                clbMenuItems.Enabled = true;
+
+                // Cập nhật label thông tin
+                lblApplyInfo.Text = "Chọn các món ăn cần áp dụng khuyến mãi";
+                lblApplyInfo.ForeColor = Color.FromArgb(100, 100, 100);
+            }
+        }
+
+        // ============================================
+        // BUTTON SAVE CLICK
+        // ============================================
         private void btnSave_Click_1(object sender, EventArgs e)
         {
-            // 1. Lấy thông tin từ giao diện
-            string promoName = txtPromotionName.Text.Trim();
-            decimal discount = numDiscountPercent.Value; // Giả sử bạn dùng NumericUpDown
-            DateTime start = dtpStartDate.Value;
-            DateTime end = dtpEndDate.Value;
-            int applyType = cbbApplyType.SelectedIndex;
-            string status = cbbStatus.SelectedItem.ToString();
-
-            // Validate sơ bộ
-            if (string.IsNullOrEmpty(promoName))
-            {
-                MessageBox.Show("Vui lòng nhập tên khuyến mãi!");
-                return;
-            }
-
             try
             {
+                // 1. Lấy thông tin từ giao diện
+                string promoName = txtPromotionName.Text.Trim();
+                decimal discount = numDiscountPercent.Value;
+                DateTime startDate = dtpStartDate.Value;
+                DateTime endDate = dtpEndDate.Value;
+                int applyType = cbbApplyType.SelectedIndex;
+                string status = cbbStatus.SelectedItem.ToString();
+
+                // 2. Validate dữ liệu
+                if (string.IsNullOrEmpty(promoName))
+                {
+                    MessageBox.Show("⚠️ Vui lòng nhập tên khuyến mãi!", "Lỗi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPromotionName.Focus();
+                    return;
+                }
+
+                if (discount <= 0)
+                {
+                    MessageBox.Show("⚠️ Mức giảm phải lớn hơn 0!", "Lỗi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    numDiscountPercent.Focus();
+                    return;
+                }
+
+                if (discount > 100)
+                {
+                    MessageBox.Show("⚠️ Mức giảm không được vượt quá 100%!", "Lỗi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    numDiscountPercent.Focus();
+                    return;
+                }
+
+                if (endDate <= startDate)
+                {
+                    MessageBox.Show("⚠️ Ngày kết thúc phải sau ngày bắt đầu!", "Lỗi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    dtpEndDate.Focus();
+                    return;
+                }
+
+                if (applyType == 1) // Theo món cụ thể
+                {
+                    bool hasCheckedItem = false;
+                    for (int i = 0; i < clbMenuItems.Items.Count; i++)
+                    {
+                        if (clbMenuItems.GetItemChecked(i))
+                        {
+                            hasCheckedItem = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasCheckedItem)
+                    {
+                        MessageBox.Show("⚠️ Vui lòng chọn ít nhất một món ăn!", "Lỗi",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        clbMenuItems.Focus();
+                        return;
+                    }
+                }
+
                 // ==========================================
                 // BƯỚC A: LƯU VÀO BẢNG PROMOTION VÀ LẤY ID MỚI
                 // ==========================================
-                // Đoạn này bạn gọi hàm Insert từ PromotionDAL. 
-                // LƯU Ý: Hàm Insert trong DAL của bạn phải dùng lệnh "SELECT SCOPE_IDENTITY();" ở cuối câu SQL 
-                // để trả về cái ID của dòng vừa thêm vào.
-
                 PromotionDTO newPromo = new PromotionDTO
                 {
                     PromotionName = promoName,
                     DiscountPercent = discount,
-                    StartDate = start,
-                    EndDate = end,
+                    StartDate = startDate,
+                    EndDate = endDate,
                     Status = status,
                     ApplyType = applyType
                 };
 
                 int newPromotionID = PromotionDAL.Insert(newPromo);
+
+                if (newPromotionID <= 0)
+                {
+                    MessageBox.Show("❌ Lỗi: Không thể lưu khuyến mãi!", "Lỗi",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 // ==========================================
                 // BƯỚC B: LƯU VÀO BẢNG PROMOTION_DETAIL (Nếu chọn theo món)
@@ -117,32 +213,47 @@ namespace my_own_project.VIEW
                 if (applyType == 1 && newPromotionID > 0)
                 {
                     // Duyệt qua tất cả các món ăn ĐÃ ĐƯỢC TICK
-                    foreach (DataRowView checkedItem in clbMenuItems.CheckedItems)
+                    for (int i = 0; i < clbMenuItems.Items.Count; i++)
                     {
-                        // Lấy MenuItemID đang nằm ẩn dưới cái tên món
-                        int menuID = Convert.ToInt32(checkedItem["MenuItemID"]);
-
-                        // Lưu từng món vào CSDL
-                        PromotionDetailDTO detail = new PromotionDetailDTO
+                        if (clbMenuItems.GetItemChecked(i))
                         {
-                            PromotionID = newPromotionID,
-                            MenuItemID = menuID
-                        };
-                        PromotionDAL.InsertPromotionDetail(detail);
+                            // Lấy MenuItemID
+                            DataRowView checkedItem = (DataRowView)clbMenuItems.Items[i];
+                            int menuID = Convert.ToInt32(checkedItem["MenuItemID"]);
+
+                            // Lưu từng món vào CSDL
+                            PromotionDetailDTO detail = new PromotionDetailDTO
+                            {
+                                PromotionID = newPromotionID,
+                                MenuItemID = menuID
+                            };
+                            PromotionDAL.InsertPromotionDetail(detail);
+                        }
                     }
                 }
 
-                MessageBox.Show("Thêm Khuyến mãi thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close(); // Đóng pop-up
+                // ==========================================
+                // THÀNH CÔNG
+                // ==========================================
+                MessageBox.Show("✅ Thêm khuyến mãi thành công!", "Thành công",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi lưu: " + ex.Message);
+                MessageBox.Show("❌ Lỗi khi lưu: " + ex.Message, "Lỗi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // ============================================
+        // BUTTON CLOSE CLICK
+        // ============================================
         private void btnClose_Click_1(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
     }
