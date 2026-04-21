@@ -44,7 +44,7 @@
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
             this.btnPromotion = new Guna.UI2.WinForms.Guna2Button();
             this.btnCategory = new Guna.UI2.WinForms.Guna2Button();
-            this.btnTable = new Guna.UI2.WinForms.Guna2Button();
+            this.btnHistory = new Guna.UI2.WinForms.Guna2Button();
             this.btnProducts = new Guna.UI2.WinForms.Guna2Button();
             this.btnCategor = new Guna.UI2.WinForms.Guna2Button();
             this.btnDashboard = new Guna.UI2.WinForms.Guna2Button();
@@ -60,7 +60,7 @@
             this.pnlFunction.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
             this.pnlFunction.Controls.Add(this.btnPromotion);
             this.pnlFunction.Controls.Add(this.btnCategory);
-            this.pnlFunction.Controls.Add(this.btnTable);
+            this.pnlFunction.Controls.Add(this.btnHistory);
             this.pnlFunction.Controls.Add(this.btnProducts);
             this.pnlFunction.Controls.Add(this.btnCategor);
             this.pnlFunction.Controls.Add(this.btnDashboard);
@@ -199,7 +199,7 @@
             this.ControlsPanel.BackColor = System.Drawing.Color.White;
             this.ControlsPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ControlsPanel.Location = new System.Drawing.Point(310, 92);
-            this.ControlsPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ControlsPanel.Margin = new System.Windows.Forms.Padding(2);
             this.ControlsPanel.Name = "ControlsPanel";
             this.ControlsPanel.Size = new System.Drawing.Size(1572, 1008);
             this.ControlsPanel.TabIndex = 2;
@@ -271,31 +271,31 @@
             this.btnCategory.Text = "Category";
             this.btnCategory.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // btnTable
+            // btnHistory
             // 
-            this.btnTable.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
-            this.btnTable.BorderColor = System.Drawing.Color.Transparent;
-            this.btnTable.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
-            this.btnTable.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(85)))), ((int)(((byte)(126)))));
-            this.btnTable.CheckedState.Image = global::my_own_project.Properties.Resources.png_hkai8h;
-            this.btnTable.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnTable.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnTable.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnTable.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnTable.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnTable.FillColor = System.Drawing.Color.Transparent;
-            this.btnTable.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTable.ForeColor = System.Drawing.Color.White;
-            this.btnTable.Image = global::my_own_project.Properties.Resources.png_mfsyuj;
-            this.btnTable.ImageAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.btnTable.Location = new System.Drawing.Point(0, 474);
-            this.btnTable.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.btnTable.Name = "btnTable";
-            this.btnTable.Size = new System.Drawing.Size(310, 100);
-            this.btnTable.TabIndex = 4;
-            this.btnTable.Text = "Table";
-            this.btnTable.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.btnTable.Click += new System.EventHandler(this.btnTable_Click);
+            this.btnHistory.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
+            this.btnHistory.BorderColor = System.Drawing.Color.Transparent;
+            this.btnHistory.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
+            this.btnHistory.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(85)))), ((int)(((byte)(126)))));
+            this.btnHistory.CheckedState.Image = global::my_own_project.Properties.Resources.png_hkai8h;
+            this.btnHistory.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnHistory.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnHistory.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnHistory.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnHistory.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnHistory.FillColor = System.Drawing.Color.Transparent;
+            this.btnHistory.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHistory.ForeColor = System.Drawing.Color.White;
+            this.btnHistory.Image = global::my_own_project.Properties.Resources.png_mfsyuj;
+            this.btnHistory.ImageAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.btnHistory.Location = new System.Drawing.Point(0, 474);
+            this.btnHistory.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnHistory.Name = "btnHistory";
+            this.btnHistory.Size = new System.Drawing.Size(310, 100);
+            this.btnHistory.TabIndex = 4;
+            this.btnHistory.Text = "History";
+            this.btnHistory.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.btnHistory.Click += new System.EventHandler(this.btnHistory_Click);
             // 
             // btnProducts
             // 
@@ -430,7 +430,7 @@
         private Guna.UI2.WinForms.Guna2Button btnDashboard;
         private Guna.UI2.WinForms.Guna2Button btnPromotion;
         private Guna.UI2.WinForms.Guna2Button btnCategory;
-        private Guna.UI2.WinForms.Guna2Button btnTable;
+        private Guna.UI2.WinForms.Guna2Button btnHistory;
         private Guna.UI2.WinForms.Guna2Button btnProducts;
         private Guna.UI2.WinForms.Guna2Button btnCategor;
         private System.Windows.Forms.Label lblDate;

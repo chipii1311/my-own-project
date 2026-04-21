@@ -104,5 +104,10 @@ namespace my_own_project
         {
             AddControls(new PromotionForm());
         }
+
+        private void btnHistory_Click(object sender, EventArgs e)
+        {
+            AddControls(new HistoryForm());
+        }
     }
 }
