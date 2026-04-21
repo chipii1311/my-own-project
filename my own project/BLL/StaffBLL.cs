@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace my_own_project.BLL
 {
     public class StaffBLL
@@ -16,8 +17,7 @@ namespace my_own_project.BLL
             if (staff.UserID <= 0)
                 throw new Exception("UserID không hợp lệ!");
 
-            if (staff.RestaurantID <= 0)
-                throw new Exception("RestaurantID không hợp lệ!");
+            // ĐÃ XÓA CHECK RESTAURANT ID
 
             if (string.IsNullOrWhiteSpace(staff.Position))
                 throw new Exception("Vị trí không được để trống!");
@@ -73,21 +73,7 @@ namespace my_own_project.BLL
             }
         }
 
-        public static DataTable GetStaffByRestaurant(int restaurantID)
-        {
-            try
-            {
-                if (restaurantID <= 0)
-                    throw new Exception("RestaurantID không hợp lệ!");
-
-                return StaffDAL.GetByRestaurant(restaurantID);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"StaffBLL.GetStaffByRestaurant Error: {ex.Message}");
-                throw;
-            }
-        }
+        // ĐÃ XÓA HÀM GetStaffByRestaurant Ở ĐÂY
 
         public static DataTable GetStaffByPosition(string position)
         {

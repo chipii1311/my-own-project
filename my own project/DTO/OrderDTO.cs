@@ -10,7 +10,7 @@ namespace my_own_project.DTO
     {
         public int OrderID { get; set; }
         public int? CustomerID { get; set; }
-        public int? RestaurantID { get; set; }
+        
         public int? TableID { get; set; }
         public DateTime OrderDate { get; set; }// đoạn này có thể thêm ?
         public string OrderType { get; set; }
@@ -21,7 +21,7 @@ namespace my_own_project.DTO
         public int? PromotionID { get; set; }
 
         public string CustomerName { get; set; }
-        public string RestaurantName { get; set; }
+        
         public int TableNumber { get; set; }
         public string StaffName { get; set; }
         public string PromotionName { get; set; }

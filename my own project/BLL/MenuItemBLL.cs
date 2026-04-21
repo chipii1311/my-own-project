@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace my_own_project.BLL
 {
     public class MenuItemBLL
@@ -22,8 +23,7 @@ namespace my_own_project.BLL
             if (item.Price < 0)
                 throw new Exception("Giá không được âm!");
 
-            if (item.RestaurantID <= 0)
-                throw new Exception("RestaurantID không hợp lệ!");
+            // ĐÃ XÓA CHECK RESTAURANT ID Ở ĐÂY
 
             if (item.CategoryID <= 0)
                 throw new Exception("CategoryID không hợp lệ!");
@@ -76,21 +76,7 @@ namespace my_own_project.BLL
             }
         }
 
-        public static DataTable GetMenuItemsByRestaurant(int restaurantID)
-        {
-            try
-            {
-                if (restaurantID <= 0)
-                    throw new Exception("RestaurantID không hợp lệ!");
-
-                return MenuItemDAL.GetByRestaurant(restaurantID);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"MenuItemBLL.GetMenuItemsByRestaurant Error: {ex.Message}");
-                throw;
-            }
-        }
+        // ĐÃ XÓA HÀM GetMenuItemsByRestaurant Ở ĐÂY
 
         public static DataTable GetMenuItemsByCategory(int categoryID)
         {
@@ -176,30 +162,12 @@ namespace my_own_project.BLL
         /// <summary>
         /// Lấy menu items available (còn hàng)
         /// </summary>
-        public static DataTable GetAvailableMenuItems(int restaurantID)
-        {
-            try
-            {
-                DataTable allItems = MenuItemDAL.GetByRestaurant(restaurantID);
-                DataTable result = allItems.Clone();
-
-                foreach (DataRow row in allItems.Rows)
-                {
-                    if ((bool)row["IsAvailable"])
-                        result.ImportRow(row);
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"MenuItemBLL.GetAvailableMenuItems Error: {ex.Message}");
-                throw;
-            }
-        }
         public static DataTable GetAllAvailableItems()
         {
+            // Dùng hàm này chuẩn hơn vì nó gọi trực tiếp SP sp_MenuItem_GetAllAvailable
             return MenuItemDAL.GetAllAvailableItems();
         }
+
+        // ĐÃ XÓA hàm GetAvailableMenuItems (bị lỗi logic cũ)
     }
 }

@@ -18,7 +18,7 @@ namespace my_own_project.DAL
                 SqlParameter[] parameters = new SqlParameter[]
                 {
                     new SqlParameter("@CustomerID", order.CustomerID ?? (object)DBNull.Value),
-                    new SqlParameter("@RestaurantID", order.RestaurantID ?? (object)DBNull.Value),
+                    
                     new SqlParameter("@TableID", order.TableID ?? (object)DBNull.Value),
                     new SqlParameter("@OrderType", order.OrderType ?? "DineIn"),
                     new SqlParameter("@StaffID", order.StaffID ?? (object)DBNull.Value),
@@ -151,7 +151,7 @@ namespace my_own_project.DAL
             {
                 OrderID = (int)row["OrderID"],
                 CustomerID = row["CustomerID"] != DBNull.Value ? (int)row["CustomerID"] : (int?)null,
-                RestaurantID = row["RestaurantID"] != DBNull.Value ? (int)row["RestaurantID"] : (int?)null,
+               
                 TableID = row["TableID"] != DBNull.Value ? (int)row["TableID"] : (int?)null,
                 OrderDate = (DateTime)row["OrderDate"],
                 OrderType = row["OrderType"]?.ToString() ?? "",
@@ -161,7 +161,7 @@ namespace my_own_project.DAL
                 StaffID = row["StaffID"] != DBNull.Value ? (int)row["StaffID"] : (int?)null,
                 PromotionID = row["PromotionID"] != DBNull.Value ? (int)row["PromotionID"] : (int?)null,
                 CustomerName = row["CustomerName"]?.ToString() ?? "",
-                RestaurantName = row["RestaurantName"]?.ToString() ?? "",
+                
                 TableNumber = row["TableNumber"] != DBNull.Value ? (int)row["TableNumber"] : 0,
                 StaffName = row["StaffName"]?.ToString() ?? ""
             };

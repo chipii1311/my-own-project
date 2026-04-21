@@ -357,7 +357,7 @@ namespace my_own_project.DesignForms
                 {
                     OrderDTO newOrder = new OrderDTO();
                     newOrder.TableID = currentTableID;
-                    newOrder.RestaurantID = 1;
+                   
                     newOrder.OrderType = "DineIn";
                     newOrder.Status = "Pending";
                     newOrder.OrderDate = DateTime.Now;
@@ -423,7 +423,7 @@ namespace my_own_project.DesignForms
                     {
                         OrderDTO newOrder = new OrderDTO();
                         newOrder.TableID = currentTableID;
-                        newOrder.RestaurantID = 1;
+                       
                         newOrder.OrderType = "DineIn";
                         newOrder.Status = "Pending";
                         newOrder.OrderDate = DateTime.Now;
@@ -610,7 +610,7 @@ namespace my_own_project.DesignForms
                 // 1. Tạo mới một Hóa đơn (Order) rỗng, chưa có món ăn
                 OrderDTO newOrder = new OrderDTO();
                 newOrder.TableID = currentTableID;
-                newOrder.RestaurantID = 1;
+                
                 newOrder.OrderType = "DineIn";
                 newOrder.Status = "Pending";
                 newOrder.OrderDate = DateTime.Now;
