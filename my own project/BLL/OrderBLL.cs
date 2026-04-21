@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace my_own_project.BLL
 {
     public class OrderBLL
@@ -13,8 +14,7 @@ namespace my_own_project.BLL
         // ==================== VALIDATE ====================
         private static bool ValidateOrder(OrderDTO order)
         {
-            if (order.RestaurantID <= 0)
-                throw new Exception("RestaurantID không hợp lệ!");
+            // ĐÃ XÓA CHECK RESTAURANT ID
 
             if (string.IsNullOrWhiteSpace(order.OrderType))
                 throw new Exception("Loại đơn hàng không được để trống!");

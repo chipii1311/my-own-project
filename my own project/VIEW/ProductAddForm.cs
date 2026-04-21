@@ -116,7 +116,7 @@ namespace my_own_project.DesignForms
 
                 // Gom dữ liệu từ trên giao diện xuống
                 MenuItemDTO item = new MenuItemDTO();
-                item.RestaurantID = 1;
+               
                 item.ItemName = txtName.Text;
                 item.Price = Convert.ToDecimal(txtPrice.Text);
                 item.CategoryID = Convert.ToInt32(cbbCategory.SelectedValue);

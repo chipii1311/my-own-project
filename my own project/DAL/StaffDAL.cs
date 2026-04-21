@@ -18,7 +18,7 @@ namespace my_own_project.DAL
                 SqlParameter[] parameters = new SqlParameter[]
                 {
                     new SqlParameter("@UserID", staff.UserID),
-                    new SqlParameter("@RestaurantID", staff.RestaurantID),
+                   
                     new SqlParameter("@Position", staff.Position ?? ""),
                     new SqlParameter("@Salary", staff.Salary),
                     new SqlParameter("@HireDate", staff.HireDate),
@@ -27,7 +27,7 @@ namespace my_own_project.DAL
                 };
 
                 DataHelper.ExecuteSPWithOutput("sp_Staff_Insert", parameters);
-                return (int)parameters[6].Value;
+                return (int)parameters[5].Value;
             }
             catch (Exception ex)
             {
@@ -72,23 +72,7 @@ namespace my_own_project.DAL
             }
         }
 
-        public static DataTable GetByRestaurant(int restaurantID)
-        {
-            try
-            {
-                SqlParameter[] parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@RestaurantID", restaurantID)
-                };
-
-                return DataHelper.ExecuteSPGetTable("sp_Staff_GetByRestaurant", parameters);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"StaffDAL.GetByRestaurant Error: {ex.Message}");
-                throw;
-            }
-        }
+       
 
         public static DataTable GetByPosition(string position)
         {
@@ -158,7 +142,7 @@ namespace my_own_project.DAL
             {
                 StaffID = (int)row["StaffID"],
                 UserID = (int)row["UserID"],
-                RestaurantID = (int)row["RestaurantID"],
+              
                 Position = row["Position"]?.ToString() ?? "",
                 Salary = (decimal)row["Salary"],
                 HireDate = (DateTime)row["HireDate"],
@@ -166,7 +150,7 @@ namespace my_own_project.DAL
                 FullName = row["FullName"]?.ToString() ?? "",
                 Email = row["Email"]?.ToString() ?? "",
                 Phone = row["Phone"]?.ToString() ?? "",
-                RestaurantName = row["RestaurantName"]?.ToString() ?? ""
+               
             };
         }
     }
