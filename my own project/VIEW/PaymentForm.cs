@@ -1,4 +1,5 @@
 ﻿using my_own_project.DAL;
+using my_own_project.DTO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -173,6 +174,41 @@ namespace my_own_project.VIEW
 
             offset += 35;
             graphic.DrawString("Cảm ơn quý khách và hẹn gặp lại!", fontItalic, brush, startX + 15, startY + offset);    
+        }
+
+        private void btnPay_Click(object sender, EventArgs e)
+        {
+            // Xác nhận thu tiền
+            DialogResult result = MessageBox.Show($"Xác nhận thu khách số tiền: {finalTotal:N0} VNĐ?",
+                                                  "Thanh toán", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    // 1. Tạo đối tượng PaymentDTO và nhét dữ liệu vào
+                    PaymentDTO paymentInfo = new PaymentDTO
+                    {
+                        OrderID = currentOrderID, // Biến lưu mã Order của bạn
+                        Amount = finalTotal,      // Biến lưu tổng tiền cần thanh toán
+                        Method = "Cash",          // Hoặc lấy từ ComboBox nếu bạn có cho khách chọn Tiền mặt/Chuyển khoản
+                        TransactionID = ""        // Để trống nếu trả tiền mặt
+                    };
+
+                    // 2. Gọi hàm Insert siêu xịn của bạn bạn
+                    int newPaymentID = PaymentDAL.Insert(paymentInfo);
+
+                    if (newPaymentID > 0)
+                    {
+                        MessageBox.Show("Thanh toán thành công! Bàn đã được dọn.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        this.Close(); // Đóng form lại
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi trong quá trình thanh toán: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

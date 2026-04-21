@@ -138,6 +138,7 @@
             this.btnPay.Size = new System.Drawing.Size(150, 41);
             this.btnPay.TabIndex = 8;
             this.btnPay.Text = "Thanh toán";
+            this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
             // 
             // btnClose
             // 
