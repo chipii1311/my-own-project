@@ -57,6 +57,7 @@ namespace my_own_project.VIEW
                     gunaAreaDataset1.DataPoints.Add(dateLabel, revenueVal);
                 }
                 chartRevenue.Update();
+                chartRevenue.Refresh();
 
                 // 4. Load Biểu đồ Top Sản phẩm (Doughnut Chart)
                 DataTable dtProducts = DashboardBLL.GetTopProducts(start, end);
@@ -68,6 +69,7 @@ namespace my_own_project.VIEW
                     gunaDoughnutDataset1.DataPoints.Add(productName, quantity);
                 }
                 chartProduct.Update();
+                chartProduct.Refresh();
             }
             catch (Exception ex)
             {
