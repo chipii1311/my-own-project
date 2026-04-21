@@ -47,27 +47,30 @@
             // lblTableName
             // 
             this.lblTableName.AutoSize = true;
-            this.lblTableName.Location = new System.Drawing.Point(122, 85);
+            this.lblTableName.Location = new System.Drawing.Point(81, 55);
+            this.lblTableName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTableName.Name = "lblTableName";
-            this.lblTableName.Size = new System.Drawing.Size(51, 20);
+            this.lblTableName.Size = new System.Drawing.Size(35, 13);
             this.lblTableName.TabIndex = 0;
             this.lblTableName.Text = "label1";
             // 
             // lblOrderID
             // 
             this.lblOrderID.AutoSize = true;
-            this.lblOrderID.Location = new System.Drawing.Point(447, 85);
+            this.lblOrderID.Location = new System.Drawing.Point(298, 55);
+            this.lblOrderID.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblOrderID.Name = "lblOrderID";
-            this.lblOrderID.Size = new System.Drawing.Size(51, 20);
+            this.lblOrderID.Size = new System.Drawing.Size(35, 13);
             this.lblOrderID.TabIndex = 1;
             this.lblOrderID.Text = "label2";
             // 
             // lblSubTotal
             // 
             this.lblSubTotal.AutoSize = true;
-            this.lblSubTotal.Location = new System.Drawing.Point(361, 438);
+            this.lblSubTotal.Location = new System.Drawing.Point(241, 285);
+            this.lblSubTotal.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSubTotal.Name = "lblSubTotal";
-            this.lblSubTotal.Size = new System.Drawing.Size(51, 20);
+            this.lblSubTotal.Size = new System.Drawing.Size(35, 13);
             this.lblSubTotal.TabIndex = 3;
             this.lblSubTotal.Text = "label1";
             // 
@@ -81,17 +84,19 @@
             this.cbbPromotion.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cbbPromotion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cbbPromotion.ItemHeight = 30;
-            this.cbbPromotion.Location = new System.Drawing.Point(328, 461);
+            this.cbbPromotion.Location = new System.Drawing.Point(219, 300);
+            this.cbbPromotion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbbPromotion.Name = "cbbPromotion";
-            this.cbbPromotion.Size = new System.Drawing.Size(140, 36);
+            this.cbbPromotion.Size = new System.Drawing.Size(95, 36);
             this.cbbPromotion.TabIndex = 4;
             // 
             // lblFinalTotal
             // 
             this.lblFinalTotal.AutoSize = true;
-            this.lblFinalTotal.Location = new System.Drawing.Point(361, 500);
+            this.lblFinalTotal.Location = new System.Drawing.Point(241, 325);
+            this.lblFinalTotal.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFinalTotal.Name = "lblFinalTotal";
-            this.lblFinalTotal.Size = new System.Drawing.Size(51, 20);
+            this.lblFinalTotal.Size = new System.Drawing.Size(35, 13);
             this.lblFinalTotal.TabIndex = 5;
             this.lblFinalTotal.Text = "label1";
             // 
@@ -105,9 +110,10 @@
             this.cbbPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.cbbPaymentMethod.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
             this.cbbPaymentMethod.ItemHeight = 30;
-            this.cbbPaymentMethod.Location = new System.Drawing.Point(328, 532);
+            this.cbbPaymentMethod.Location = new System.Drawing.Point(219, 346);
+            this.cbbPaymentMethod.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cbbPaymentMethod.Name = "cbbPaymentMethod";
-            this.cbbPaymentMethod.Size = new System.Drawing.Size(140, 36);
+            this.cbbPaymentMethod.Size = new System.Drawing.Size(95, 36);
             this.cbbPaymentMethod.TabIndex = 6;
             // 
             // btnPrint
@@ -118,9 +124,10 @@
             this.btnPrint.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnPrint.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnPrint.ForeColor = System.Drawing.Color.White;
-            this.btnPrint.Location = new System.Drawing.Point(94, 574);
+            this.btnPrint.Location = new System.Drawing.Point(53, 396);
+            this.btnPrint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnPrint.Name = "btnPrint";
-            this.btnPrint.Size = new System.Drawing.Size(143, 41);
+            this.btnPrint.Size = new System.Drawing.Size(95, 27);
             this.btnPrint.TabIndex = 7;
             this.btnPrint.Text = "In hóa đơn";
             this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
@@ -133,9 +140,10 @@
             this.btnPay.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnPay.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnPay.ForeColor = System.Drawing.Color.White;
-            this.btnPay.Location = new System.Drawing.Point(271, 574);
+            this.btnPay.Location = new System.Drawing.Point(176, 396);
+            this.btnPay.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnPay.Name = "btnPay";
-            this.btnPay.Size = new System.Drawing.Size(150, 41);
+            this.btnPay.Size = new System.Drawing.Size(100, 27);
             this.btnPay.TabIndex = 8;
             this.btnPay.Text = "Thanh toán";
             this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
@@ -148,9 +156,10 @@
             this.btnClose.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnClose.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(451, 574);
+            this.btnClose.Location = new System.Drawing.Point(301, 396);
+            this.btnClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(120, 41);
+            this.btnClose.Size = new System.Drawing.Size(80, 27);
             this.btnClose.TabIndex = 9;
             this.btnClose.Text = "Hủy";
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -173,19 +182,20 @@
             // 
             this.dgvBill.AllowUserToAddRows = false;
             this.dgvBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvBill.Location = new System.Drawing.Point(79, 126);
+            this.dgvBill.Location = new System.Drawing.Point(53, 82);
+            this.dgvBill.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dgvBill.Name = "dgvBill";
             this.dgvBill.RowHeadersVisible = false;
             this.dgvBill.RowHeadersWidth = 62;
             this.dgvBill.RowTemplate.Height = 28;
-            this.dgvBill.Size = new System.Drawing.Size(541, 286);
+            this.dgvBill.Size = new System.Drawing.Size(361, 186);
             this.dgvBill.TabIndex = 10;
             // 
             // PaymentForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(693, 636);
+            this.ClientSize = new System.Drawing.Size(462, 445);
             this.Controls.Add(this.dgvBill);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnPay);
@@ -197,6 +207,7 @@
             this.Controls.Add(this.lblOrderID);
             this.Controls.Add(this.lblTableName);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "PaymentForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PaymentForm";

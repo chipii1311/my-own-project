@@ -10,32 +10,33 @@
     {
         public class PaymentDAL
         {
-            // ==================== CREATE ====================
-            public static int Insert(PaymentDTO payment)
+        // ==================== CREATE ====================
+        // ==================== CREATE ====================
+        public static int Insert(PaymentDTO payment)
+        {
+            try
             {
-                try
+                SqlParameter[] parameters = new SqlParameter[]
                 {
-                    SqlParameter[] parameters = new SqlParameter[]
-                    {
-                        new SqlParameter("@OrderID", payment.OrderID),
-                        new SqlParameter("@Method", payment.Method ?? "Cash"),
-                        new SqlParameter("@Amount", payment.Amount),
-                        new SqlParameter("@TransactionID", payment.TransactionID ?? ""),
-                        new SqlParameter("@ID", SqlDbType.Int) { Direction = ParameterDirection.Output }
-                    };
+            new SqlParameter("@OrderID", payment.OrderID),
+            new SqlParameter("@Method", payment.Method ?? "Cash"),
+            new SqlParameter("@Amount", payment.Amount),
+            new SqlParameter("@TransactionID", payment.TransactionID ?? ""),
+            new SqlParameter("@ID", SqlDbType.Int) { Direction = ParameterDirection.Output }
+                };
 
-                    DataHelper.ExecuteSPWithOutput("sp_Payment_Insert", parameters);
-                    return (int)parameters[4].Value;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"PaymentDAL.Insert Error: {ex.Message}");
-                    throw;
-                }
+                // GỌI THẲNG HÀM VÀ RETURN LUÔN (Vì DataHelper.ExecuteSPWithOutput đã cấu hình sẵn việc trả về ID)
+                return DataHelper.ExecuteSPWithOutput("sp_Payment_Insert", parameters);
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PaymentDAL.Insert Error: {ex.Message}");
+                throw;
+            }
+        }
 
-            // ==================== READ ====================
-            public static PaymentDTO GetByOrderID(int orderID)
+        // ==================== READ ====================
+        public static PaymentDTO GetByOrderID(int orderID)
             {
                 try
                 {

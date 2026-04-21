@@ -18,7 +18,6 @@ namespace my_own_project.DAL
                 SqlParameter[] parameters = new SqlParameter[]
                 {
                     new SqlParameter("@CustomerID", order.CustomerID ?? (object)DBNull.Value),
-                    
                     new SqlParameter("@TableID", order.TableID ?? (object)DBNull.Value),
                     new SqlParameter("@OrderType", order.OrderType ?? "DineIn"),
                     new SqlParameter("@StaffID", order.StaffID ?? (object)DBNull.Value),
@@ -27,7 +26,7 @@ namespace my_own_project.DAL
                 };
 
                 DataHelper.ExecuteSPWithOutput("sp_Orders_Insert", parameters);
-                return Convert.ToInt32(parameters[6].Value);
+                return Convert.ToInt32(parameters[5].Value);
             }
             catch (Exception ex)
             {

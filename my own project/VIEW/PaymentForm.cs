@@ -1,5 +1,6 @@
 ﻿using my_own_project.DAL;
 using my_own_project.DTO;
+using my_own_project.BLL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -189,14 +190,15 @@ namespace my_own_project.VIEW
                     // 1. Tạo đối tượng PaymentDTO và nhét dữ liệu vào
                     PaymentDTO paymentInfo = new PaymentDTO
                     {
-                        OrderID = currentOrderID, // Biến lưu mã Order của bạn
-                        Amount = finalTotal,      // Biến lưu tổng tiền cần thanh toán
-                        Method = "Cash",          // Hoặc lấy từ ComboBox nếu bạn có cho khách chọn Tiền mặt/Chuyển khoản
-                        TransactionID = ""        // Để trống nếu trả tiền mặt
+                        OrderID = currentOrderID,
+                        Amount = finalTotal,
+                        Method = "Cash",
+                        // FIX LỖI UNIQUE: Tạo mã giao dịch tự động cho Tiền mặt (Ví dụ: CASH-20260422123045-10)
+                        TransactionID = "CASH-" + DateTime.Now.ToString("yyyyMMddHHmmss") + "-" + currentOrderID
                     };
 
-                    // 2. Gọi hàm Insert siêu xịn của bạn bạn
-                    int newPaymentID = PaymentDAL.Insert(paymentInfo);
+                    // 2. Gọi hàm CreatePayment từ BLL thay vì DAL để chạy qua bộ Validate
+                    int newPaymentID = PaymentBLL.CreatePayment(paymentInfo);
 
                     if (newPaymentID > 0)
                     {
