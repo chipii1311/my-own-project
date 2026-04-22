@@ -16,7 +16,18 @@ namespace my_own_project.VIEW
     public partial class PromotionAddForm : Form
     {
         private DataTable menuItemsData;
+        private int promotionID;
+        private bool isAddMode;
+
         
+
+        public PromotionAddForm(int id)
+        {
+            InitializeComponent();
+            promotionID = id;
+            isAddMode = (id == 0);
+
+        }
 
         public PromotionAddForm()
         {
