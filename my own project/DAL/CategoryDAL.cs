@@ -47,25 +47,36 @@ namespace my_own_project.DAL
             }
         }
 
-        public static CategoryDTO GetByID(int categoryID)
+        //public static CategoryDTO GetByID(int categoryID)
+        //{
+        //    try
+        //    {
+        //        SqlParameter[] parameters = new SqlParameter[]
+        //        {
+        //            new SqlParameter("@CategoryID", categoryID)
+        //        };
+
+        //        DataTable dt = DataHelper.ExecuteSPGetTable("sp_Category_GetByID", parameters);
+        //        if (dt.Rows.Count > 0)
+        //            return MapDTO(dt.Rows[0]);
+
+        //        return null;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"CategoryDAL.GetByID Error: {ex.Message}");
+        //        throw;
+        //    }
+        //}
+        public static DataTable GetByID(int categoryID)
         {
             try
             {
-                SqlParameter[] parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@CategoryID", categoryID)
-                };
-
-                DataTable dt = DataHelper.ExecuteSPGetTable("sp_Category_GetByID", parameters);
-                if (dt.Rows.Count > 0)
-                    return MapDTO(dt.Rows[0]);
-
-                return null;
+                return DataHelper.ExecuteSPGetTable($"EXEC sp_Category_GetByID {categoryID}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"CategoryDAL.GetByID Error: {ex.Message}");
-                throw;
+                throw new Exception("Lỗi lấy dữ liệu danh mục: " + ex.Message);
             }
         }
 

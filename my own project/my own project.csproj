@@ -159,6 +159,12 @@
     <Compile Include="VIEW\AddTable.Designer.cs">
       <DependentUpon>AddTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\CategoryAddEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\CategoryAddEditForm.Designer.cs">
+      <DependentUpon>CategoryAddEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\CategoryAddForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -277,6 +283,9 @@
     </Compile>
     <EmbeddedResource Include="VIEW\AddTable.resx">
       <DependentUpon>AddTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\CategoryAddEditForm.resx">
+      <DependentUpon>CategoryAddEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\CategoryAddForm.resx">
       <DependentUpon>CategoryAddForm.cs</DependentUpon>

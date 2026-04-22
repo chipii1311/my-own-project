@@ -58,7 +58,39 @@ namespace my_own_project.BLL
                 if (categoryID <= 0)
                     throw new Exception("CategoryID không hợp lệ!");
 
-                return CategoryDAL.GetByID(categoryID);
+                DataTable dt = CategoryDAL.GetByID(categoryID);
+                if (dt == null || dt.Rows.Count == 0)
+                    return null;
+
+                DataRow row = dt.Rows[0];
+                var category = new CategoryDTO();
+
+                // Map CategoryID
+                if (dt.Columns.Contains("CategoryID"))
+                    category.CategoryID = Convert.ToInt32(row["CategoryID"]);
+                else if (dt.Columns.Count > 0)
+                    category.CategoryID = Convert.ToInt32(row[0]);
+
+                // Map CategoryName
+                if (dt.Columns.Contains("CategoryName"))
+                    category.CategoryName = row["CategoryName"]?.ToString();
+                else if (dt.Columns.Count > 1)
+                    category.CategoryName = row[1]?.ToString();
+                else
+                {
+                    // fallback: pick first non-null string-like column
+                    foreach (DataColumn col in dt.Columns)
+                    {
+                        var val = row[col];
+                        if (val != DBNull.Value)
+                        {
+                            category.CategoryName = val.ToString();
+                            break;
+                        }
+                    }
+                }
+
+                return category;
             }
             catch (Exception ex)
             {

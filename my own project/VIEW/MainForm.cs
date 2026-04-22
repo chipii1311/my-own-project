@@ -109,5 +109,10 @@ namespace my_own_project
         {
             AddControls(new HistoryForm());
         }
+
+        private void btnCategory_Click_1(object sender, EventArgs e)
+        {
+            AddControls(new CategoryForm());
+        }
     }
 }
