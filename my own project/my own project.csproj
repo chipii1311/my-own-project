@@ -275,6 +275,12 @@
     <Compile Include="UCFoodItem.Designer.cs">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\TableForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -342,6 +348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UCFoodItem.resx">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\TableForm.resx">
       <DependentUpon>TableForm.cs</DependentUpon>
