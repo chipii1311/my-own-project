@@ -56,7 +56,7 @@
             this.pnlHeader.Controls.Add(this.lblSubtitle);
             this.pnlHeader.Controls.Add(this.lblTitle);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlHeader.FillColor = System.Drawing.Color.RoyalBlue;
+            this.pnlHeader.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Padding = new System.Windows.Forms.Padding(25, 15, 25, 15);
@@ -130,10 +130,10 @@
             this.btnAdd.BackColor = System.Drawing.Color.Transparent;
             this.btnAdd.BorderRadius = 19;
             this.btnAdd.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnAdd.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(76)))), ((int)(((byte)(175)))), ((int)(((byte)(80)))));
+            this.btnAdd.FillColor = System.Drawing.Color.LightCoral;
             this.btnAdd.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnAdd.ForeColor = System.Drawing.Color.White;
-            this.btnAdd.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(142)))), ((int)(((byte)(60)))));
+            this.btnAdd.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(85)))), ((int)(((byte)(126)))));
             this.btnAdd.Location = new System.Drawing.Point(1075, 12);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 40);
@@ -149,11 +149,11 @@
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
             this.dgvCategory.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(67)))), ((int)(((byte)(54)))));
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.Gainsboro;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
             dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(244)))), ((int)(((byte)(67)))), ((int)(((byte)(54)))));
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.Gainsboro;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvCategory.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
@@ -277,6 +277,7 @@
             this.Controls.Add(this.pnlToolbar);
             this.Controls.Add(this.pnlHeader);
             this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "CategoryForm";
             this.Text = "Quản lý Danh mục";
             this.Load += new System.EventHandler(this.CategoryForm_Load);

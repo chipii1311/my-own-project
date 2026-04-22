@@ -42,7 +42,7 @@
             this.pnlHeader.BackColor = System.Drawing.Color.RosyBrown;
             this.pnlHeader.Controls.Add(this.lblTitle);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlHeader.FillColor = System.Drawing.Color.RoyalBlue;
+            this.pnlHeader.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(55)))), ((int)(((byte)(89)))));
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Padding = new System.Windows.Forms.Padding(30, 20, 30, 20);
@@ -106,7 +106,7 @@
             this.chkIsActive.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.chkIsActive.Location = new System.Drawing.Point(20, 130);
             this.chkIsActive.Name = "chkIsActive";
-            this.chkIsActive.Size = new System.Drawing.Size(214, 27);
+            this.chkIsActive.Size = new System.Drawing.Size(243, 32);
             this.chkIsActive.TabIndex = 2;
             this.chkIsActive.Text = "✅ Kích hoạt danh mục";
             this.chkIsActive.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
@@ -142,7 +142,7 @@
             this.lblCategoryName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(50)))), ((int)(((byte)(50)))));
             this.lblCategoryName.Location = new System.Drawing.Point(20, 50);
             this.lblCategoryName.Name = "lblCategoryName";
-            this.lblCategoryName.Size = new System.Drawing.Size(121, 25);
+            this.lblCategoryName.Size = new System.Drawing.Size(142, 30);
             this.lblCategoryName.TabIndex = 0;
             this.lblCategoryName.Text = "Tên danh mục:";
             // 
@@ -165,10 +165,10 @@
             this.btnSave.BackColor = System.Drawing.Color.Transparent;
             this.btnSave.BorderRadius = 19;
             this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnSave.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(76)))), ((int)(((byte)(175)))), ((int)(((byte)(80)))));
+            this.btnSave.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(85)))), ((int)(((byte)(126)))));
             this.btnSave.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(142)))), ((int)(((byte)(60)))));
+            this.btnSave.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(85)))), ((int)(((byte)(126)))));
             this.btnSave.Location = new System.Drawing.Point(30, 20);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(120, 40);
@@ -182,7 +182,7 @@
             this.btnClose.BackColor = System.Drawing.Color.Transparent;
             this.btnClose.BorderRadius = 19;
             this.btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnClose.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.btnClose.FillColor = System.Drawing.Color.LightCoral;
             this.btnClose.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.btnClose.ForeColor = System.Drawing.Color.White;
             this.btnClose.HoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(150)))), ((int)(((byte)(150)))), ((int)(((byte)(150)))));
@@ -195,7 +195,7 @@
             // 
             // CategoryAddEditForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 28F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(600, 440);
@@ -204,7 +204,7 @@
             this.Controls.Add(this.pnlHeader);
             this.DoubleBuffered = true;
             this.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "CategoryAddEditForm";
