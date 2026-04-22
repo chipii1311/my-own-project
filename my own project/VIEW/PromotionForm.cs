@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using my_own_project.DTO;
+using my_own_project.VIEW;
 
 namespace my_own_project.VIEW
 {
@@ -235,9 +237,11 @@ namespace my_own_project.VIEW
         {
             try
             {
-                // TODO: Sẽ implement PromotionEditForm sau
-                MessageBox.Show("✏️ Chức năng chỉnh sửa sẽ sớm được cập nhật!", "Thông báo",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                PromotionAddForm frm = new PromotionAddForm(promotionID); // promotionID > 0 = Edit mode
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadData();
+                }
             }
             catch (Exception ex)
             {
