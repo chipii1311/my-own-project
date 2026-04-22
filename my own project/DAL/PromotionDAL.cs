@@ -1,11 +1,7 @@
 ﻿using my_own_project.DTO;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace my_own_project.DAL
 {
@@ -87,6 +83,7 @@ namespace my_own_project.DAL
         }
 
         // ==================== UPDATE ====================
+        // 1. Sửa lại hàm Update (thêm @ApplyType vào mảng parameters)
         public static bool Update(PromotionDTO promotion)
         {
             try
@@ -98,7 +95,8 @@ namespace my_own_project.DAL
                     new SqlParameter("@DiscountPercent", promotion.DiscountPercent),
                     new SqlParameter("@StartDate", promotion.StartDate),
                     new SqlParameter("@EndDate", promotion.EndDate),
-                    new SqlParameter("@Status", promotion.Status ?? "Active")
+                    new SqlParameter("@Status", promotion.Status ?? "Active"),
+                    new SqlParameter("@ApplyType", promotion.ApplyType) // BỔ SUNG DÒNG NÀY
                 };
 
                 DataHelper.ExecuteSP("sp_Promotion_Update", parameters);
@@ -107,6 +105,24 @@ namespace my_own_project.DAL
             catch (Exception ex)
             {
                 Console.WriteLine($"PromotionDAL.Update Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        // 2. Thêm hàm này vào cuối class PromotionDAL
+        public static DataTable GetPromotionDetails(int promotionID)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@PromotionID", promotionID)
+                };
+                return DataHelper.ExecuteSPGetTable("sp_PromotionDetail_GetByPromotionID", parameters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PromotionDAL.GetPromotionDetails Error: {ex.Message}");
                 throw;
             }
         }
@@ -141,11 +157,12 @@ namespace my_own_project.DAL
                 DiscountPercent = (decimal)row["DiscountPercent"],
                 StartDate = (DateTime)row["StartDate"],
                 EndDate = (DateTime)row["EndDate"],
-                Status = row["Status"]?.ToString() ?? "Active"
+                Status = row["Status"]?.ToString() ?? "Active",
+                // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ HIỂN THỊ ĐÚNG LOẠI ÁP DỤNG
+                ApplyType = row.Table.Columns.Contains("ApplyType") && row["ApplyType"] != DBNull.Value
+                            ? Convert.ToInt32(row["ApplyType"]) : 0
             };
         }
-
-
 
         public static void InsertPromotionDetail(PromotionDetailDTO detail)
         {
