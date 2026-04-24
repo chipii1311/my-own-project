@@ -271,6 +271,7 @@
             // 
             // flpTables
             // 
+            this.flpTables.AutoScroll = true;
             this.flpTables.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpTables.Location = new System.Drawing.Point(0, 221);
             this.flpTables.Name = "flpTables";
@@ -288,6 +289,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmTable";
             this.Text = "frmTables";
+            this.Load += new System.EventHandler(this.frmTable_Load_1);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();

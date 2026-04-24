@@ -19,15 +19,6 @@ namespace my_own_project.VIEW
             InitializeComponent();
         }
 
-        private void frmTable_Load(object sender, EventArgs e)
-        {
-            // Thiết lập giá trị mặc định cho các bộ lọc Guna2
-            if (cbStatus.Items.Count > 0) cbStatus.SelectedIndex = 0;
-            if (cbCapacity.Items.Count > 0) cbCapacity.SelectedIndex = 0;
-
-            LoadData();
-        }
-
         public void LoadData()
         {
             DataTable dt = DiningTableBLL.GetAllTables();
@@ -97,6 +88,14 @@ namespace my_own_project.VIEW
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             ApplyFilter();
+        }
+
+        private void frmTable_Load_1(object sender, EventArgs e)
+        {
+            LoadData();
+            // Thiết lập giá trị mặc định cho các bộ lọc Guna2
+            if (cbStatus.Items.Count > 0) cbStatus.SelectedIndex = 0;
+            if (cbCapacity.Items.Count > 0) cbCapacity.SelectedIndex = 0;
         }
     }
 }

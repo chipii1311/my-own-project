@@ -114,5 +114,10 @@ namespace my_own_project
         {
             AddControls(new CategoryForm());
         }
+
+        private void btnTest_Click(object sender, EventArgs e)
+        {
+            AddControls(new frmTable());
+        }
     }
 }
