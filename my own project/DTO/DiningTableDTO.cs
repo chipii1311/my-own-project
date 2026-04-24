@@ -10,7 +10,7 @@ namespace my_own_project.DTO
     {
         public int TableID { get; set; }
         public int RestaurantID { get; set; }
-        public int TableNumber { get; set; }
+        public int TableNumber { get; set; } 
         public int Capacity { get; set; }  // Số ghế
         public string Status { get; set; }  // Available, Occupied, Maintenance
         public string Notes { get; set; }

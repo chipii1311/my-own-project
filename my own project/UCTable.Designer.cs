@@ -29,12 +29,11 @@
         private void InitializeComponent()
         {
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblCapacity = new System.Windows.Forms.Label();
+            this.lblSize = new System.Windows.Forms.Label();
+            this.lblName = new System.Windows.Forms.Label();
             this.cipStatus = new Guna.UI2.WinForms.Guna2Chip();
             this.picTable = new System.Windows.Forms.PictureBox();
-            this.lblName = new System.Windows.Forms.Label();
-            this.lblSize = new System.Windows.Forms.Label();
-            this.lblCapacity = new System.Windows.Forms.Label();
-            this.btnConfirm = new Guna.UI2.WinForms.Guna2Button();
             this.guna2Panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picTable)).BeginInit();
             this.SuspendLayout();
@@ -42,7 +41,6 @@
             // guna2Panel1
             // 
             this.guna2Panel1.BorderRadius = 15;
-            this.guna2Panel1.Controls.Add(this.btnConfirm);
             this.guna2Panel1.Controls.Add(this.lblCapacity);
             this.guna2Panel1.Controls.Add(this.lblSize);
             this.guna2Panel1.Controls.Add(this.lblName);
@@ -54,6 +52,42 @@
             this.guna2Panel1.Name = "guna2Panel1";
             this.guna2Panel1.Size = new System.Drawing.Size(200, 150);
             this.guna2Panel1.TabIndex = 0;
+            // 
+            // lblCapacity
+            // 
+            this.lblCapacity.AutoSize = true;
+            this.lblCapacity.BackColor = System.Drawing.Color.Transparent;
+            this.lblCapacity.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCapacity.ForeColor = System.Drawing.Color.Black;
+            this.lblCapacity.Location = new System.Drawing.Point(54, 124);
+            this.lblCapacity.Name = "lblCapacity";
+            this.lblCapacity.Size = new System.Drawing.Size(45, 17);
+            this.lblCapacity.TabIndex = 2;
+            this.lblCapacity.Text = "label1";
+            // 
+            // lblSize
+            // 
+            this.lblSize.AutoSize = true;
+            this.lblSize.BackColor = System.Drawing.Color.Transparent;
+            this.lblSize.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSize.ForeColor = System.Drawing.Color.Black;
+            this.lblSize.Location = new System.Drawing.Point(3, 124);
+            this.lblSize.Name = "lblSize";
+            this.lblSize.Size = new System.Drawing.Size(45, 17);
+            this.lblSize.TabIndex = 2;
+            this.lblSize.Text = "label1";
+            // 
+            // lblName
+            // 
+            this.lblName.AutoSize = true;
+            this.lblName.BackColor = System.Drawing.Color.Transparent;
+            this.lblName.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblName.ForeColor = System.Drawing.Color.Black;
+            this.lblName.Location = new System.Drawing.Point(33, 27);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(45, 17);
+            this.lblName.TabIndex = 2;
+            this.lblName.Text = "label1";
             // 
             // cipStatus
             // 
@@ -78,58 +112,6 @@
             this.picTable.TabIndex = 0;
             this.picTable.TabStop = false;
             // 
-            // lblName
-            // 
-            this.lblName.AutoSize = true;
-            this.lblName.BackColor = System.Drawing.Color.Transparent;
-            this.lblName.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.ForeColor = System.Drawing.Color.Black;
-            this.lblName.Location = new System.Drawing.Point(33, 27);
-            this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(45, 17);
-            this.lblName.TabIndex = 2;
-            this.lblName.Text = "label1";
-            // 
-            // lblSize
-            // 
-            this.lblSize.AutoSize = true;
-            this.lblSize.BackColor = System.Drawing.Color.Transparent;
-            this.lblSize.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSize.ForeColor = System.Drawing.Color.Black;
-            this.lblSize.Location = new System.Drawing.Point(3, 124);
-            this.lblSize.Name = "lblSize";
-            this.lblSize.Size = new System.Drawing.Size(45, 17);
-            this.lblSize.TabIndex = 2;
-            this.lblSize.Text = "label1";
-            // 
-            // lblCapacity
-            // 
-            this.lblCapacity.AutoSize = true;
-            this.lblCapacity.BackColor = System.Drawing.Color.Transparent;
-            this.lblCapacity.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCapacity.ForeColor = System.Drawing.Color.Black;
-            this.lblCapacity.Location = new System.Drawing.Point(54, 124);
-            this.lblCapacity.Name = "lblCapacity";
-            this.lblCapacity.Size = new System.Drawing.Size(45, 17);
-            this.lblCapacity.TabIndex = 2;
-            this.lblCapacity.Text = "label1";
-            // 
-            // btnConfirm
-            // 
-            this.btnConfirm.AutoRoundedCorners = true;
-            this.btnConfirm.BackColor = System.Drawing.Color.Transparent;
-            this.btnConfirm.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnConfirm.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnConfirm.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnConfirm.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnConfirm.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnConfirm.ForeColor = System.Drawing.Color.White;
-            this.btnConfirm.Location = new System.Drawing.Point(115, 97);
-            this.btnConfirm.Name = "btnConfirm";
-            this.btnConfirm.Size = new System.Drawing.Size(82, 50);
-            this.btnConfirm.TabIndex = 3;
-            this.btnConfirm.Text = "guna2Button1";
-            // 
             // UCTable
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -149,7 +131,6 @@
         private Guna.UI2.WinForms.Guna2Panel guna2Panel1;
         private System.Windows.Forms.PictureBox picTable;
         private Guna.UI2.WinForms.Guna2Chip cipStatus;
-        private Guna.UI2.WinForms.Guna2Button btnConfirm;
         private System.Windows.Forms.Label lblCapacity;
         private System.Windows.Forms.Label lblSize;
         private System.Windows.Forms.Label lblName;
