@@ -28,6 +28,7 @@ namespace my_own_project.DesignForms // Đổi lại namespace nếu bạn để
         public POSForm()
         {
             InitializeModernPOS();
+            LoadDiningTables(); // Gọi ở đây để lúc mở lên là có bàn luôn
             LoadMenuItems();
         }
 
@@ -54,13 +55,30 @@ namespace my_own_project.DesignForms // Đổi lại namespace nếu bạn để
             lblCartTitle.BackColor = Color.White;
             pnlCart.Controls.Add(lblCartTitle);
 
+
+
+
+            Guna2ComboBox cboTable = new Guna2ComboBox();
+            cboTable.Name = "cboTable"; // Đặt tên để lát gọi lấy dữ liệu
+            cboTable.Location = new Point(20, 60);
+            cboTable.Size = new Size(310, 36);
+            cboTable.BorderRadius = 10;
+            cboTable.Font = new Font("Segoe UI", 10F);
+            cboTable.ForeColor = Color.Black;
+            // Tạm thời add tay, lát load từ DB lên sau
+            cboTable.Items.Add("Mang đi (Take Away)");
+            cboTable.Items.Add("Bàn 1");
+            cboTable.Items.Add("Bàn 2");
+            cboTable.SelectedIndex = 0; // Mặc định là mang đi
+            pnlCart.Controls.Add(cboTable);
+
             // ListView Hóa đơn
             // Dùng FlowLayoutPanel thay cho ListView cũ
             flpCart = new FlowLayoutPanel();
-            flpCart.Location = new Point(20, 70);
-            flpCart.Size = new Size(310, 400);
+            flpCart.Location = new Point(20, 110);
+            flpCart.Size = new Size(310, 360); // Bóp chiều cao lại một xíu
             flpCart.AutoScroll = true;
-            flpCart.FlowDirection = FlowDirection.TopDown; // Xếp từ trên xuống
+            flpCart.FlowDirection = FlowDirection.TopDown;
             flpCart.WrapContents = false;
             pnlCart.Controls.Add(flpCart);
             // Tổng tiền
@@ -230,13 +248,24 @@ namespace my_own_project.DesignForms // Đổi lại namespace nếu bạn để
                 // Tự động tạo hóa đơn mới nếu chưa có
                 if (currentOrderID == -1)
                 {
+                    // === ĐOẠN CODE MỚI: LẤY BÀN TỪ COMBOBOX ===
+                    Guna2ComboBox cboTable = (Guna2ComboBox)pnlCart.Controls["cboTable"];
+                    object selectedTableID = cboTable.SelectedValue;
+
                     OrderDTO newOrder = new OrderDTO();
-                    newOrder.TableID = null; // Mua trực tiếp mang đi, không gán bàn
-                    newOrder.OrderType = "TakeAway";
+
+                    // Nếu value là DBNull (tức là chọn "Mang đi"), thì set TableID = null
+                    newOrder.TableID = (selectedTableID == DBNull.Value) ? (int?)null : Convert.ToInt32(selectedTableID);
+
+                    // Mang đi thì OrderType = TakeAway, có bàn thì là DineIn
+                    newOrder.OrderType = (newOrder.TableID == null) ? "TakeAway" : "DineIn";
                     newOrder.Status = "Pending";
                     newOrder.OrderDate = DateTime.Now;
 
                     currentOrderID = OrderBLL.CreateOrder(newOrder);
+
+                    // Khóa ComboBox lại, cấm đổi bàn khi đã bắt đầu order món
+                    cboTable.Enabled = false;
                 }
 
                 // Thêm chi tiết món
@@ -375,13 +404,53 @@ namespace my_own_project.DesignForms // Đổi lại namespace nếu bạn để
                 return;
             }
 
-            // Mở form thanh toán (truyền -1 vào thay cho TableID vì ta không dùng bàn nữa)
             PaymentForm frm = new PaymentForm(currentOrderID, -1);
             frm.ShowDialog();
 
             // Thanh toán xong thì Reset giỏ hàng
             currentOrderID = -1;
             ShowBill();
+
+            // === THÊM 2 DÒNG NÀY ĐỂ MỞ KHÓA LẠI COMBOBOX ===
+            Guna2ComboBox cboTable = (Guna2ComboBox)pnlCart.Controls["cboTable"];
+            if (cboTable != null) cboTable.Enabled = true;
+        }
+
+
+        private void LoadDiningTables()
+        {
+            try
+            {
+                // 1. Gọi SP lấy toàn bộ danh sách bàn
+                DataTable dt = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_DiningTable_GetAll");
+
+                // 2. Tạo thêm một cột ảo để hiển thị tên bàn cho thân thiện (VD: "Bàn 1", "Bàn 2")
+                dt.Columns.Add("TableDisplay", typeof(string));
+                foreach (DataRow row in dt.Rows)
+                {
+                    row["TableDisplay"] = "Bàn " + row["TableNumber"].ToString();
+                }
+
+                // 3. Chèn lựa chọn "Mang đi" vào dòng đầu tiên (ID = null)
+                DataRow dr = dt.NewRow();
+                dr["TableID"] = DBNull.Value;
+                dr["TableDisplay"] = "Mang đi (Take Away)";
+                dt.Rows.InsertAt(dr, 0);
+
+                // 4. Đổ dữ liệu vào ComboBox (Giả sử bạn đã đặt tên cboTable trong InitializeModernPOS)
+                Guna2ComboBox cboTable = (Guna2ComboBox)pnlCart.Controls["cboTable"];
+                if (cboTable != null)
+                {
+                    cboTable.DataSource = dt;
+                    cboTable.DisplayMember = "TableDisplay"; // Cái hiện ra cho người ta đọc
+                    cboTable.ValueMember = "TableID";       // Cái ID ngầm để lưu xuống DB
+                    cboTable.SelectedIndex = 0;             // Mặc định chọn dòng đầu (Mang đi)
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải danh sách bàn: " + ex.Message);
+            }
         }
     }
 }
