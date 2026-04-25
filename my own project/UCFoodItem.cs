@@ -1,79 +1,125 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using Guna.UI2.WinForms;
+using System;
 using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO; // Thêm thư viện này để xử lý file ảnh
 using System.Windows.Forms;
 
-namespace my_own_project                
-{           
+namespace my_own_project
+{
     public partial class UCFoodItem : UserControl
     {
-        // Tạo một sự kiện để báo cho POSForm biết khi nào nút "Thêm" được bấm
-        public event EventHandler OnSelect = null;
+        public int FoodID { get; private set; }
+        public string FoodName { get; private set; }
+        public decimal Price { get; private set; }
 
-        // Các thuộc tính để chứa dữ liệu món ăn
-        public int FoodID { get; set; }
-        public decimal Price { get; set; }
-                
+        public event EventHandler OnSelect;
+
+        private Guna2Panel cardPanel;
+        private Guna2PictureBox picFood; // Đã lên đời Guna2PictureBox xịn sò
+        private Label lblName;
+        private Label lblPrice;
+        private Guna2CircleButton btnAdd;
+
         public UCFoodItem()
         {
-            InitializeComponent();
-            btnBuy.Click += btnBuy_Click;
+            InitializeModernCard();
         }
 
-        // Hàm này dùng để đổ dữ liệu từ SQL vào cái thẻ này
-        public void SetData(int id, string name, decimal price, string imgFileName)
+        private void InitializeModernCard()
         {
-            lblFoodName.Text = name;
+            this.Size = new Size(180, 240);
+            this.BackColor = Color.Transparent;
+            this.Margin = new Padding(12);
+
+            cardPanel = new Guna2Panel();
+            cardPanel.Dock = DockStyle.Fill;
+            cardPanel.BorderRadius = 20;
+            cardPanel.FillColor = Color.White;
+            cardPanel.ShadowDecoration.Enabled = true;
+            cardPanel.ShadowDecoration.Depth = 10;
+            cardPanel.ShadowDecoration.BorderRadius = 20;
+
+            // ==========================================
+            // ẢNH MÓN ĂN (Dùng Guna2PictureBox)
+            // ==========================================
+            picFood = new Guna2PictureBox();
+            picFood.Size = new Size(140, 120);
+            picFood.Location = new Point(20, 15);
+            picFood.SizeMode = PictureBoxSizeMode.Zoom;
+            picFood.BorderRadius = 15; // Bo góc ảnh cho hiện đại
+            picFood.ErrorImage = null;   // Bùa chống X đỏ
+            picFood.InitialImage = null; // Bùa chống X đỏ
+            cardPanel.Controls.Add(picFood);
+
+            // ==========================================
+            // TÊN VÀ GIÁ
+            // ==========================================
+            lblName = new Label();
+            lblName.Font = new Font("Segoe UI Semibold", 11F);
+            lblName.Location = new Point(15, 145);
+            lblName.Size = new Size(150, 45);
+            cardPanel.Controls.Add(lblName);
+
+            lblPrice = new Label();
+            lblPrice.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblPrice.Location = new Point(15, 195);
+            lblPrice.AutoSize = true;
+            cardPanel.Controls.Add(lblPrice);
+
+            // ==========================================
+            // NÚT CỘNG MÀU ĐEN
+            // ==========================================
+            btnAdd = new Guna2CircleButton();
+            btnAdd.Size = new Size(35, 35);
+            btnAdd.Location = new Point(130, 190);
+            btnAdd.FillColor = Color.FromArgb(30, 30, 30);
+            btnAdd.ForeColor = Color.White;
+            btnAdd.Text = "+";
+            btnAdd.Font = new Font("Arial", 16F, FontStyle.Bold);
+            btnAdd.TextOffset = new Point(1, -2); // Căn giữa dấu cộng
+            btnAdd.Cursor = Cursors.Hand;
+            btnAdd.Animated = true;
+            btnAdd.HoverState.FillColor = Color.FromArgb(88, 28, 230);
+
+            btnAdd.Click += (s, e) => { OnSelect?.Invoke(this, EventArgs.Empty); };
+            cardPanel.Controls.Add(btnAdd);
+
+            this.Controls.Add(cardPanel);
+        }
+
+        public void SetData(int id, string name, decimal price, string imgUrl)
+        {
+            FoodID = id;
+            FoodName = name;
+            Price = price;
+
+            lblName.Text = name;
             lblPrice.Text = price.ToString("N0") + "đ";
-            this.FoodID = id;
-            this.Price = price;
 
             try
             {
-                if (!string.IsNullOrEmpty(imgFileName))
+                if (!string.IsNullOrEmpty(imgUrl))
                 {
-                    // Tự động tìm thư mục MenuImages nằm cùng cấp với file .exe
-                    string fullPath = Path.Combine(Application.StartupPath, "MenuImages", imgFileName);
-
-                    if (File.Exists(fullPath))
+                    string imagePath = Path.Combine(Application.StartupPath, "MenuImages", imgUrl);
+                    if (File.Exists(imagePath))
                     {
-                        // Giải phóng ảnh cũ nếu có để tránh tràn bộ nhớ
-                        if (picImage.Image != null) picImage.Image.Dispose();
-
-                        picImage.Image = Image.FromFile(fullPath);
+                        picFood.ImageLocation = imagePath; // Guna2PictureBox load cực mượt
+                    }
+                    else
+                    {
+                        picFood.ImageLocation = null;
+                        picFood.Image = null;
                     }
                 }
+                else
+                {
+                    picFood.Image = null;
+                }
             }
-            catch (Exception)
-            {
-                // Nếu lỗi hoặc không thấy ảnh, có thể hiện một ảnh mặc định
-            }
-        }
-        public int GetQuantity()
-        {
-            return (int)nudQuantity.Value;
+            catch { }
         }
 
-        // Reset lại số lượng về 1 sau khi thêm thành công
-        public void ResetQuantity()
-        {
-            nudQuantity.Value = 1;
-        }
-
-        // Khi bấm nút Thêm trên thẻ, nó sẽ kích hoạt sự kiện OnSelect
-        private void btnBuy_Click(object sender, EventArgs e)
-        {
-            if (OnSelect != null)
-                OnSelect(this, e);
-        }
-
-
+        public int GetQuantity() { return 1; }
+        public void ResetQuantity() { }
     }
-
 }

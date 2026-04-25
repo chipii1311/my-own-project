@@ -153,6 +153,33 @@ namespace my_own_project.DAL
             }
         }
 
+        public static int ExecuteNonQuery(string query)
+        {
+            try
+            {
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.CommandType = CommandType.Text; // Lệnh Text thuần, không phải SP
+                        cmd.CommandTimeout = 30;
+                        conn.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in ExecuteNonQuery: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteNonQuery: {ex.Message}");
+                throw;
+            }
+        }
+
         /// <summary>
         /// Thực thi SP có OUTPUT parameter (lấy ID sau INSERT)
         /// </summary>
@@ -195,3 +222,4 @@ namespace my_own_project.DAL
         }
     }
 }
+
