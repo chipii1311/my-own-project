@@ -159,6 +159,54 @@
     <Compile Include="UCTable.Designer.cs">
       <DependentUpon>UCTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEWSTAFF\Frmpayment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Frmpayment.Designer.cs">
+      <DependentUpon>Frmpayment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Frmstaffmain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Frmstaffmain.Designer.cs">
+      <DependentUpon>Frmstaffmain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\StaffDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\StaffDashboard.Designer.cs">
+      <DependentUpon>StaffDashboard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\StaffMainFormgpt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\StaffMainFormgpt.Designer.cs">
+      <DependentUpon>StaffMainFormgpt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\StaffOrderForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\StaffOrderForm.Designer.cs">
+      <DependentUpon>StaffOrderForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Ucinvoicelist and ucstaffhome.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Ucinvoicelist and ucstaffhome.Designer.cs">
+      <DependentUpon>Ucinvoicelist and ucstaffhome.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Ucorderpos.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Ucorderpos.Designer.cs">
+      <DependentUpon>Ucorderpos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Uctablemanagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="VIEWSTAFF\Uctablemanagement.Designer.cs">
+      <DependentUpon>Uctablemanagement.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\AddTable.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -295,6 +343,9 @@
     </Compile>
     <EmbeddedResource Include="UCTable.resx">
       <DependentUpon>UCTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEWSTAFF\Frmpayment.resx">
+      <DependentUpon>Frmpayment.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\AddTable.resx">
       <DependentUpon>AddTable.cs</DependentUpon>
