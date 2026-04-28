@@ -37,7 +37,7 @@ namespace my_own_project.DesignForms
             this.Padding = new Padding(20);
 
             // ==========================================
-            // 1. GIỎ HÀNG (DẠNG BẢNG CHI TIẾT HÓA ĐƠN)
+            // 1. GIỎ HÀNG 
             // ==========================================
             pnlCart = new Guna2Panel();
             pnlCart.Dock = DockStyle.Right;
@@ -54,16 +54,14 @@ namespace my_own_project.DesignForms
             lblCartTitle.BackColor = Color.White;
             pnlCart.Controls.Add(lblCartTitle);
 
-            // ComboBox Bàn 
             Guna2ComboBox cboTable = new Guna2ComboBox();
             cboTable.Name = "cboTable";
-            cboTable.Location = new Point(280, 15); // Kéo lùi lại một chút để chữ không bị cắt
-            cboTable.Size = new Size(200, 36);      // Nới rộng ra để chứa chữ "Có khách"
+            cboTable.Location = new Point(280, 15);
+            cboTable.Size = new Size(200, 36);
             cboTable.BorderRadius = 5;
             cboTable.Font = new Font("Segoe UI", 10F);
             pnlCart.Controls.Add(cboTable);
 
-            // THANH TIÊU ĐỀ CÁC CỘT 
             Guna2Panel pnlColHeader = new Guna2Panel();
             pnlColHeader.Location = new Point(20, 70);
             pnlColHeader.Size = new Size(460, 30);
@@ -78,7 +76,6 @@ namespace my_own_project.DesignForms
             pnlColHeader.Controls.Add(new Label { Text = "Thành tiền", Location = new Point(370, 5), Font = new Font("Segoe UI", 9F), ForeColor = Color.Gray, AutoSize = true });
             pnlCart.Controls.Add(pnlColHeader);
 
-            // KHUNG CHỨA DANH SÁCH MÓN
             flpCart = new FlowLayoutPanel();
             flpCart.Location = new Point(20, 105);
             flpCart.Size = new Size(470, 380);
@@ -87,7 +84,6 @@ namespace my_own_project.DesignForms
             flpCart.WrapContents = false;
             pnlCart.Controls.Add(flpCart);
 
-            // VÙNG TỔNG KẾT
             Label lblSubTotalTitle = new Label { Text = "Tạm tính", Font = new Font("Segoe UI", 10F), Location = new Point(20, 500), AutoSize = true, BackColor = Color.White };
             Label lblTotalTitle = new Label { Text = "Tổng cộng", Font = new Font("Segoe UI", 14F, FontStyle.Bold), Location = new Point(20, 540), AutoSize = true, BackColor = Color.White };
             pnlCart.Controls.Add(lblSubTotalTitle);
@@ -96,13 +92,22 @@ namespace my_own_project.DesignForms
             lblTotal = new Label { Name = "lblTotalAmount", Text = "0 đ", Font = new Font("Segoe UI", 14F, FontStyle.Bold), ForeColor = Color.Red, Location = new Point(310, 540), Size = new Size(170, 30), TextAlign = ContentAlignment.MiddleRight, BackColor = Color.White };
             pnlCart.Controls.Add(lblTotal);
 
-            // CÁC NÚT CHỨC NĂNG 
+            // NÚT XÓA TẤT CẢ - Đã thêm logic dọn dẹp bàn về Trống và Xóa OrderHistory
             Guna2Button btnClear = new Guna2Button { Text = "Xóa tất cả", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(20, 590), FillColor = Color.White, ForeColor = Color.Red, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.Red, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
             btnClear.Click += (s, e) => {
-                if (currentOrderID != -1 && MessageBox.Show("Xóa toàn bộ giỏ hàng?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (currentOrderID != -1 && MessageBox.Show("Xóa toàn bộ giỏ hàng và Hủy bàn này?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
+                    // Trả bàn về trống trước
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
+
+                    // Xóa chi tiết, Lịch sử và Xóa Order
                     my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderID = {currentOrderID}");
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderHistory WHERE OrderID = {currentOrderID}"); // FIX LỖI KHÓA NGOẠI ORDERHISTORY
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM Orders WHERE OrderID = {currentOrderID}");
+
+                    currentOrderID = -1;
                     ShowBill();
+                    LoadDiningTables(); // Tải lại để thấy bàn Trống
                 }
             };
 
@@ -163,6 +168,12 @@ namespace my_own_project.DesignForms
         {
             try
             {
+                Guna2ComboBox cboTable = (Guna2ComboBox)pnlCart.Controls["cboTable"];
+                object currentSelectedValue = null;
+
+                // Lưu lại bàn đang chọn trước khi tải lại dữ liệu mới
+                if (cboTable != null) currentSelectedValue = cboTable.SelectedValue;
+
                 DataTable dt = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_DiningTable_GetAll");
                 dt.Columns.Add("TableDisplay", typeof(string));
                 foreach (DataRow row in dt.Rows)
@@ -176,47 +187,21 @@ namespace my_own_project.DesignForms
                 dr["TableDisplay"] = "Mang đi (Take Away)";
                 dt.Rows.InsertAt(dr, 0);
 
-                Guna2ComboBox cboTable = (Guna2ComboBox)pnlCart.Controls["cboTable"];
                 if (cboTable != null)
                 {
+                    cboTable.SelectedIndexChanged -= CboTable_SelectedIndexChanged;
+
                     cboTable.DataSource = dt;
                     cboTable.DisplayMember = "TableDisplay";
                     cboTable.ValueMember = "TableID";
-                    cboTable.SelectedIndex = 0;
 
-                    // === LOGIC MỚI: TỰ ĐỘNG TẢI HÓA ĐƠN KHI CHỌN BÀN ===
-                    cboTable.SelectedIndexChanged += (s, ev) => {
-                        object val = cboTable.SelectedValue;
+                    // Phục hồi lại bàn cũ để không bị nhảy lung tung
+                    if (currentSelectedValue != null && currentSelectedValue != DBNull.Value)
+                        cboTable.SelectedValue = currentSelectedValue;
+                    else
+                        cboTable.SelectedIndex = 0;
 
-                        if (val == DBNull.Value || val == null)
-                        {
-                            currentOrderID = -1; // Chọn Mang đi -> Giỏ hàng trống mới tinh
-                        }
-                        else
-                        {
-                            int tableID = Convert.ToInt32(val);
-
-                            // Gọi Stored Procedure để tìm xem Bàn này có hóa đơn nào chưa thanh toán không
-                            System.Data.SqlClient.SqlParameter[] p = new System.Data.SqlClient.SqlParameter[] {
-                                new System.Data.SqlClient.SqlParameter("@TableID", tableID)
-                            };
-                            DataTable dtOrder = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_Orders_GetByTable", p);
-
-                            if (dtOrder != null && dtOrder.Rows.Count > 0)
-                            {
-                                // Bàn đang có khách -> Nạp ID hóa đơn đang ăn lên
-                                currentOrderID = Convert.ToInt32(dtOrder.Rows[0]["OrderID"]);
-                            }
-                            else
-                            {
-                                // Bàn trống -> Làm mới giỏ hàng để chuẩn bị gọi món
-                                currentOrderID = -1;
-                            }
-                        }
-
-                        // Cập nhật lại UI giỏ hàng
-                        ShowBill();
-                    };
+                    cboTable.SelectedIndexChanged += CboTable_SelectedIndexChanged;
                 }
             }
             catch (Exception ex)
@@ -224,18 +209,36 @@ namespace my_own_project.DesignForms
                 MessageBox.Show("Lỗi tải danh sách bàn: " + ex.Message);
             }
         }
-        // Tách sự kiện SelectedIndexChanged ra một hàm riêng cho gọn gàng
+
         private void CboTable_SelectedIndexChanged(object sender, EventArgs e)
         {
             Guna2ComboBox cbo = sender as Guna2ComboBox;
-            if (currentOrderID != -1 && cbo != null)
+            if (cbo != null)
             {
                 object val = cbo.SelectedValue;
-                string tableVal = (val == DBNull.Value || val == null) ? "NULL" : val.ToString();
-                string orderType = (val == DBNull.Value || val == null) ? "TakeAway" : "DineIn";
 
-                string query = $"UPDATE Orders SET TableID = {tableVal}, OrderType = '{orderType}' WHERE OrderID = {currentOrderID}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                if (val == DBNull.Value || val == null)
+                {
+                    currentOrderID = -1;
+                }
+                else
+                {
+                    int tableID = Convert.ToInt32(val);
+                    System.Data.SqlClient.SqlParameter[] p = new System.Data.SqlClient.SqlParameter[] {
+                        new System.Data.SqlClient.SqlParameter("@TableID", tableID)
+                    };
+                    DataTable dtOrder = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_Orders_GetByTable", p);
+
+                    if (dtOrder != null && dtOrder.Rows.Count > 0)
+                    {
+                        currentOrderID = Convert.ToInt32(dtOrder.Rows[0]["OrderID"]);
+                    }
+                    else
+                    {
+                        currentOrderID = -1;
+                    }
+                }
+                ShowBill();
             }
         }
 
@@ -336,6 +339,7 @@ namespace my_own_project.DesignForms
 
             try
             {
+                // Nếu giỏ hàng đang trống, tạo Order mới
                 if (currentOrderID == -1)
                 {
                     Guna2ComboBox cboTable = (Guna2ComboBox)pnlCart.Controls["cboTable"];
@@ -347,7 +351,17 @@ namespace my_own_project.DesignForms
                     newOrder.Status = "Pending";
                     newOrder.OrderDate = DateTime.Now;
 
+                    // Tạo hóa đơn
                     currentOrderID = OrderBLL.CreateOrder(newOrder);
+
+                    // ÉP DATABASE ĐỔI TRẠNG THÁI BÀN THÀNH "CÓ KHÁCH"
+                    if (newOrder.TableID != null)
+                    {
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Có khách' WHERE TableID = {newOrder.TableID}");
+                    }
+
+                    // Tải lại ComboBox
+                    LoadDiningTables();
                 }
 
                 OrderDetailDTO detail = new OrderDetailDTO();
@@ -366,7 +380,6 @@ namespace my_own_project.DesignForms
                 MessageBox.Show("Lỗi khi thêm món: " + ex.Message);
             }
         }
-
         private void ShowBill()
         {
             flpCart.Controls.Clear();
@@ -392,7 +405,6 @@ namespace my_own_project.DesignForms
                     Label lblSTT = new Label { Text = stt.ToString(), Location = new Point(0, 15), Font = new Font("Segoe UI", 10F), AutoSize = true };
                     Label lblName = new Label { Text = name, Location = new Point(40, 15), Font = new Font("Segoe UI Semibold", 10F), AutoSize = false, Size = new Size(130, 25), AutoEllipsis = true };
 
-                    // Đã hạ Font xuống Arial 11F để chữ + - hiện rõ nét căng
                     Guna2Button btnMinus = new Guna2Button { Size = new Size(26, 26), BorderRadius = 5, Location = new Point(175, 12), FillColor = Color.White, ForeColor = Color.Black, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.LightGray, Text = "-", Font = new Font("Arial", 11F, FontStyle.Bold), Padding = new Padding(0), Cursor = Cursors.Hand };
                     btnMinus.Click += (s, ev) => {
                         if (qty > 1)
@@ -455,6 +467,9 @@ namespace my_own_project.DesignForms
 
             currentOrderID = -1;
             ShowBill();
+
+            // TỰ ĐỘNG CẬP NHẬT LẠI COMBOBOX ĐỂ THẤY BÀN "TRỐNG"
+            LoadDiningTables();
         }
     }
 }
