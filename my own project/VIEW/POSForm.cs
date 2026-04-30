@@ -92,22 +92,33 @@ namespace my_own_project.DesignForms
             lblTotal = new Label { Name = "lblTotalAmount", Text = "0 đ", Font = new Font("Segoe UI", 14F, FontStyle.Bold), ForeColor = Color.Red, Location = new Point(310, 540), Size = new Size(170, 30), TextAlign = ContentAlignment.MiddleRight, BackColor = Color.White };
             pnlCart.Controls.Add(lblTotal);
 
-            // NÚT XÓA TẤT CẢ - Đã thêm logic dọn dẹp bàn về Trống và Xóa OrderHistory
+            // NÚT XÓA TẤT CẢ - Đã gắn máy dò lỗi Database
             Guna2Button btnClear = new Guna2Button { Text = "Xóa tất cả", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(20, 590), FillColor = Color.White, ForeColor = Color.Red, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.Red, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
             btnClear.Click += (s, e) => {
                 if (currentOrderID != -1 && MessageBox.Show("Xóa toàn bộ giỏ hàng và Hủy bàn này?", "Xác nhận", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    // Trả bàn về trống trước
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
+                    try
+                    {
+                        // 1. Trả bàn về trống trước
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
 
-                    // Xóa chi tiết, Lịch sử và Xóa Order
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderID = {currentOrderID}");
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderHistory WHERE OrderID = {currentOrderID}"); // FIX LỖI KHÓA NGOẠI ORDERHISTORY
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM Orders WHERE OrderID = {currentOrderID}");
+                        // 2. Xóa các bảng con
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderID = {currentOrderID}");
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderHistory WHERE OrderID = {currentOrderID}");
 
-                    currentOrderID = -1;
-                    ShowBill();
-                    LoadDiningTables(); // Tải lại để thấy bàn Trống
+                        // 3. Xóa bảng cha (Khả năng cao đang văng lỗi ngầm ở đây)
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM Orders WHERE OrderID = {currentOrderID}");
+
+                        currentOrderID = -1;
+                        ShowBill();
+                        LoadDiningTables(); // Tải lại để thấy bàn Trống
+                        MessageBox.Show("Đã xóa sạch sẽ dưới Database!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        // BẮT LỖI HIỆN LÊN MÀN HÌNH NGAY!
+                        MessageBox.Show("Có lỗi xảy ra khi xóa dưới Database:\n" + ex.Message, "Phát hiện Bug", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             };
 
@@ -463,13 +474,15 @@ namespace my_own_project.DesignForms
             }
 
             PaymentForm frm = new PaymentForm(currentOrderID, -1);
-            frm.ShowDialog();
 
-            currentOrderID = -1;
-            ShowBill();
-
-            // TỰ ĐỘNG CẬP NHẬT LẠI COMBOBOX ĐỂ THẤY BÀN "TRỐNG"
-            LoadDiningTables();
+            // BÍ QUYẾT: Chỉ reset giỏ hàng khi PaymentForm báo về là "ĐÃ THANH TOÁN (OK)"
+            if (frm.ShowDialog() == DialogResult.OK)
+            {
+                currentOrderID = -1;
+                ShowBill();
+                LoadDiningTables(); // Cập nhật lại ComboBox để thấy bàn "Trống"
+            }
+            // Nếu bấm [X] hoặc "Hủy bỏ", nó sẽ không làm gì cả, giữ nguyên hóa đơn!
         }
     }
 }

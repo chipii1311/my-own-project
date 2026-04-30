@@ -220,6 +220,41 @@ namespace my_own_project.DAL
                 throw;
             }
         }
+
+        /// <summary>
+        /// Thực thi câu lệnh SQL thuần trả về DataTable (Dùng cho lệnh SELECT)
+        /// </summary>
+        public static DataTable ExecuteQuery(string query)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.CommandType = CommandType.Text; // Lệnh Text thuần
+                        cmd.CommandTimeout = 30;
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in ExecuteQuery: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteQuery: {ex.Message}");
+                throw;
+            }
+            return dt;
+        }
     }
 }
 
