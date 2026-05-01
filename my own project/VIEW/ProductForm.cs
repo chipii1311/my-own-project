@@ -44,116 +44,111 @@ namespace my_own_project.VIEW
             this.Dock = DockStyle.Fill;
 
             // ==========================================
-            // CỘT BÊN PHẢI (THUẬT TOÁN TÍNH TỌA ĐỘ ĐỘNG CHỐNG ĐÈ 100%)
+            // CỘT BÊN PHẢI (CHỐNG CẮT TIÊU ĐỀ 100%)
             // ==========================================
             Guna2Panel pnlRight = new Guna2Panel();
             pnlRight.Dock = DockStyle.Right;
             pnlRight.Width = 380;
             pnlRight.FillColor = Color.White;
-            pnlRight.CustomBorderThickness = new Padding(1, 0, 0, 0);
-            pnlRight.CustomBorderColor = Color.LightGray;
+            pnlRight.CustomBorderThickness = new Padding(2, 0, 0, 0);
+            pnlRight.CustomBorderColor = Color.FromArgb(220, 220, 220);
             this.Controls.Add(pnlRight);
 
-            // Bọc bằng Panel cuộn để chống tràn màn hình
-            Panel pnlRightScroll = new Panel();
-            pnlRightScroll.Dock = DockStyle.Fill;
-            pnlRightScroll.AutoScroll = true;
-            pnlRight.Controls.Add(pnlRightScroll);
+            // 1. TẠO THANH TIÊU ĐỀ CỐ ĐỊNH (Không bao giờ bị cuộn hay cắt)
+            Guna2Panel pnlRightTop = new Guna2Panel();
+            pnlRightTop.Dock = DockStyle.Top;
+            pnlRightTop.Height = 80; // Cao bằng đúng tiêu đề bên trái
+            pnlRightTop.FillColor = Color.Transparent;
+            pnlRight.Controls.Add(pnlRightTop);
 
-            // Bắt đầu tính toán Y từ trên xuống dưới
-            int currentY = 30;
-            int leftMargin = 30;
-            int controlWidth = 320;
+            // Gắn chữ vào giữa thanh tiêu đề cố định
+            Label lblRightTitle = new Label
+            {
+                Text = "THÔNG TIN CHI TIẾT",
+                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(88, 28, 230),
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter // Tự động căn giữa
+            };
+            pnlRightTop.Controls.Add(lblRightTitle);
 
-            // 1. Tiêu đề
-            Label lblRightTitle = new Label { Text = "THÔNG TIN CHI TIẾT", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), AutoSize = true };
-            lblRightTitle.Location = new Point((380 - lblRightTitle.PreferredWidth) / 2, currentY); // Căn giữa
-            pnlRightScroll.Controls.Add(lblRightTitle);
-            currentY += lblRightTitle.PreferredHeight + 25; // Lấy chiều cao thực tế + khoảng cách 25px
+            // 2. BẢNG LƯỚI CHỨA CÁC Ô NHẬP LIỆU (Nằm bên dưới tiêu đề)
+            TableLayoutPanel tlp = new TableLayoutPanel();
+            tlp.Dock = DockStyle.Fill;
+            tlp.ColumnCount = 1;
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tlp.RowCount = 10;
+            for (int i = 0; i < 10; i++) tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            tlp.AutoScroll = true;
+            tlp.Padding = new Padding(20, 10, 20, 20); // Dư dả khoảng trống
+            pnlRight.Controls.Add(tlp);
+            tlp.BringToFront(); // Đảm bảo tlp không đè lên thanh top
 
-            // 2. Ảnh
-            picFood = new Guna2PictureBox { Size = new Size(160, 160), BorderRadius = 10, SizeMode = PictureBoxSizeMode.Zoom, FillColor = Color.FromArgb(240, 240, 240) };
-            picFood.Location = new Point((380 - 160) / 2, currentY); // Căn giữa ảnh
-            pnlRightScroll.Controls.Add(picFood);
-            currentY += picFood.Height + 15;
+            // [Row 0] Ảnh
+            picFood = new Guna2PictureBox { Size = new Size(140, 140), BorderRadius = 10, SizeMode = PictureBoxSizeMode.Zoom, FillColor = Color.FromArgb(240, 240, 240), Anchor = AnchorStyles.Top, Margin = new Padding(0, 0, 0, 10) };
+            tlp.Controls.Add(picFood, 0, 0);
 
-            // 3. Nút Chọn Ảnh
-            btnBrowse = new Guna2Button { Text = "Chọn ảnh mới", Size = new Size(160, 35), BorderRadius = 8, FillColor = Color.Gray, Font = new Font("Segoe UI", 9F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnBrowse.Location = new Point((380 - 160) / 2, currentY);
+            // [Row 1] Nút Chọn Ảnh
+            btnBrowse = new Guna2Button { Text = "Chọn ảnh mới", Size = new Size(140, 35), BorderRadius = 8, FillColor = Color.Gray, Font = new Font("Segoe UI", 9F, FontStyle.Bold), Cursor = Cursors.Hand, Anchor = AnchorStyles.Top, Margin = new Padding(0, 0, 0, 20) };
             btnBrowse.Click += BtnBrowse_Click;
-            pnlRightScroll.Controls.Add(btnBrowse);
-            currentY += btnBrowse.Height + 25;
+            tlp.Controls.Add(btnBrowse, 0, 1);
 
-            // 4. Nhãn Danh mục
-            Label lblCatInput = new Label { Text = "Danh mục:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true };
-            lblCatInput.Location = new Point(leftMargin, currentY);
-            pnlRightScroll.Controls.Add(lblCatInput);
-            currentY += lblCatInput.PreferredHeight + 5;
+            // [Row 2] Nhãn Danh mục
+            Label lblCatInput = new Label { Text = "Danh mục:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(5, 0, 0, 5) };
+            tlp.Controls.Add(lblCatInput, 0, 2);
 
-            // 5. Cbo Danh mục
-            cboInputCategory = new Guna2ComboBox { Size = new Size(controlWidth, 36), BorderRadius = 5, Font = new Font("Segoe UI", 11F), BorderColor = Color.LightGray };
-            cboInputCategory.Location = new Point(leftMargin, currentY);
-            pnlRightScroll.Controls.Add(cboInputCategory);
-            currentY += cboInputCategory.Height + 15;
+            // [Row 3] ComboBox Danh mục
+            cboInputCategory = new Guna2ComboBox { Height = 40, BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), BorderColor = Color.FromArgb(213, 218, 223), Dock = DockStyle.Fill, Margin = new Padding(5, 0, 5, 15) };
+            tlp.Controls.Add(cboInputCategory, 0, 3);
 
-            // 6. Nhãn Tên món
-            Label lblName = new Label { Text = "Tên món ăn:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true };
-            lblName.Location = new Point(leftMargin, currentY);
-            pnlRightScroll.Controls.Add(lblName);
-            currentY += lblName.PreferredHeight + 5;
+            // [Row 4] Nhãn Tên món
+            Label lblName = new Label { Text = "Tên món ăn:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(5, 0, 0, 5) };
+            tlp.Controls.Add(lblName, 0, 4);
 
-            // 7. Textbox Tên món (Fix lỗi tàng hình: Thêm BorderColor và BorderThickness)
-            txtName = new Guna2TextBox { Size = new Size(controlWidth, 40), BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "VD: Cơm chiên hải sản", BorderThickness = 1, BorderColor = Color.Gray, ForeColor = Color.Black };
-            txtName.Location = new Point(leftMargin, currentY);
-            pnlRightScroll.Controls.Add(txtName);
-            currentY += txtName.Height + 15;
+            // [Row 5] TextBox Tên món
+            txtName = new Guna2TextBox { Height = 42, BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "VD: Cơm chiên hải sản", FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Dock = DockStyle.Fill, Margin = new Padding(5, 0, 5, 15) };
+            tlp.Controls.Add(txtName, 0, 5);
 
-            // 8. Nhãn Giá
-            Label lblPrice = new Label { Text = "Giá bán (VNĐ):", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true };
-            lblPrice.Location = new Point(leftMargin, currentY);
-            pnlRightScroll.Controls.Add(lblPrice);
-            currentY += lblPrice.PreferredHeight + 5;
+            // [Row 6] Nhãn Giá
+            Label lblPrice = new Label { Text = "Giá bán (VNĐ):", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(5, 0, 0, 5) };
+            tlp.Controls.Add(lblPrice, 0, 6);
 
-            // 9. Textbox Giá
-            txtPrice = new Guna2TextBox { Size = new Size(controlWidth, 40), BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "VD: 45000", BorderThickness = 1, BorderColor = Color.Gray, ForeColor = Color.Black };
-            txtPrice.Location = new Point(leftMargin, currentY);
-            pnlRightScroll.Controls.Add(txtPrice);
-            currentY += txtPrice.Height + 25;
+            // [Row 7] TextBox Giá
+            txtPrice = new Guna2TextBox { Height = 42, BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "VD: 45000", FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Dock = DockStyle.Fill, Margin = new Padding(5, 0, 5, 25) };
+            tlp.Controls.Add(txtPrice, 0, 7);
 
-            // Textbox ID Ẩn
+            // Textbox ID ẩn đi, không cần nhét vào lưới
             txtID = new Guna2TextBox { Visible = false };
-            pnlRightScroll.Controls.Add(txtID);
+            pnlRight.Controls.Add(txtID);
 
-            // 10. Cụm 3 nút Thêm / Sửa / Xóa
-            btnAdd = new Guna2Button { Text = "THÊM", Size = new Size(95, 45), BorderRadius = 5, FillColor = Color.FromArgb(46, 204, 113), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnAdd.Location = new Point(leftMargin, currentY);
+            // [Row 8] Cụm 3 nút Thêm/Sửa/Xóa
+            TableLayoutPanel tlpBtns = new TableLayoutPanel { ColumnCount = 3, RowCount = 1, Height = 45, Dock = DockStyle.Fill, Margin = new Padding(5, 0, 5, 15) };
+            tlpBtns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tlpBtns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tlpBtns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tlpBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+
+            btnAdd = new Guna2Button { Text = "THÊM", BorderRadius = 5, FillColor = Color.FromArgb(46, 204, 113), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand, Dock = DockStyle.Fill, Margin = new Padding(0, 0, 5, 0) };
             btnAdd.Click += BtnAdd_Click;
-            pnlRightScroll.Controls.Add(btnAdd);
+            tlpBtns.Controls.Add(btnAdd, 0, 0);
 
-            btnEdit = new Guna2Button { Text = "SỬA", Size = new Size(100, 45), BorderRadius = 5, FillColor = Color.FromArgb(52, 152, 219), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnEdit.Location = new Point(leftMargin + 105, currentY);
+            btnEdit = new Guna2Button { Text = "SỬA", BorderRadius = 5, FillColor = Color.FromArgb(52, 152, 219), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand, Dock = DockStyle.Fill, Margin = new Padding(5, 0, 5, 0) };
             btnEdit.Click += BtnEdit_Click;
-            pnlRightScroll.Controls.Add(btnEdit);
+            tlpBtns.Controls.Add(btnEdit, 1, 0);
 
-            btnDelete = new Guna2Button { Text = "XÓA", Size = new Size(105, 45), BorderRadius = 5, FillColor = Color.FromArgb(231, 76, 60), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnDelete.Location = new Point(leftMargin + 215, currentY);
+            btnDelete = new Guna2Button { Text = "XÓA", BorderRadius = 5, FillColor = Color.FromArgb(231, 76, 60), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand, Dock = DockStyle.Fill, Margin = new Padding(5, 0, 0, 0) };
             btnDelete.Click += BtnDelete_Click;
-            pnlRightScroll.Controls.Add(btnDelete);
-            currentY += btnAdd.Height + 15;
+            tlpBtns.Controls.Add(btnDelete, 2, 0);
 
-            // 11. Nút dọn dẹp form
-            btnClear = new Guna2Button { Text = "Tạo món mới (Dọn sạch Form)", Size = new Size(controlWidth, 40), BorderRadius = 5, FillColor = Color.FromArgb(240, 240, 240), ForeColor = Color.Black, Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnClear.Location = new Point(leftMargin, currentY);
+            tlp.Controls.Add(tlpBtns, 0, 8);
+
+            // [Row 9] Nút dọn dẹp form
+            btnClear = new Guna2Button { Text = "Tạo món mới (Dọn sạch Form)", Height = 45, BorderRadius = 5, FillColor = Color.FromArgb(240, 240, 240), ForeColor = Color.Black, Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand, Dock = DockStyle.Fill, Margin = new Padding(5, 0, 5, 10) };
             btnClear.Click += (s, e) => { ClearInputs(); };
-            pnlRightScroll.Controls.Add(btnClear);
-            // Cuối cùng: Thêm khoảng trống padding bottom
-            currentY += btnClear.Height + 30;
-            Label lblSpacer = new Label { Size = new Size(10, 10), Location = new Point(0, currentY) };
-            pnlRightScroll.Controls.Add(lblSpacer);
-
+            tlp.Controls.Add(btnClear, 0, 9);
 
             // ==========================================
-            // BÊN TRÁI - DANH SÁCH & THANH LỌC CATEGORY (GIỮ NGUYÊN)
+            // BÊN TRÁI - DANH SÁCH & THANH LỌC CATEGORY
             // ==========================================
             Guna2Panel pnlCenter = new Guna2Panel();
             pnlCenter.Dock = DockStyle.Fill;
