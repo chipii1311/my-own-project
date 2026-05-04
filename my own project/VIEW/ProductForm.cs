@@ -11,7 +11,8 @@ namespace my_own_project.VIEW
     {
         private Guna2TextBox txtID, txtName, txtPrice;
         private Guna2PictureBox picFood;
-        private Guna2Button btnBrowse, btnAdd, btnEdit, btnDelete, btnClear;
+        private Guna2Button btnBrowse, btnEdit, btnDelete; // Đã xóa btnAdd và btnClear
+        private Guna2Button btnAddNewProduct; // Nút mới ở trên cùng
 
         private Guna2ComboBox cboFilterCategory;
         private Guna2ComboBox cboInputCategory;
@@ -44,7 +45,7 @@ namespace my_own_project.VIEW
             this.Dock = DockStyle.Fill;
 
             // ==========================================
-            // CỘT BÊN PHẢI (ĐÃ CHUẨN ĐẸP 100%, GIỮ NGUYÊN)
+            // CỘT BÊN PHẢI (CHỈ CÒN SỬA VÀ XÓA)
             // ==========================================
             Guna2Panel pnlRight = new Guna2Panel();
             pnlRight.Dock = DockStyle.Right;
@@ -80,7 +81,7 @@ namespace my_own_project.VIEW
             picFood = new Guna2PictureBox { Size = new Size(150, 140), BorderRadius = 10, SizeMode = PictureBoxSizeMode.Zoom, FillColor = Color.FromArgb(240, 240, 240), Margin = new Padding(cCenter, 0, 0, 15) };
             flpInput.Controls.Add(picFood);
 
-            btnBrowse = new Guna2Button { Text = "Chọn ảnh mới", Size = new Size(150, 35), BorderRadius = 8, FillColor = Color.Gray, Font = new Font("Segoe UI", 9F, FontStyle.Bold), Cursor = Cursors.Hand, Margin = new Padding(cCenter, 0, 0, 25) };
+            btnBrowse = new Guna2Button { Text = "Đổi ảnh khác", Size = new Size(150, 35), BorderRadius = 8, FillColor = Color.Gray, Font = new Font("Segoe UI", 9F, FontStyle.Bold), Cursor = Cursors.Hand, Margin = new Padding(cCenter, 0, 0, 25) };
             btnBrowse.Click += BtnBrowse_Click;
             flpInput.Controls.Add(btnBrowse);
 
@@ -93,71 +94,64 @@ namespace my_own_project.VIEW
             Label lblName = new Label { Text = "Tên món ăn:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
             flpInput.Controls.Add(lblName);
 
-            txtName = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "VD: Cơm chiên hải sản", FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 15) };
+            txtName = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 15) };
             flpInput.Controls.Add(txtName);
 
             Label lblPrice = new Label { Text = "Giá bán (VNĐ):", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
             flpInput.Controls.Add(lblPrice);
 
-            txtPrice = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "VD: 45000", FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 25) };
+            txtPrice = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 25) };
             flpInput.Controls.Add(txtPrice);
 
             txtID = new Guna2TextBox { Visible = false, Size = new Size(0, 0) };
             flpInput.Controls.Add(txtID);
 
-            Panel pnlActionButtons = new Panel { Size = new Size(cWidth, 45), Margin = new Padding(0, 0, 0, 15) };
+            // BỘ NÚT SỬA / XÓA (Giãn đều)
+            TableLayoutPanel tlpAction = new TableLayoutPanel { Size = new Size(cWidth, 45), ColumnCount = 2, Margin = new Padding(0, 0, 0, 15) };
+            tlpAction.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpAction.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
 
-            btnAdd = new Guna2Button { Text = "THÊM", Location = new Point(0, 0), Size = new Size(100, 45), BorderRadius = 5, FillColor = Color.FromArgb(46, 204, 113), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnAdd.Click += BtnAdd_Click;
-            pnlActionButtons.Controls.Add(btnAdd);
-
-            btnEdit = new Guna2Button { Text = "SỬA", Location = new Point(110, 0), Size = new Size(100, 45), BorderRadius = 5, FillColor = Color.FromArgb(52, 152, 219), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnEdit = new Guna2Button { Text = "CẬP NHẬT", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 5, 0), BorderRadius = 5, FillColor = Color.FromArgb(52, 152, 219), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnEdit.Click += BtnEdit_Click;
-            pnlActionButtons.Controls.Add(btnEdit);
+            tlpAction.Controls.Add(btnEdit, 0, 0);
 
-            btnDelete = new Guna2Button { Text = "XÓA", Location = new Point(220, 0), Size = new Size(100, 45), BorderRadius = 5, FillColor = Color.FromArgb(231, 76, 60), Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnDelete = new Guna2Button { Text = "XÓA MÓN", Dock = DockStyle.Fill, Margin = new Padding(5, 0, 0, 0), BorderRadius = 5, FillColor = Color.FromArgb(255, 107, 129), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnDelete.Click += BtnDelete_Click;
-            pnlActionButtons.Controls.Add(btnDelete);
+            tlpAction.Controls.Add(btnDelete, 1, 0);
 
-            flpInput.Controls.Add(pnlActionButtons);
-
-            btnClear = new Guna2Button { Text = "Tạo món mới (Dọn sạch Form)", Size = new Size(cWidth, 45), BorderRadius = 5, FillColor = Color.FromArgb(240, 240, 240), ForeColor = Color.Black, Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand, Margin = new Padding(0, 0, 0, 20) };
-            btnClear.Click += (s, e) => { ClearInputs(); };
-            flpInput.Controls.Add(btnClear);
+            flpInput.Controls.Add(tlpAction);
 
             // ==========================================
-            // BÊN TRÁI - SỬ DỤNG TABLELAYOUT ĐỂ CHỐNG CẮT ẢNH
+            // BÊN TRÁI - THANH TOP BAR CÓ NÚT THÊM
             // ==========================================
             Guna2Panel pnlCenter = new Guna2Panel();
             pnlCenter.Dock = DockStyle.Fill;
             this.Controls.Add(pnlCenter);
 
-            // Tạo khung lưới chia làm 2 hàng
             TableLayoutPanel tlpLeft = new TableLayoutPanel();
             tlpLeft.Dock = DockStyle.Fill;
             tlpLeft.ColumnCount = 1;
             tlpLeft.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tlpLeft.RowCount = 2;
-            tlpLeft.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F)); // Hàng 1: Cao đúng 100px
-            tlpLeft.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));  // Hàng 2: Chiếm nốt phần còn lại
+            tlpLeft.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));
+            tlpLeft.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             pnlCenter.Controls.Add(tlpLeft);
 
-            // --- Bỏ vào Hàng 1: Thanh Tiêu Đề ---
             Guna2Panel pnlTopCenter = new Guna2Panel();
             pnlTopCenter.Dock = DockStyle.Fill;
             pnlTopCenter.FillColor = Color.Transparent;
             pnlTopCenter.Margin = new Padding(0);
             tlpLeft.Controls.Add(pnlTopCenter, 0, 0);
 
-            Label lblTitle = new Label { Text = "QUẢN LÝ THỰC ĐƠN", Font = new Font("Segoe UI", 20F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), Location = new Point(30, 50), AutoSize = true };
+            Label lblTitle = new Label { Text = "QUẢN LÝ THỰC ĐƠN", Font = new Font("Segoe UI", 20F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), Location = new Point(30, 45), AutoSize = true };
             pnlTopCenter.Controls.Add(lblTitle);
 
-            Label lblFilter = new Label { Text = "Lọc theo:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(350, 60), AutoSize = true };
+            Label lblFilter = new Label { Text = "Lọc theo:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(340, 55), AutoSize = true };
             pnlTopCenter.Controls.Add(lblFilter);
 
             cboFilterCategory = new Guna2ComboBox
             {
-                Location = new Point(430, 50),
+                Location = new Point(420, 45),
                 Size = new Size(200, 36),
                 BorderRadius = 5,
                 Font = new Font("Segoe UI", 10F),
@@ -167,13 +161,62 @@ namespace my_own_project.VIEW
             cboFilterCategory.SelectedIndexChanged += (s, e) => { LoadProductData(); };
             pnlTopCenter.Controls.Add(cboFilterCategory);
 
-            // --- Bỏ vào Hàng 2: Danh sách thẻ món ăn ---
+            // NÚT POPUP THÊM MÓN NẰM Ở ĐÂY
+            btnAddNewProduct = new Guna2Button
+            {
+                Text = "➕ THÊM MÓN MỚI",
+                Location = new Point(650, 45),
+                Size = new Size(180, 36),
+                BorderRadius = 5,
+                FillColor = Color.FromArgb(46, 204, 113),
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnAddNewProduct.Click += BtnAddNewProduct_Click;
+            pnlTopCenter.Controls.Add(btnAddNewProduct);
+
+            // --- Hàng 2: Danh sách thẻ món ăn ---
             flpProducts = new FlowLayoutPanel();
             flpProducts.Dock = DockStyle.Fill;
             flpProducts.AutoScroll = true;
-            flpProducts.Padding = new Padding(25, 15, 20, 20); // Top padding 15 cho đẹp mắt
-            flpProducts.Margin = new Padding(0); // Không margin để lưới chia chuẩn
+            flpProducts.Padding = new Padding(25, 15, 20, 20);
+            flpProducts.Margin = new Padding(0);
             tlpLeft.Controls.Add(flpProducts, 0, 1);
+        }
+
+        private void BtnAddNewProduct_Click(object sender, EventArgs e)
+        {
+            // Mở Popup thêm món
+            using (my_own_project.VIEW.ProductAddForm addForm = new my_own_project.VIEW.ProductAddForm())
+            {
+                // Làm mờ form chính ở dưới
+                Form blackBackground = new Form();
+                blackBackground.StartPosition = FormStartPosition.Manual;
+                blackBackground.FormBorderStyle = FormBorderStyle.None;
+                blackBackground.Opacity = 0.5d;
+                blackBackground.BackColor = Color.Black;
+                blackBackground.Size = this.Size; // Lấy kích thước form cha (không phải mainform tổng)
+
+                // Mẹo nhỏ: Để form mờ bao phủ toàn màn hình, ta gán tọa độ tuyệt đối
+                try
+                {
+                    blackBackground.Location = this.Parent.PointToScreen(this.Location);
+                }
+                catch
+                {
+                    blackBackground.Location = this.PointToScreen(Point.Empty);
+                }
+
+                blackBackground.Show();
+
+                // Nếu thêm thành công và bấm Xác nhận
+                if (addForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadProductData(); // Load lại lưới dữ liệu
+                }
+
+                blackBackground.Dispose(); // Tắt mờ
+            }
         }
 
         private void LoadCategories()
@@ -288,6 +331,9 @@ namespace my_own_project.VIEW
 
                     flpProducts.Controls.Add(card);
                 }
+
+                // Sau khi load xong, gọi hàm làm sạch form bên phải
+                ClearInputs();
             }
             catch (Exception ex)
             {
@@ -335,45 +381,11 @@ namespace my_own_project.VIEW
             }
         }
 
-        private void BtnAdd_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPrice.Text))
-            {
-                MessageBox.Show("Vui lòng nhập tên và giá món ăn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try
-            {
-                int catID = Convert.ToInt32(cboInputCategory.SelectedValue);
-                string fileName = "";
-                if (!string.IsNullOrEmpty(currentImagePath) && File.Exists(currentImagePath) && !currentImagePath.Contains(imageFolder))
-                {
-                    fileName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.GetExtension(currentImagePath);
-                    string destPath = Path.Combine(imageFolder, fileName);
-                    File.Copy(currentImagePath, destPath, true);
-                }
-
-                string query = $"INSERT INTO MenuItem (CategoryID, ItemName, Price, Status, ImageUrl, ItemStatus, CreatedAt) " +
-                               $"VALUES ({catID}, N'{txtName.Text}', {txtPrice.Text}, N'Còn', '{fileName}', 1, GETDATE())";
-
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
-                MessageBox.Show("Thêm món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                ClearInputs();
-                LoadProductData();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi thêm: " + ex.Message);
-            }
-        }
-
         private void BtnEdit_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
             {
-                MessageBox.Show("Vui lòng nhấp vào 1 món ăn để sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng click chọn 1 món ăn từ danh sách để cập nhật!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -395,7 +407,6 @@ namespace my_own_project.VIEW
                 my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
                 MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                ClearInputs();
                 LoadProductData();
             }
             catch (Exception ex)
@@ -408,11 +419,11 @@ namespace my_own_project.VIEW
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
             {
-                MessageBox.Show("Vui lòng nhấp vào 1 món ăn để xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng click chọn 1 món ăn từ danh sách để xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            DialogResult dr = MessageBox.Show("Bạn có chắc chắn muốn xóa món này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult dr = MessageBox.Show($"Bạn có chắc chắn muốn xóa món '{txtName.Text}'?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dr == DialogResult.Yes)
             {
                 try
@@ -421,7 +432,6 @@ namespace my_own_project.VIEW
                     my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
 
                     MessageBox.Show("Đã xóa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    ClearInputs();
                     LoadProductData();
                 }
                 catch (Exception ex)

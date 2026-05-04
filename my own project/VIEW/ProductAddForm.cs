@@ -1,164 +1,194 @@
-﻿using my_own_project.BLL;
-using my_own_project.DAL;
-using my_own_project.DTO;
+﻿using Guna.UI2.WinForms;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
-namespace my_own_project.DesignForms
+namespace my_own_project.VIEW
 {
-
-
-    public partial class ProductAddForm : SampleAdd
+    public partial class ProductAddForm : Form
     {
+        private Guna2TextBox txtItemName;
+        private Guna2ComboBox cboCategory;
+        private Guna2TextBox txtPrice;
+        private Guna2PictureBox picItem;
+        private string selectedImagePath = "";
 
-        private string selectedImageName = "";
-        public int editItemID = -1;
-        private string sourceImagePath = "";
         public ProductAddForm()
         {
             InitializeComponent();
+            this.Controls.Clear();
+
+            // 1. CÂU LỆNH CHỐNG VỠ FORM (Khóa mõm tính năng tự Scale của Windows)
+            this.AutoScaleMode = AutoScaleMode.None;
+
+            this.Size = new Size(500, 650);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.BackColor = Color.White;
+
+            BuildPopupUI_Unbreakable(); // Dùng lưới bất tử
+            LoadCategories();
+
+            Guna2ShadowForm shadow = new Guna2ShadowForm(this);
         }
 
-        private void ProductAddForm_Load(object sender, EventArgs e)
+        private void BuildPopupUI_Unbreakable()
         {
-            // Giả sử bạn đổi tên ComboBox là cboCategory
-            DataTable dtCategories = CategoryBLL.GetAllCategories();
-            cbbCategory.DataSource = dtCategories;
-            cbbCategory.DisplayMember = "CategoryName"; // Chữ hiện lên cho người ta đọc
-            cbbCategory.ValueMember = "CategoryID";     // ID ngầm bên dưới để lưu SQL
+            // Viền bo góc
+            Guna2Elipse elipse = new Guna2Elipse { TargetControl = this, BorderRadius = 15 };
 
-            cbbStatus.Items.Clear();
-            cbbStatus.Items.Add("Ngừng kinh doanh"); // Index 0
-            cbbStatus.Items.Add("Đang phục vụ");     // Index 1
-            cbbStatus.Items.Add("Tạm hết hàng");     // Index 2
-            cbbStatus.SelectedIndex = 1; // Mặc định mở lên là "Đang phục vụ"
+            // ==========================================
+            // 1. THANH TIÊU ĐỀ
+            // ==========================================
+            Guna2Panel pnlTop = new Guna2Panel { Dock = DockStyle.Top, Height = 50, FillColor = Color.FromArgb(88, 28, 230) };
+            this.Controls.Add(pnlTop);
 
-            // 2. NẾU LÀ CHẾ ĐỘ SỬA (editItemID khác -1) -> Lôi dữ liệu cũ lên
-            if (editItemID != -1)
+            Label lblTitle = new Label { Text = "THÊM MÓN MỚI", Font = new Font("Segoe UI", 14F, FontStyle.Bold), ForeColor = Color.White, BackColor = Color.Transparent, AutoSize = true, Location = new Point(20, 12) };
+            pnlTop.Controls.Add(lblTitle);
+
+            Guna2ControlBox btnClose = new Guna2ControlBox { Anchor = AnchorStyles.Top | AnchorStyles.Right, Size = new Size(50, 50), Location = new Point(450, 0), FillColor = Color.Transparent, BackColor = Color.Transparent, IconColor = Color.White, Cursor = Cursors.Hand, CustomClick = true };
+            btnClose.Click += (s, e) => { this.Close(); };
+            pnlTop.Controls.Add(btnClose);
+
+            Guna2DragControl drag = new Guna2DragControl { TargetControl = pnlTop };
+
+            // ==========================================
+            // 2. LƯỚI TABLELAYOUT (CHỐNG ĐÈ 100%)
+            // ==========================================
+            TableLayoutPanel tlp = new TableLayoutPanel
             {
-                // Đổi tiêu đề Form cho chuyên nghiệp
-                this.Text = "Sửa món ăn";
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 9,
+                Padding = new Padding(40, 25, 40, 20), // Tự động ép lề Trái - Phải đúng 40px, canh giữa tuyệt đối!
+                BackColor = Color.White
+            };
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            for (int i = 0; i < 9; i++) tlp.RowStyles.Add(new RowStyle(SizeType.AutoSize)); // Các hàng tự giãn theo content
 
-                // Lấy dữ liệu từ DB lên
-                MenuItemDTO item = MenuItemDAL.GetByID(editItemID);
-                if (item != null)
-                {
-                    // Điền vào các ô trống
-                    txtName.Text = item.ItemName;
-                    txtPrice.Text = item.Price.ToString();
-                    cbbCategory.SelectedValue = item.CategoryID;
+            this.Controls.Add(tlp);
+            tlp.BringToFront(); // Để TableLayout nằm dưới thanh màu tím
 
-                    // Mẹo cực hay: Vì Index của ComboBox là 0,1,2 khớp y xì đúc với trạng thái trong DB!
-                    cbbStatus.SelectedIndex = item.ItemStatus;
+            // --- HÀNG 1: LABEL DANH MỤC ---
+            Label lblCat = new Label { Text = "DANH MỤC:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
+            tlp.Controls.Add(lblCat, 0, 0);
 
-                    // Hiển thị ảnh cũ (nếu có)
-                    if (!string.IsNullOrEmpty(item.ImageUrl))
-                    {
-                        selectedImageName = item.ImageUrl; // Giữ lại tên file cũ để lỡ họ không đổi ảnh
-                        string imagePath = Application.StartupPath + "\\MenuImages\\" + item.ImageUrl;
-                        if (System.IO.File.Exists(imagePath))
-                        {
-                            pictureBox1.Image = Image.FromFile(imagePath);
-                            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-                        }
-                    }
-                }
-            }
+            // --- HÀNG 2: COMBOBOX DANH MỤC ---
+            cboCategory = new Guna2ComboBox { Dock = DockStyle.Fill, MinimumSize = new Size(0, 40), Height = 40, BorderRadius = 5, Font = new Font("Segoe UI", 11F), Margin = new Padding(0, 0, 0, 15) };
+            tlp.Controls.Add(cboCategory, 0, 1);
+
+            // --- HÀNG 3: LABEL TÊN MÓN ---
+            Label lblName = new Label { Text = "TÊN MÓN ĂN:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
+            tlp.Controls.Add(lblName, 0, 2);
+
+            // --- HÀNG 4: TEXTBOX TÊN MÓN ---
+            txtItemName = new Guna2TextBox { Dock = DockStyle.Fill, MinimumSize = new Size(0, 40), Height = 40, BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "Nhập tên món...", Margin = new Padding(0, 0, 0, 15) };
+            tlp.Controls.Add(txtItemName, 0, 3);
+
+            // --- HÀNG 5: LABEL GIÁ ---
+            Label lblPrice = new Label { Text = "GIÁ BÁN (VNĐ):", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
+            tlp.Controls.Add(lblPrice, 0, 4);
+
+            // --- HÀNG 6: TEXTBOX GIÁ ---
+            txtPrice = new Guna2TextBox { Dock = DockStyle.Fill, MinimumSize = new Size(0, 40), Height = 40, BorderRadius = 5, Font = new Font("Segoe UI", 11F), PlaceholderText = "Ví dụ: 50000", Margin = new Padding(0, 0, 0, 15) };
+            tlp.Controls.Add(txtPrice, 0, 5);
+
+            // --- HÀNG 7: LABEL ẢNH ---
+            Label lblImage = new Label { Text = "HÌNH ẢNH:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
+            tlp.Controls.Add(lblImage, 0, 6);
+
+            // --- HÀNG 8: KHU VỰC CHỌN ẢNH ---
+            Panel pnlImage = new Panel { Dock = DockStyle.Fill, MinimumSize = new Size(0, 100), Height = 100, Margin = new Padding(0, 0, 0, 30) };
+            picItem = new Guna2PictureBox { Size = new Size(100, 100), Location = new Point(0, 0), SizeMode = PictureBoxSizeMode.Zoom, BorderRadius = 10, FillColor = Color.FromArgb(245, 246, 250) };
+            Guna2Button btnChooseImg = new Guna2Button { Text = "Tải ảnh lên", Size = new Size(120, 35), Location = new Point(120, 32), BorderRadius = 5, Font = new Font("Segoe UI", 9F, FontStyle.Bold), FillColor = Color.FromArgb(224, 224, 224), ForeColor = Color.Black, Cursor = Cursors.Hand };
+            btnChooseImg.Click += BtnChooseImg_Click;
+            pnlImage.Controls.Add(picItem);
+            pnlImage.Controls.Add(btnChooseImg);
+            tlp.Controls.Add(pnlImage, 0, 7);
+
+            // --- HÀNG 9: NÚT XÁC NHẬN ---
+            Guna2Button btnSave = new Guna2Button { Text = "XÁC NHẬN THÊM", Dock = DockStyle.Fill, MinimumSize = new Size(0, 45), Height = 45, BorderRadius = 5, Font = new Font("Segoe UI", 11F, FontStyle.Bold), FillColor = Color.FromArgb(46, 204, 113), Cursor = Cursors.Hand };
+            btnSave.Click += BtnSave_Click;
+            tlp.Controls.Add(btnSave, 0, 8);
         }
 
-        private void btnClose_Click_1(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void btnBrowseImage_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog open = new OpenFileDialog();
-            // Chỉ cho phép chọn file ảnh
-            open.Filter = "Image Files(*.jpg; *.jpeg; *.png; *.webp)|*.jpg; *.jpeg; *.png; *.webp";
-
-            if (open.ShowDialog() == DialogResult.OK)
-            {
-                // 1. Hiển thị ảnh lên PictureBox cho người dùng xem trước
-                picProduct.Image = Image.FromFile(open.FileName);
-                picProduct.SizeMode = PictureBoxSizeMode.Zoom;
-                sourceImagePath = open.FileName;
-
-                // 2. Tạo một cái tên file mới tinh không bị trùng (dùng ngày giờ)
-                string extension = System.IO.Path.GetExtension(open.FileName);
-                selectedImageName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + extension;
-
-                // 3. Đường dẫn đích: Thư mục MenuImages của project
-                string targetPath = Application.StartupPath + "\\MenuImages\\" + selectedImageName;
-
-              
-            }
-        }
-
-        private void btnSave_Click_1(object sender, EventArgs e)
+        private void LoadCategories()
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtPrice.Text))
+                string query = "SELECT CategoryID, CategoryName FROM Category WHERE IsActive = 1";
+                DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(query);
+                cboCategory.DataSource = dt;
+                cboCategory.DisplayMember = "CategoryName";
+                cboCategory.ValueMember = "CategoryID";
+            }
+            catch (Exception ex) { MessageBox.Show("Lỗi tải danh mục: " + ex.Message); }
+        }
+
+        private void BtnChooseImg_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif";
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show("Vui lòng nhập đủ Tên và Giá!");
-                    return;
+                    picItem.Image = Image.FromFile(ofd.FileName);
+                    // Sửa lại: Lưu lại TOÀN BỘ đường dẫn gốc của ảnh trên máy bạn
+                    selectedImagePath = ofd.FileName;
+                }
+            }
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtItemName.Text) || string.IsNullOrWhiteSpace(txtPrice.Text))
+            {
+                MessageBox.Show("Vui lòng nhập đủ Tên món và Giá bán!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!decimal.TryParse(txtPrice.Text, out decimal price))
+            {
+                MessageBox.Show("Giá bán chỉ được nhập số!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                int catId = Convert.ToInt32(cboCategory.SelectedValue);
+                string finalImageName = "";
+
+                // --- BỔ SUNG LOGIC COPY ẢNH VÀO THƯ MỤC CỦA APP ---
+                if (!string.IsNullOrEmpty(selectedImagePath) && File.Exists(selectedImagePath))
+                {
+                    // Lấy đường dẫn thư mục MenuImages của app
+                    string imageFolder = Path.Combine(Application.StartupPath, "MenuImages");
+                    if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
+
+                    // Đổi tên ảnh tránh bị trùng lặp (Ví dụ: ITEM_20260504_153020.jpg)
+                    finalImageName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.GetExtension(selectedImagePath);
+                    string destPath = Path.Combine(imageFolder, finalImageName);
+
+                    // Thực hiện copy file
+                    File.Copy(selectedImagePath, destPath, true);
                 }
 
-                // Gom dữ liệu từ trên giao diện xuống
-                MenuItemDTO item = new MenuItemDTO();
-               
-                item.ItemName = txtName.Text;
-                item.Price = Convert.ToDecimal(txtPrice.Text);
-                item.CategoryID = Convert.ToInt32(cbbCategory.SelectedValue);
-                item.ItemStatus = cbbStatus.SelectedIndex; // Lấy đúng số 0, 1, 2
-                item.ImageUrl = selectedImageName;
+                // Lưu tên ảnh mới vào Database
+                string query = $"INSERT INTO MenuItem (CategoryID, ItemName, Price, Status, ImageUrl, ItemStatus, CreatedAt) " +
+                               $"VALUES ({catId}, N'{txtItemName.Text}', {price}, N'Còn', N'{finalImageName}', 1, GETDATE())";
 
-                // 2. CHÈN CODE COPY ẢNH VÀO ĐÂY (TRƯỚC KHI LƯU DB)
-                if (!string.IsNullOrEmpty(sourceImagePath)) // Kiểm tra xem người dùng có vừa bấm Browse chọn ảnh không
-                {
-                    string folderPath = Path.Combine(Application.StartupPath, "MenuImages");
-                    string targetPath = Path.Combine(folderPath, selectedImageName);
+                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
 
-                    // Tạo thư mục nếu chưa tồn tại
-                    if (!Directory.Exists(folderPath))
-                    {
-                        Directory.CreateDirectory(folderPath);
-                    }
+                MessageBox.Show("Đã thêm món mới thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Copy file từ đường dẫn gốc (máy tính khách) vào thư mục phần mềm
-                    File.Copy(sourceImagePath, targetPath, true);
-                }
-                // ============================================================
-                // RẼ NHÁNH: THÊM HAY SỬA?
-                if (editItemID == -1)
-                {
-                    // CHẾ ĐỘ THÊM
-                    MenuItemDAL.Insert(item);
-                    MessageBox.Show("Đã thêm món ăn thành công!");
-                }
-                else
-                {
-                    // CHẾ ĐỘ SỬA
-                    item.MenuItemID = editItemID; // Gắn ID vào để DB biết sửa dòng nào
-                    MenuItemDAL.Update(item);
-                    MessageBox.Show("Đã cập nhật thông tin món ăn!");
-                }
-
-                this.Close(); // Đóng form
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message);
+                MessageBox.Show("Lỗi lưu dữ liệu: " + ex.Message);
             }
         }
     }
