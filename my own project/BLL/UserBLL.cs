@@ -136,61 +136,55 @@ namespace my_own_project.BLL
                 }
             }
 
-            /// <summary>
-            /// Cập nhật mật khẩu User
-            /// </summary>
-            public static bool ChangePassword(int userID, string oldPassword, string newPassword)
+        /// <summary>
+        /// Cập nhật mật khẩu User
+        /// </summary>
+        public static bool ChangePassword(int userID, string oldPassword, string newPassword)
+        {
+            try
             {
-                try
-                {
-                    if (userID <= 0)
-                        throw new Exception("UserID không hợp lệ!");
+                if (userID <= 0)
+                    throw new Exception("UserID không hợp lệ!");
 
-                    if (string.IsNullOrWhiteSpace(oldPassword))
-                        throw new Exception("Mật khẩu cũ không được để trống!");
+                if (string.IsNullOrWhiteSpace(oldPassword))
+                    throw new Exception("Mật khẩu cũ không được để trống!");
 
-                    if (string.IsNullOrWhiteSpace(newPassword))
-                        throw new Exception("Mật khẩu mới không được để trống!");
+                if (string.IsNullOrWhiteSpace(newPassword))
+                    throw new Exception("Mật khẩu mới không được để trống!");
 
-                    if (newPassword.Length < 6)
-                        throw new Exception("Mật khẩu mới phải tối thiểu 6 ký tự!");
+                if (newPassword.Length < 6)
+                    throw new Exception("Mật khẩu mới phải tối thiểu 6 ký tự!");
 
-                    // Lấy user hiện tại
-                    UserDTO user = UserDAL.GetByID(userID);
-                    if (user == null)
-                        throw new Exception("Người dùng không tồn tại!");
+                // Lấy user hiện tại
+                UserDTO user = UserDAL.GetByID(userID);
+                if (user == null)
+                    throw new Exception("Người dùng không tồn tại!");
 
-                    // Kiểm tra mật khẩu cũ
-                    string hashedOldPassword = HashPassword(oldPassword);
-                    if (user.PasswordHash != hashedOldPassword)
-                        throw new Exception("Mật khẩu cũ không chính xác!");
+                // Kiểm tra mật khẩu cũ có khớp không
+                string hashedOldPassword = HashPassword(oldPassword);
+                if (user.PasswordHash != hashedOldPassword)
+                    throw new Exception("Mật khẩu cũ không chính xác!");
 
-                    // Hash mật khẩu mới
-                    string hashedNewPassword = HashPassword(newPassword);
+                // Băm mật khẩu mới
+                string hashedNewPassword = HashPassword(newPassword);
 
-                    return UserDAL.Update(new UserDTO
-                    {
-                        UserID = userID,
-                        FullName = user.FullName,
-                        Email = user.Email,
-                        Phone = user.Phone,
-                        PasswordHash = hashedNewPassword,
-                        Role = user.Role,
-                        IsActive = user.IsActive
-                    });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"UserBLL.ChangePassword Error: {ex.Message}");
-                    throw;
-                }
+                // ==========================================
+                // FIX LỖI Ở ĐÂY: GỌI ĐÚNG HÀM CHANGE PASSWORD TRONG DAL
+                // ==========================================
+                return UserDAL.ChangePassword(userID, hashedNewPassword);
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UserBLL.ChangePassword Error: {ex.Message}");
+                throw;
+            }
+        }
 
-            // ==================== DELETE ====================
-            /// <summary>
-            /// Xóa User (soft delete - đặt IsActive = false)
-            /// </summary>
-            public static bool DeleteUser(int userID)
+        // ==================== DELETE ====================
+        /// <summary>
+        /// Xóa User (soft delete - đặt IsActive = false)
+        /// </summary>
+        public static bool DeleteUser(int userID)
             {
                 try
                 {
