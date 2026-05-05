@@ -261,6 +261,12 @@
     <Compile Include="VIEW\MenuForm.Designer.cs">
       <DependentUpon>MenuForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\NewDashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\NewDashboardForm.Designer.cs">
+      <DependentUpon>NewDashboardForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\NewMainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -335,6 +341,12 @@
     <Compile Include="UCFoodItem.Designer.cs">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\SettingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\SettingForm.Designer.cs">
+      <DependentUpon>SettingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -386,9 +398,6 @@
     <EmbeddedResource Include="VIEW\POSForm.resx">
       <DependentUpon>POSForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\ProductAddForm.resx">
-      <DependentUpon>ProductAddForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VIEW\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -414,6 +423,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UCFoodItem.resx">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\SettingForm.resx">
+      <DependentUpon>SettingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>

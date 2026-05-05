@@ -1,5 +1,5 @@
 ﻿using my_own_project.DesignForms;
-using my_own_project.VIEWSTAFF;
+using my_own_project.VIEW;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ namespace my_own_project
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LoginForm());
+            Application.Run(new NewMainForm());
         }
     }
 }

@@ -1,236 +1,241 @@
-﻿namespace my_own_project.VIEW
+﻿using Guna.UI2.WinForms;
+using my_own_project.BLL;
+using System;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.Windows.Forms;
+
+namespace my_own_project.DesignForms
 {
-    partial class PaymentForm
+    public partial class PaymentForm : Form
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private int currentOrderID;
+        private decimal totalAmount = 0;
+        private int tableID;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        // Các control giao diện
+        private Label lblTotalAmount;
+        private Guna2Button btnPrint;   // Nút In tạm tính
+        private Guna2Button btnConfirm; // Nút Xác nhận thu tiền
+        private Guna2Button btnCancel;
+        private Guna2ShadowForm shadowForm;
+
+        // Đồ nghề in ấn
+        private PrintDocument printDoc;
+        private PrintPreviewDialog printPreview;
+
+        public PaymentForm(int orderID, int tableID = -1)
         {
-            if (disposing && (components != null))
+            this.currentOrderID = orderID;
+            this.tableID = tableID;
+
+            // Khởi tạo máy in
+            printDoc = new PrintDocument();
+            // Thiết lập khổ giấy in nhiệt 80mm (Khoảng 320 pixel)
+            printDoc.DefaultPageSettings.PaperSize = new PaperSize("Thermal80mm", 320, 600);
+            printDoc.PrintPage += PrintDoc_PrintPage;
+
+            printPreview = new PrintPreviewDialog();
+            printPreview.Document = printDoc;
+            printPreview.StartPosition = FormStartPosition.CenterScreen;
+            printPreview.Size = new Size(400, 600);
+
+            InitializeModernUI();
+            LoadTotalAmount();
+        }
+
+        private void InitializeModernUI()
+        {
+            this.Size = new Size(480, 300);
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.BackColor = Color.White;
+
+            shadowForm = new Guna2ShadowForm(this);
+            shadowForm.ShadowColor = Color.Black;
+
+            // --- HEADER ---
+            Guna2Panel pnlHeader = new Guna2Panel();
+            pnlHeader.Dock = DockStyle.Top;
+            pnlHeader.Height = 60;
+            pnlHeader.FillColor = Color.FromArgb(88, 28, 230);
+
+            Label lblTitle = new Label();
+            lblTitle.Text = "XÁC NHẬN THANH TOÁN";
+            lblTitle.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            lblTitle.ForeColor = Color.White;
+            lblTitle.Location = new Point(20, 15);
+            lblTitle.AutoSize = true;
+            lblTitle.BackColor = Color.Transparent;
+            pnlHeader.Controls.Add(lblTitle);
+
+            // --- NỘI DUNG CHÍNH ---
+            Label lblTextTotal = new Label { Text = "Tổng tiền cần thanh toán:", Font = new Font("Segoe UI", 12F), ForeColor = Color.Gray, Location = new Point(30, 90), AutoSize = true };
+            this.Controls.Add(lblTextTotal);
+
+            lblTotalAmount = new Label { Text = "0 đ", Font = new Font("Segoe UI", 24F, FontStyle.Bold), ForeColor = Color.FromArgb(255, 71, 87), Location = new Point(30, 120), AutoSize = true };
+            this.Controls.Add(lblTotalAmount);
+
+            // --- 3 NÚT BẤM (Thiết kế lại logic) ---
+            int btnY = 210;
+
+            btnCancel = new Guna2Button();
+            btnCancel.Text = "Hủy";
+            btnCancel.Size = new Size(90, 50);
+            btnCancel.Location = new Point(20, btnY);
+            btnCancel.BorderRadius = 10;
+            btnCancel.FillColor = Color.FromArgb(240, 240, 240);
+            btnCancel.ForeColor = Color.Black;
+            btnCancel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnCancel.Cursor = Cursors.Hand;
+            btnCancel.Click += (s, e) => { this.Close(); };
+            this.Controls.Add(btnCancel);
+
+            btnPrint = new Guna2Button();
+            btnPrint.Text = "In Hóa Đơn Tạm Tính";
+            btnPrint.Size = new Size(130, 50);
+            btnPrint.Location = new Point(125, btnY);
+            btnPrint.BorderRadius = 10;
+            btnPrint.FillColor = Color.FromArgb(46, 204, 113); // Màu xanh lá cho nút In
+            btnPrint.ForeColor = Color.White;
+            btnPrint.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnPrint.Cursor = Cursors.Hand;
+            btnPrint.Click += (s, e) => { printPreview.ShowDialog(); }; // Chỉ in, không cập nhật DB
+            this.Controls.Add(btnPrint);
+
+            btnConfirm = new Guna2Button();
+            btnConfirm.Text = "Xác nhận & Thu tiền";
+            btnConfirm.Size = new Size(180, 50);
+            btnConfirm.Location = new Point(270, btnY);
+            btnConfirm.BorderRadius = 10;
+            btnConfirm.FillColor = Color.FromArgb(88, 28, 230); // Màu tím chủ đạo
+            btnConfirm.ForeColor = Color.White;
+            btnConfirm.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            btnConfirm.Cursor = Cursors.Hand;
+            btnConfirm.Click += BtnConfirm_Click;
+            this.Controls.Add(btnConfirm);
+
+            Guna2BorderlessForm borderlessForm = new Guna2BorderlessForm();
+            borderlessForm.ContainerControl = this;
+            borderlessForm.BorderRadius = 20;
+        }
+
+        private void LoadTotalAmount()
+        {
+            DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
+            totalAmount = 0;
+            foreach (DataRow row in dtDetails.Rows)
             {
-                components.Dispose();
+                totalAmount += Convert.ToDecimal(row["SubTotal"]);
             }
-            base.Dispose(disposing);
+            lblTotalAmount.Text = totalAmount.ToString("N0") + " đ";
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
+        private void BtnConfirm_Click(object sender, EventArgs e)
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PaymentForm));
-            this.lblTableName = new System.Windows.Forms.Label();
-            this.lblOrderID = new System.Windows.Forms.Label();
-            this.lblSubTotal = new System.Windows.Forms.Label();
-            this.cbbPromotion = new Guna.UI2.WinForms.Guna2ComboBox();
-            this.lblFinalTotal = new System.Windows.Forms.Label();
-            this.cbbPaymentMethod = new Guna.UI2.WinForms.Guna2ComboBox();
-            this.btnPrint = new Guna.UI2.WinForms.Guna2Button();
-            this.btnPay = new Guna.UI2.WinForms.Guna2Button();
-            this.btnClose = new Guna.UI2.WinForms.Guna2Button();
-            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
-            this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
-            this.dgvBill = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvBill)).BeginInit();
-            this.SuspendLayout();
-            // 
-            // lblTableName
-            // 
-            this.lblTableName.AutoSize = true;
-            this.lblTableName.Location = new System.Drawing.Point(81, 55);
-            this.lblTableName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblTableName.Name = "lblTableName";
-            this.lblTableName.Size = new System.Drawing.Size(35, 13);
-            this.lblTableName.TabIndex = 0;
-            this.lblTableName.Text = "label1";
-            // 
-            // lblOrderID
-            // 
-            this.lblOrderID.AutoSize = true;
-            this.lblOrderID.Location = new System.Drawing.Point(298, 55);
-            this.lblOrderID.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblOrderID.Name = "lblOrderID";
-            this.lblOrderID.Size = new System.Drawing.Size(35, 13);
-            this.lblOrderID.TabIndex = 1;
-            this.lblOrderID.Text = "label2";
-            // 
-            // lblSubTotal
-            // 
-            this.lblSubTotal.AutoSize = true;
-            this.lblSubTotal.Location = new System.Drawing.Point(241, 285);
-            this.lblSubTotal.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblSubTotal.Name = "lblSubTotal";
-            this.lblSubTotal.Size = new System.Drawing.Size(35, 13);
-            this.lblSubTotal.TabIndex = 3;
-            this.lblSubTotal.Text = "label1";
-            // 
-            // cbbPromotion
-            // 
-            this.cbbPromotion.BackColor = System.Drawing.Color.Transparent;
-            this.cbbPromotion.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.cbbPromotion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbbPromotion.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cbbPromotion.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cbbPromotion.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cbbPromotion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
-            this.cbbPromotion.ItemHeight = 30;
-            this.cbbPromotion.Location = new System.Drawing.Point(219, 300);
-            this.cbbPromotion.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cbbPromotion.Name = "cbbPromotion";
-            this.cbbPromotion.Size = new System.Drawing.Size(95, 36);
-            this.cbbPromotion.TabIndex = 4;
-            // 
-            // lblFinalTotal
-            // 
-            this.lblFinalTotal.AutoSize = true;
-            this.lblFinalTotal.Location = new System.Drawing.Point(241, 325);
-            this.lblFinalTotal.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblFinalTotal.Name = "lblFinalTotal";
-            this.lblFinalTotal.Size = new System.Drawing.Size(35, 13);
-            this.lblFinalTotal.TabIndex = 5;
-            this.lblFinalTotal.Text = "label1";
-            // 
-            // cbbPaymentMethod
-            // 
-            this.cbbPaymentMethod.BackColor = System.Drawing.Color.Transparent;
-            this.cbbPaymentMethod.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.cbbPaymentMethod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbbPaymentMethod.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cbbPaymentMethod.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.cbbPaymentMethod.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.cbbPaymentMethod.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
-            this.cbbPaymentMethod.ItemHeight = 30;
-            this.cbbPaymentMethod.Location = new System.Drawing.Point(219, 346);
-            this.cbbPaymentMethod.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.cbbPaymentMethod.Name = "cbbPaymentMethod";
-            this.cbbPaymentMethod.Size = new System.Drawing.Size(95, 36);
-            this.cbbPaymentMethod.TabIndex = 6;
-            // 
-            // btnPrint
-            // 
-            this.btnPrint.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnPrint.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnPrint.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnPrint.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnPrint.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnPrint.ForeColor = System.Drawing.Color.White;
-            this.btnPrint.Location = new System.Drawing.Point(53, 396);
-            this.btnPrint.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.btnPrint.Name = "btnPrint";
-            this.btnPrint.Size = new System.Drawing.Size(95, 27);
-            this.btnPrint.TabIndex = 7;
-            this.btnPrint.Text = "In hóa đơn";
-            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
-            // 
-            // btnPay
-            // 
-            this.btnPay.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnPay.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnPay.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnPay.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnPay.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnPay.ForeColor = System.Drawing.Color.White;
-            this.btnPay.Location = new System.Drawing.Point(176, 396);
-            this.btnPay.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.btnPay.Name = "btnPay";
-            this.btnPay.Size = new System.Drawing.Size(100, 27);
-            this.btnPay.TabIndex = 8;
-            this.btnPay.Text = "Thanh toán";
-            this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
-            // 
-            // btnClose
-            // 
-            this.btnClose.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
-            this.btnClose.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
-            this.btnClose.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
-            this.btnClose.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
-            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(301, 396);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(80, 27);
-            this.btnClose.TabIndex = 9;
-            this.btnClose.Text = "Hủy";
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // printDocument1
-            // 
-            this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
-            // 
-            // printPreviewDialog1
-            // 
-            this.printPreviewDialog1.AutoScrollMargin = new System.Drawing.Size(0, 0);
-            this.printPreviewDialog1.AutoScrollMinSize = new System.Drawing.Size(0, 0);
-            this.printPreviewDialog1.ClientSize = new System.Drawing.Size(400, 300);
-            this.printPreviewDialog1.Enabled = true;
-            this.printPreviewDialog1.Icon = ((System.Drawing.Icon)(resources.GetObject("printPreviewDialog1.Icon")));
-            this.printPreviewDialog1.Name = "printPreviewDialog1";
-            this.printPreviewDialog1.Visible = false;
-            // 
-            // dgvBill
-            // 
-            this.dgvBill.AllowUserToAddRows = false;
-            this.dgvBill.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvBill.Location = new System.Drawing.Point(53, 82);
-            this.dgvBill.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.dgvBill.Name = "dgvBill";
-            this.dgvBill.RowHeadersVisible = false;
-            this.dgvBill.RowHeadersWidth = 62;
-            this.dgvBill.RowTemplate.Height = 28;
-            this.dgvBill.Size = new System.Drawing.Size(361, 186);
-            this.dgvBill.TabIndex = 10;
-            // 
-            // PaymentForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(462, 445);
-            this.Controls.Add(this.dgvBill);
-            this.Controls.Add(this.btnClose);
-            this.Controls.Add(this.btnPay);
-            this.Controls.Add(this.btnPrint);
-            this.Controls.Add(this.cbbPaymentMethod);
-            this.Controls.Add(this.lblFinalTotal);
-            this.Controls.Add(this.cbbPromotion);
-            this.Controls.Add(this.lblSubTotal);
-            this.Controls.Add(this.lblOrderID);
-            this.Controls.Add(this.lblTableName);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.Name = "PaymentForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PaymentForm";
-            this.Load += new System.EventHandler(this.PaymentForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvBill)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            if (MessageBox.Show("Khách đã thanh toán đủ tiền?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    // 1. Cập nhật Order thành 'Completed'
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE Orders SET Status = 'Completed' WHERE OrderID = {currentOrderID}");
 
+                    // 2. Trả bàn về trạng thái 'Trống'
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
+
+                    MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Có lỗi xảy ra: " + ex.Message);
+                }
+            }
         }
 
-        #endregion
+        // ===============================================
+        // BÍ QUYẾT VẼ BILL CHUẨN MÁY IN NHIỆT (THERMAL 80MM)
+        // ===============================================
+        private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Font fontTitle = new Font("Courier New", 16, FontStyle.Bold);
+            Font fontHeader = new Font("Courier New", 10, FontStyle.Italic);
+            Font fontRegular = new Font("Courier New", 10, FontStyle.Regular);
+            Font fontBold = new Font("Courier New", 10, FontStyle.Bold);
 
-        private System.Windows.Forms.Label lblTableName;
-        private System.Windows.Forms.Label lblOrderID;
-        private System.Windows.Forms.Label lblSubTotal;
-        private Guna.UI2.WinForms.Guna2ComboBox cbbPromotion;
-        private System.Windows.Forms.Label lblFinalTotal;
-        private Guna.UI2.WinForms.Guna2ComboBox cbbPaymentMethod;
-        private Guna.UI2.WinForms.Guna2Button btnPrint;
-        private Guna.UI2.WinForms.Guna2Button btnPay;
-        private Guna.UI2.WinForms.Guna2Button btnClose;
-        private System.Drawing.Printing.PrintDocument printDocument1;
-        private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
-        private System.Windows.Forms.DataGridView dgvBill;
+            int yPos = 10;
+            int width = 300; // Cố định chiều rộng để căn giữa
+            int margin = 10; // Căn lề trái
+
+            // Công cụ để căn giữa và căn phải
+            StringFormat centerFormat = new StringFormat();
+            centerFormat.Alignment = StringAlignment.Center;
+
+            StringFormat rightFormat = new StringFormat();
+            rightFormat.Alignment = StringAlignment.Far;
+
+            // --- HEADER QUÁN (Căn Giữa) ---
+            g.DrawString("PBL3 RESTAURANT", fontTitle, Brushes.Black, new RectangleF(0, yPos, width, 25), centerFormat);
+            yPos += 25;
+            g.DrawString("Đ/c: Đại học Bách Khoa Đà Nẵng", fontRegular, Brushes.Black, new RectangleF(0, yPos, width, 20), centerFormat);
+            yPos += 20;
+            g.DrawString("Hotline: 0123.456.789", fontRegular, Brushes.Black, new RectangleF(0, yPos, width, 20), centerFormat);
+            yPos += 30;
+
+            // --- THÔNG TIN BILL ---
+            g.DrawString("PHIẾU TẠM TÍNH", new Font("Courier New", 14, FontStyle.Bold), Brushes.Black, new RectangleF(0, yPos, width, 25), centerFormat);
+            yPos += 30;
+
+            g.DrawString("Mã HD: " + currentOrderID, fontRegular, Brushes.Black, margin, yPos);
+            yPos += 20;
+            g.DrawString("Ngày: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), fontRegular, Brushes.Black, margin, yPos);
+            yPos += 25;
+
+            string line = new string('-', 35);
+            g.DrawString(line, fontRegular, Brushes.Black, margin, yPos);
+            yPos += 20;
+
+            // --- TIÊU ĐỀ CÁC CỘT ---
+            g.DrawString("Tên món", fontBold, Brushes.Black, margin, yPos);
+            g.DrawString("SL", fontBold, Brushes.Black, 150, yPos);
+            // Gióng phải cho đẹp
+            g.DrawString("Đ.Giá", fontBold, Brushes.Black, new RectangleF(170, yPos, 50, 20), rightFormat);
+            g.DrawString("T.Tiền", fontBold, Brushes.Black, new RectangleF(230, yPos, 60, 20), rightFormat);
+            yPos += 20;
+            g.DrawString(line, fontRegular, Brushes.Black, margin, yPos);
+            yPos += 20;
+
+            // --- CHI TIẾT CÁC MÓN ĂN ---
+            DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
+            foreach (DataRow row in dtDetails.Rows)
+            {
+                string name = row["ItemName"].ToString();
+                if (name.Length > 15) name = name.Substring(0, 15) + "..."; // Cắt tên dài
+
+                string qty = row["Quantity"].ToString();
+                string price = (Convert.ToDecimal(row["UnitPrice"]) / 1000).ToString("0") + "k";
+                string sub = (Convert.ToDecimal(row["SubTotal"]) / 1000).ToString("0") + "k";
+
+                g.DrawString(name, fontRegular, Brushes.Black, margin, yPos);
+                g.DrawString(qty, fontRegular, Brushes.Black, 150, yPos);
+                g.DrawString(price, fontRegular, Brushes.Black, new RectangleF(170, yPos, 50, 20), rightFormat);
+                g.DrawString(sub, fontRegular, Brushes.Black, new RectangleF(230, yPos, 60, 20), rightFormat);
+                yPos += 25;
+            }
+
+            g.DrawString(line, fontRegular, Brushes.Black, margin, yPos);
+            yPos += 20;
+
+            // --- TỔNG CỘNG ---
+            g.DrawString("TỔNG CỘNG:", new Font("Courier New", 12, FontStyle.Bold), Brushes.Black, margin, yPos);
+            g.DrawString(totalAmount.ToString("N0") + " đ", new Font("Courier New", 12, FontStyle.Bold), Brushes.Black, new RectangleF(130, yPos, 160, 25), rightFormat);
+            yPos += 40;
+
+            // --- LỜI CẢM ƠN ---
+            g.DrawString("Cảm ơn & Hẹn gặp lại!", fontHeader, Brushes.Black, new RectangleF(0, yPos, width, 20), centerFormat);
+        }
     }
 }
