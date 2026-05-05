@@ -221,12 +221,7 @@ namespace my_own_project.DesignForms
             }
         }
 
-        private void LoadMenuItems()
-        {
-            dtAllMenu = MenuItemBLL.GetAllAvailableItems();
-            LoadCategories();
-            FilterMenu(0, "");
-        }
+        
 
         private void LoadCategories()
         {
@@ -244,6 +239,16 @@ namespace my_own_project.DesignForms
                 }
             }
             catch { }
+        }
+
+        private void LoadMenuItems()
+        {
+            // THAY ĐỔI 1: Gọi SQL trực tiếp thay vì dùng BLL cũ để chắc chắn lấy được cột Status
+            string query = "SELECT MenuItemID, CategoryID, ItemName, Price, ISNULL(ImageUrl, '') AS ImageUrl, ISNULL(Status, N'Còn') AS Status FROM MenuItem WHERE ItemStatus = 1";
+            dtAllMenu = my_own_project.DAL.DataHelper.ExecuteQuery(query);
+
+            LoadCategories();
+            FilterMenu(0, "");
         }
 
         private void FilterMenu(int categoryID, string keyword)
@@ -273,7 +278,32 @@ namespace my_own_project.DesignForms
                     Convert.ToDecimal(row["Price"]),
                     row["ImageUrl"].ToString()
                 );
-                uc.OnSelect += Uc_OnSelect;
+
+                // ==========================================
+                // THAY ĐỔI 2: CHẶN MÓN HẾT VÀ DÁN TEM BÁO HIỆU
+                // ==========================================
+                if (row["Status"].ToString() == "Hết")
+                {
+                    uc.Enabled = false; // Vô hiệu hóa thẻ này (Hệ thống tự bôi xám và khóa tính năng click)
+
+                    Label lblOut = new Label();
+                    lblOut.Text = "HẾT HÀNG";
+                    lblOut.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+                    lblOut.ForeColor = Color.White;
+                    lblOut.BackColor = Color.FromArgb(255, 71, 87); // Màu đỏ báo động
+                    lblOut.AutoSize = true;
+                    lblOut.Location = new Point(10, 10);
+                    lblOut.Padding = new Padding(3);
+
+                    uc.Controls.Add(lblOut);
+                    lblOut.BringToFront(); // Nổi cái tem đỏ lên trên cùng
+                }
+                else
+                {
+                    // CHỈ NHỮNG MÓN "CÒN" mới được cấp quyền click để thêm vào giỏ hàng
+                    uc.OnSelect += Uc_OnSelect;
+                }
+
                 flpMenu.Controls.Add(uc);
             }
         }

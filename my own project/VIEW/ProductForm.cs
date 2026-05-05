@@ -19,6 +19,7 @@ namespace my_own_project.VIEW
 
         private Guna2ComboBox cboFilterCategory;
         private Guna2ComboBox cboInputCategory;
+        private Guna2ComboBox cboInputStatus; // Thêm biến trạng thái
 
         private FlowLayoutPanel flpProducts;
 
@@ -30,13 +31,11 @@ namespace my_own_project.VIEW
             InitializeComponent();
             this.Controls.Clear();
 
-            // Đảm bảo thư mục lưu ảnh luôn tồn tại
             if (!Directory.Exists(imageFolder))
                 Directory.CreateDirectory(imageFolder);
 
-            InitializeModernUI(); // Vẽ giao diện
+            InitializeModernUI();
 
-            // Gắn sự kiện Load form
             this.Load += ProductForm_Load;
         }
 
@@ -70,16 +69,7 @@ namespace my_own_project.VIEW
             int cWidth = 320;
             int cCenter = (cWidth - 150) / 2;
 
-            Label lblRightTitle = new Label
-            {
-                Text = "THÔNG TIN CHI TIẾT",
-                Font = new Font("Segoe UI", 16F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(88, 28, 230),
-                AutoSize = false,
-                Size = new Size(cWidth, 40),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Margin = new Padding(0, 0, 0, 20)
-            };
+            Label lblRightTitle = new Label { Text = "THÔNG TIN CHI TIẾT", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), AutoSize = false, Size = new Size(cWidth, 40), TextAlign = ContentAlignment.MiddleCenter, Margin = new Padding(0, 0, 0, 20) };
             flpInput.Controls.Add(lblRightTitle);
 
             picFood = new Guna2PictureBox { Size = new Size(150, 140), BorderRadius = 10, SizeMode = PictureBoxSizeMode.Zoom, FillColor = Color.FromArgb(240, 240, 240), Margin = new Padding(cCenter, 0, 0, 15) };
@@ -104,13 +94,20 @@ namespace my_own_project.VIEW
             Label lblPrice = new Label { Text = "Giá bán (VNĐ):", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
             flpInput.Controls.Add(lblPrice);
 
-            txtPrice = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 25) };
+            txtPrice = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 15) };
             flpInput.Controls.Add(txtPrice);
+
+            // --- THÊM CHỌN TRẠNG THÁI (ĐANG BÁN / HẾT MÓN) ---
+            Label lblStatus = new Label { Text = "Trạng thái:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
+            flpInput.Controls.Add(lblStatus);
+
+            cboInputStatus = new Guna2ComboBox { Size = new Size(cWidth, 40), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 25) };
+            cboInputStatus.Items.AddRange(new object[] { "Còn", "Hết" }); // Căn theo chữ CÒN/HẾT trong CSDL
+            flpInput.Controls.Add(cboInputStatus);
 
             txtID = new Guna2TextBox { Visible = false, Size = new Size(0, 0) };
             flpInput.Controls.Add(txtID);
 
-            // BỘ NÚT SỬA / XÓA (Giãn đều)
             TableLayoutPanel tlpAction = new TableLayoutPanel { Size = new Size(cWidth, 45), ColumnCount = 2, Margin = new Padding(0, 0, 0, 15) };
             tlpAction.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tlpAction.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
@@ -125,7 +122,7 @@ namespace my_own_project.VIEW
 
             flpInput.Controls.Add(tlpAction);
 
-            // --- BÊN TRÁI - THANH TOP BAR CÓ NÚT THÊM ---
+            // --- BÊN TRÁI - THANH TOP BAR ---
             Guna2Panel pnlCenter = new Guna2Panel();
             pnlCenter.Dock = DockStyle.Fill;
             this.Controls.Add(pnlCenter);
@@ -151,29 +148,11 @@ namespace my_own_project.VIEW
             Label lblFilter = new Label { Text = "Lọc theo:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(340, 55), AutoSize = true };
             pnlTopCenter.Controls.Add(lblFilter);
 
-            cboFilterCategory = new Guna2ComboBox
-            {
-                Location = new Point(420, 45),
-                Size = new Size(200, 36),
-                BorderRadius = 5,
-                Font = new Font("Segoe UI", 10F),
-                FillColor = Color.White,
-                BorderColor = Color.LightGray
-            };
-            cboFilterCategory.SelectedIndexChanged += CboFilterCategory_SelectedIndexChanged; // Tách xuống Events
+            cboFilterCategory = new Guna2ComboBox { Location = new Point(420, 45), Size = new Size(200, 36), BorderRadius = 5, Font = new Font("Segoe UI", 10F), FillColor = Color.White, BorderColor = Color.LightGray };
+            cboFilterCategory.SelectedIndexChanged += CboFilterCategory_SelectedIndexChanged;
             pnlTopCenter.Controls.Add(cboFilterCategory);
 
-            // NÚT POPUP THÊM MÓN NẰM Ở ĐÂY
-            btnAddNewProduct = new Guna2Button
-            {
-                Text = "➕ THÊM MÓN MỚI",
-                Location = new Point(650, 45),
-                Size = new Size(180, 36),
-                BorderRadius = 5,
-                FillColor = Color.FromArgb(46, 204, 113),
-                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
+            btnAddNewProduct = new Guna2Button { Text = "➕ THÊM MÓN MỚI", Location = new Point(650, 45), Size = new Size(180, 36), BorderRadius = 5, FillColor = Color.FromArgb(46, 204, 113), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnAddNewProduct.Click += BtnAddNewProduct_Click;
             pnlTopCenter.Controls.Add(btnAddNewProduct);
 
@@ -232,7 +211,8 @@ namespace my_own_project.VIEW
                     filterCatID = id;
                 }
 
-                string query = "SELECT MenuItemID AS [Mã món], CategoryID, ItemName AS [Tên món], Price AS [Giá bán], ISNULL(ImageUrl, '') AS [Ảnh] FROM MenuItem WHERE ItemStatus = 1";
+                // Cập nhật câu SQL: Lấy thêm cột Status (Còn/Hết)
+                string query = "SELECT MenuItemID AS [Mã món], CategoryID, ItemName AS [Tên món], Price AS [Giá bán], ISNULL(ImageUrl, '') AS [Ảnh], ISNULL(Status, N'Còn') AS [Trạng thái] FROM MenuItem WHERE ItemStatus = 1";
 
                 if (filterCatID > 0)
                     query += $" AND CategoryID = {filterCatID}";
@@ -252,6 +232,25 @@ namespace my_own_project.VIEW
                     card.Margin = new Padding(10, 10, 15, 15);
                     card.Cursor = Cursors.Hand;
                     card.Tag = row;
+
+                    // --- TRANG TRÍ: NHÃN BÁO HẾT MÓN ---
+                    string status = row["Trạng thái"].ToString();
+                    if (status == "Hết")
+                    {
+                        Label lblOut = new Label();
+                        lblOut.Text = "HẾT MÓN";
+                        lblOut.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+                        lblOut.ForeColor = Color.White;
+                        lblOut.BackColor = Color.FromArgb(255, 71, 87); // Màu đỏ chót
+                        lblOut.AutoSize = true;
+                        lblOut.Location = new Point(10, 10);
+                        lblOut.Padding = new Padding(3);
+                        card.Controls.Add(lblOut);
+                        lblOut.BringToFront(); // Nổi lên trên ảnh
+
+                        // Hiệu ứng làm mờ ảnh nếu hết món
+                        card.FillColor = Color.FromArgb(245, 245, 245);
+                    }
 
                     Guna2PictureBox pic = new Guna2PictureBox();
                     pic.Location = new Point(15, 15);
@@ -280,7 +279,7 @@ namespace my_own_project.VIEW
                     lblName.Size = new Size(160, 45);
                     lblName.TextAlign = ContentAlignment.TopCenter;
                     lblName.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-                    lblName.ForeColor = Color.FromArgb(64, 64, 64);
+                    lblName.ForeColor = (status == "Hết") ? Color.Gray : Color.FromArgb(64, 64, 64);
                     lblName.BackColor = Color.Transparent;
 
                     Label lblPrice = new Label();
@@ -289,7 +288,7 @@ namespace my_own_project.VIEW
                     lblPrice.Location = new Point(10, 195);
                     lblPrice.Size = new Size(160, 30);
                     lblPrice.TextAlign = ContentAlignment.MiddleCenter;
-                    lblPrice.ForeColor = Color.FromArgb(46, 204, 113);
+                    lblPrice.ForeColor = (status == "Hết") ? Color.Gray : Color.FromArgb(46, 204, 113);
                     lblPrice.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
                     lblPrice.BackColor = Color.Transparent;
 
@@ -297,17 +296,18 @@ namespace my_own_project.VIEW
                     card.Controls.Add(lblName);
                     card.Controls.Add(lblPrice);
 
-                    // Gắn sự kiện click để đưa dữ liệu lên cột bên phải
                     EventHandler clickEvent = (s, e) => { Card_Click(row); };
                     card.Click += clickEvent;
                     pic.Click += clickEvent;
                     lblName.Click += clickEvent;
                     lblPrice.Click += clickEvent;
 
+                    // Gắn click cho nhãn đỏ nữa để ấn vào phần nhãn vẫn ăn lệnh
+                    if (card.Controls.Count > 3) card.Controls[0].Click += clickEvent;
+
                     flpProducts.Controls.Add(card);
                 }
 
-                // Sau khi load xong, gọi hàm làm sạch form bên phải
                 ClearInputs();
             }
             catch (Exception ex)
@@ -324,6 +324,7 @@ namespace my_own_project.VIEW
             picFood.Image = null;
             currentImagePath = "";
             if (cboInputCategory.Items.Count > 0) cboInputCategory.SelectedIndex = 0;
+            if (cboInputStatus.Items.Count > 0) cboInputStatus.SelectedIndex = 0; // Đưa về mặc định "Còn"
         }
 
         #endregion
@@ -357,6 +358,10 @@ namespace my_own_project.VIEW
                 cboInputCategory.SelectedValue = row["CategoryID"];
             }
 
+            // --- Lấy trạng thái Còn / Hết gán vào Combo Box ---
+            string status = row["Trạng thái"].ToString();
+            cboInputStatus.Text = (status == "Hết") ? "Hết" : "Còn";
+
             string imgName = row["Ảnh"].ToString();
             currentImagePath = Path.Combine(imageFolder, imgName);
             try
@@ -375,10 +380,8 @@ namespace my_own_project.VIEW
 
         private void BtnAddNewProduct_Click(object sender, EventArgs e)
         {
-            // Mở Popup thêm món
             using (my_own_project.VIEW.ProductAddForm addForm = new my_own_project.VIEW.ProductAddForm())
             {
-                // Làm mờ form chính ở dưới
                 Form blackBackground = new Form();
                 blackBackground.StartPosition = FormStartPosition.Manual;
                 blackBackground.FormBorderStyle = FormBorderStyle.None;
@@ -386,18 +389,11 @@ namespace my_own_project.VIEW
                 blackBackground.BackColor = Color.Black;
                 blackBackground.Size = this.Size;
 
-                try
-                {
-                    blackBackground.Location = this.Parent.PointToScreen(this.Location);
-                }
-                catch
-                {
-                    blackBackground.Location = this.PointToScreen(Point.Empty);
-                }
+                try { blackBackground.Location = this.Parent.PointToScreen(this.Location); }
+                catch { blackBackground.Location = this.PointToScreen(Point.Empty); }
 
                 blackBackground.Show();
 
-                // Nếu thêm thành công và bấm Xác nhận
                 if (addForm.ShowDialog() == DialogResult.OK)
                 {
                     LoadProductData();
@@ -429,6 +425,8 @@ namespace my_own_project.VIEW
             try
             {
                 int catID = Convert.ToInt32(cboInputCategory.SelectedValue);
+                string status = cboInputStatus.Text; // Lấy trạng thái người dùng vừa chọn
+
                 string fileNameQuery = "";
                 if (!string.IsNullOrEmpty(currentImagePath) && File.Exists(currentImagePath) && !currentImagePath.Contains(imageFolder))
                 {
@@ -438,7 +436,8 @@ namespace my_own_project.VIEW
                     fileNameQuery = $", ImageUrl = '{fileName}'";
                 }
 
-                string query = $"UPDATE MenuItem SET CategoryID = {catID}, ItemName = N'{txtName.Text}', Price = {txtPrice.Text} {fileNameQuery} " +
+                // Cập nhật thêm Status vào câu lệnh SQL
+                string query = $"UPDATE MenuItem SET CategoryID = {catID}, ItemName = N'{txtName.Text}', Price = {txtPrice.Text}, Status = N'{status}' {fileNameQuery} " +
                                $"WHERE MenuItemID = {txtID.Text}";
 
                 my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
