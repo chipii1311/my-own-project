@@ -22,9 +22,12 @@ namespace my_own_project.VIEW
         private Color colorMainBG = Color.FromArgb(245, 246, 250);
         private Color colorPurple = Color.FromArgb(88, 28, 230);
 
-        // --- BIẾN PHÂN QUYỀN ĐĂNG NHẬP ---
-        // (Sau này form Đăng nhập sẽ truyền giá trị "Nhân viên" hoặc "Quản lý" vào biến này)
-        public string UserRole { get; set; } = "Quản lý"; // Tạm thời để Quản lý để bạn test thấy đủ nút
+        // ========================================================
+        // BIẾN PHÂN QUYỀN VÀ THÔNG TIN ĐĂNG NHẬP (Lấy từ Login)
+        // ========================================================
+        public string UserRole { get; set; } = "Quản lý";
+        public string LoggedInUserName { get; set; } = ""; // ĐÃ THÊM: Để hiện tên lên Avatar
+        public int LoggedInUserID { get; set; } = 0;       // ĐÃ THÊM: Để truyền cho AccountForm
 
         // Các nút Menu cần khai báo toàn cục để dễ ẩn/hiện khi phân quyền
         private Guna2Button btnPOS, btnHistory, btnProduct, btnDashboard, btnSettings, btnStaff, btnExit;
@@ -99,26 +102,21 @@ namespace my_own_project.VIEW
             // 4. NÚT TÀI KHOẢN (AVATAR) TRÊN TOPBAR - BẢN SANG CHẢNH
             btnAccount = new Guna2Button();
             btnAccount.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            // Thu nhỏ lại xíu, cách điệu thành dạng viên thuốc (Pill shape)
             btnAccount.Size = new Size(150, 32);
-            // Căn giữa theo chiều dọc của thanh TopBar (40px) -> Y=4
             btnAccount.Location = new Point(pnlTopBar.Width - 320, 4);
 
-            // Màu sắc thiết kế chuẩn UI hiện đại
-            btnAccount.FillColor = Color.FromArgb(240, 235, 255); // Nền tím cực nhạt
-            btnAccount.ForeColor = Color.FromArgb(88, 28, 230);   // Chữ tím đậm
+            btnAccount.FillColor = Color.FromArgb(240, 235, 255);
+            btnAccount.ForeColor = Color.FromArgb(88, 28, 230);
             btnAccount.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnAccount.Text = "🙂 Hi, Quản lý"; // Thêm emoji xinh xắn
-            btnAccount.BorderRadius = 16; // Bo tròn tuyệt đối hai đầu
+            btnAccount.Text = "🙂 Xin chào";
+            btnAccount.BorderRadius = 16;
             btnAccount.Cursor = Cursors.Hand;
 
-            // Hiệu ứng di chuột lên (Hover) chớp nháy màu rất mượt
             btnAccount.HoverState.FillColor = Color.FromArgb(88, 28, 230);
             btnAccount.HoverState.ForeColor = Color.White;
 
             btnAccount.Click += BtnAccount_Click;
 
-            // Thêm các control vào TopBar
             pnlTopBar.Controls.Add(btnAccount);
             pnlTopBar.Controls.Add(btnMin);
             pnlTopBar.Controls.Add(btnMax);
@@ -169,7 +167,6 @@ namespace my_own_project.VIEW
             btnSettings = CreateIconButton("⚙️", 400);
             btnSettings.Click += BtnSettings_Click;
 
-            // --- NÚT NHÂN SỰ VỪA ĐƯỢC THÊM VÀO ---
             btnStaff = CreateIconButton("👥", 470);
             btnStaff.Click += BtnStaff_Click;
 
@@ -178,7 +175,6 @@ namespace my_own_project.VIEW
             btnExit.Location = new Point(20, this.Height - 80);
             btnExit.Click += BtnClose_Click;
 
-            // Thêm các nút vào thanh Sidebar
             pnlSidebar.Controls.Add(btnPOS);
             pnlSidebar.Controls.Add(btnHistory);
             pnlSidebar.Controls.Add(btnProduct);
@@ -193,7 +189,6 @@ namespace my_own_project.VIEW
             this.Controls.Add(pnlMainContent);
             this.Controls.Add(pnlSidebar);
 
-            // TỰ ĐỘNG MỞ POSFORM KHI KHỞI ĐỘNG
             OpenChildForm(new POSForm());
         }
 
@@ -217,7 +212,6 @@ namespace my_own_project.VIEW
 
         #endregion
 
-
         // ========================================================
         #region 2. KHU VỰC CHỨC NĂNG & LOGIC
         // ========================================================
@@ -236,21 +230,29 @@ namespace my_own_project.VIEW
 
         #endregion
 
-
         // ========================================================
         #region 3. KHU VỰC SỰ KIỆN (EVENTS) & PHÂN QUYỀN
         // ========================================================
 
         private void NewMainForm_Load(object sender, EventArgs e)
         {
-            // TÍNH NĂNG PHÂN QUYỀN (ROLE-BASED ACCESS)
+            // 1. ĐỔI TÊN NÚT AVATAR
+            if (!string.IsNullOrEmpty(LoggedInUserName))
+            {
+                // Cắt lấy tên ngắn nhất (VD: Nguyễn Văn A -> A)
+                string[] nameParts = LoggedInUserName.Trim().Split(' ');
+                string shortName = nameParts[nameParts.Length - 1];
+                btnAccount.Text = "🙂 Hi, " + shortName;
+            }
+
+            // 2. TÍNH NĂNG PHÂN QUYỀN (ROLE-BASED ACCESS)
             if (UserRole == "Nhân viên")
             {
                 // Giấu các tính năng nhạy cảm không cho nhân viên thấy
-                btnProduct.Visible = false;   // Quản lý thực đơn
-                btnDashboard.Visible = false; // Xem báo cáo doanh thu
-                btnSettings.Visible = false;  // Cài đặt danh mục, bàn ăn
-                btnStaff.Visible = false;     // Quản lý nhân sự
+                btnProduct.Visible = false;
+                btnDashboard.Visible = false;
+                btnSettings.Visible = false;
+                btnStaff.Visible = false;
             }
         }
 
@@ -292,7 +294,6 @@ namespace my_own_project.VIEW
         // --- SỰ KIỆN GỌI FORM TÀI KHOẢN CÁ NHÂN ---
         private void BtnAccount_Click(object sender, EventArgs e)
         {
-            // Bỏ chọn tất cả các nút ở Sidebar để người dùng biết họ đang ở màn hình khác
             btnPOS.Checked = false;
             btnHistory.Checked = false;
             btnProduct.Checked = false;
@@ -300,8 +301,10 @@ namespace my_own_project.VIEW
             btnSettings.Checked = false;
             btnStaff.Checked = false;
 
-            // Mở AccountForm
-            OpenChildForm(new AccountForm());
+            // TRUYỀN ID CỦA NGƯỜI DÙNG VÀO TRONG DẤU NGOẶC LUÔN!
+            AccountForm accForm = new AccountForm(this.LoggedInUserID);
+
+            OpenChildForm(accForm);
         }
 
         #endregion

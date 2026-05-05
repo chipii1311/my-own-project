@@ -180,27 +180,30 @@ namespace my_own_project.DAL
                 LastLogin = row["LastLogin"] != DBNull.Value ? (DateTime?)row["LastLogin"] : null
             };
         }
+
+
+        public static bool ChangePassword(int userID, string newPasswordHash)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@UserID", userID),
+                    new SqlParameter("@NewPasswordHash", newPasswordHash)
+                };
+
+                // Gọi Stored Procedure chuyên làm nhiệm vụ đổi pass
+                DataHelper.ExecuteSP("sp_Users_ChangePassword", parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UserDAL.ChangePassword Error: {ex.Message}");
+                throw;
+            }
+        }
+
     }
 }
 
 // ==================== CHANGE PASSWORD ====================
-public static bool ChangePassword(int userID, string newPasswordHash)
-{
-    try
-    {
-        SqlParameter[] parameters = new SqlParameter[]
-        {
-                    new SqlParameter("@UserID", userID),
-                    new SqlParameter("@NewPasswordHash", newPasswordHash)
-        };
-
-        // Gọi Stored Procedure chuyên làm nhiệm vụ đổi pass
-        DataHelper.ExecuteSP("sp_Users_ChangePassword", parameters);
-        return true;
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"UserDAL.ChangePassword Error: {ex.Message}");
-        throw;
-    }
-}
