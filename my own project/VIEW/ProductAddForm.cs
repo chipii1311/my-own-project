@@ -9,6 +9,9 @@ namespace my_own_project.VIEW
 {
     public partial class ProductAddForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private Guna2TextBox txtItemName;
         private Guna2ComboBox cboCategory;
         private Guna2TextBox txtPrice;
@@ -20,7 +23,7 @@ namespace my_own_project.VIEW
             InitializeComponent();
             this.Controls.Clear();
 
-            // 1. CÂU LỆNH CHỐNG VỠ FORM (Khóa mõm tính năng tự Scale của Windows)
+            // 1. CÂU LỆNH CHỐNG VỠ FORM (Khóa tính năng tự Scale của Windows)
             this.AutoScaleMode = AutoScaleMode.None;
 
             this.Size = new Size(500, 650);
@@ -29,19 +32,23 @@ namespace my_own_project.VIEW
             this.BackColor = Color.White;
 
             BuildPopupUI_Unbreakable(); // Dùng lưới bất tử
-            LoadCategories();
 
             Guna2ShadowForm shadow = new Guna2ShadowForm(this);
+
+            // Gắn sự kiện Load form
+            this.Load += ProductAddForm_Load;
         }
+
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
 
         private void BuildPopupUI_Unbreakable()
         {
             // Viền bo góc
             Guna2Elipse elipse = new Guna2Elipse { TargetControl = this, BorderRadius = 15 };
 
-            // ==========================================
-            // 1. THANH TIÊU ĐỀ
-            // ==========================================
+            // --- 1. THANH TIÊU ĐỀ ---
             Guna2Panel pnlTop = new Guna2Panel { Dock = DockStyle.Top, Height = 50, FillColor = Color.FromArgb(88, 28, 230) };
             this.Controls.Add(pnlTop);
 
@@ -49,14 +56,12 @@ namespace my_own_project.VIEW
             pnlTop.Controls.Add(lblTitle);
 
             Guna2ControlBox btnClose = new Guna2ControlBox { Anchor = AnchorStyles.Top | AnchorStyles.Right, Size = new Size(50, 50), Location = new Point(450, 0), FillColor = Color.Transparent, BackColor = Color.Transparent, IconColor = Color.White, Cursor = Cursors.Hand, CustomClick = true };
-            btnClose.Click += (s, e) => { this.Close(); };
+            btnClose.Click += BtnClose_Click; // Tách sự kiện đóng Form
             pnlTop.Controls.Add(btnClose);
 
             Guna2DragControl drag = new Guna2DragControl { TargetControl = pnlTop };
 
-            // ==========================================
-            // 2. LƯỚI TABLELAYOUT (CHỐNG ĐÈ 100%)
-            // ==========================================
+            // --- 2. LƯỚI TABLELAYOUT (CHỐNG ĐÈ 100%) ---
             TableLayoutPanel tlp = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
@@ -114,6 +119,13 @@ namespace my_own_project.VIEW
             tlp.Controls.Add(btnSave, 0, 8);
         }
 
+        #endregion
+
+
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC DATABASE
+        // ========================================================
+
         private void LoadCategories()
         {
             try
@@ -127,6 +139,23 @@ namespace my_own_project.VIEW
             catch (Exception ex) { MessageBox.Show("Lỗi tải danh mục: " + ex.Message); }
         }
 
+        #endregion
+
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void ProductAddForm_Load(object sender, EventArgs e)
+        {
+            LoadCategories();
+        }
+
+        private void BtnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
         private void BtnChooseImg_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -135,7 +164,7 @@ namespace my_own_project.VIEW
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     picItem.Image = Image.FromFile(ofd.FileName);
-                    // Sửa lại: Lưu lại TOÀN BỘ đường dẫn gốc của ảnh trên máy bạn
+                    // Lưu lại TOÀN BỘ đường dẫn gốc của ảnh trên máy bạn
                     selectedImagePath = ofd.FileName;
                 }
             }
@@ -160,14 +189,14 @@ namespace my_own_project.VIEW
                 int catId = Convert.ToInt32(cboCategory.SelectedValue);
                 string finalImageName = "";
 
-                // --- BỔ SUNG LOGIC COPY ẢNH VÀO THƯ MỤC CỦA APP ---
+                // --- LOGIC COPY ẢNH VÀO THƯ MỤC CỦA APP ---
                 if (!string.IsNullOrEmpty(selectedImagePath) && File.Exists(selectedImagePath))
                 {
                     // Lấy đường dẫn thư mục MenuImages của app
                     string imageFolder = Path.Combine(Application.StartupPath, "MenuImages");
                     if (!Directory.Exists(imageFolder)) Directory.CreateDirectory(imageFolder);
 
-                    // Đổi tên ảnh tránh bị trùng lặp (Ví dụ: ITEM_20260504_153020.jpg)
+                    // Đổi tên ảnh tránh bị trùng lặp
                     finalImageName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.GetExtension(selectedImagePath);
                     string destPath = Path.Combine(imageFolder, finalImageName);
 
@@ -191,5 +220,7 @@ namespace my_own_project.VIEW
                 MessageBox.Show("Lỗi lưu dữ liệu: " + ex.Message);
             }
         }
+
+        #endregion
     }
 }

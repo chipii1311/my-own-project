@@ -6,20 +6,24 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 
-namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
+namespace my_own_project.VIEW
 {
     public partial class PaymentForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private int currentOrderID;
         private decimal totalAmount = 0;
         private int tableID;
 
         // Các control giao diện
         private Label lblTotalAmount;
-        private Guna2Button btnPrint;   // Nút In
-        private Guna2Button btnConfirm; // Nút Xác nhận
-        private Guna2Button btnCancel;  // Nút Hủy
+        private Guna2Button btnPrint;
+        private Guna2Button btnConfirm;
+        private Guna2Button btnCancel;
         private Guna2ShadowForm shadowForm;
+        private Guna2BorderlessForm borderlessForm; // Đã sửa lỗi: Chuyển thành biến toàn cục
 
         // Đồ nghề in ấn
         private PrintDocument printDoc;
@@ -27,10 +31,13 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
 
         public PaymentForm(int orderID, int tableID = -1)
         {
+            InitializeComponent(); // ĐÃ FIX LỖI: Dòng lệnh quan trọng nhất để Form không bị tẩu hỏa nhập ma!
+            this.Controls.Clear();
+
             this.currentOrderID = orderID;
             this.tableID = tableID;
 
-            // Khởi tạo máy in khổ 80mm (Khoảng 315 pixel)
+            // Khởi tạo máy in khổ 80mm
             printDoc = new PrintDocument();
             printDoc.DefaultPageSettings.PaperSize = new PaperSize("Thermal80mm", 315, 600);
             printDoc.PrintPage += PrintDoc_PrintPage;
@@ -39,16 +46,21 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             printPreview.Document = printDoc;
             printPreview.StartPosition = FormStartPosition.CenterScreen;
             printPreview.Size = new Size(450, 650);
-            // Sửa lỗi zoom nhỏ của PrintPreview mặc định
             printPreview.PrintPreviewControl.Zoom = 1.0;
 
-            InitializeModernUI();
-            LoadTotalAmount();
+            BuildPaymentUI(); // Vẽ giao diện
+
+            // Chuyển việc gọi Data xuống sự kiện Load cho an toàn
+            this.Load += PaymentForm_Load;
         }
 
-        private void InitializeModernUI()
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
+
+        private void BuildPaymentUI()
         {
-            this.Size = new Size(480, 320); // Mở rộng form một chút cho thoáng
+            this.Size = new Size(480, 320);
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterParent;
             this.BackColor = Color.White;
@@ -91,7 +103,7 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             btnCancel.ForeColor = Color.Black;
             btnCancel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnCancel.Cursor = Cursors.Hand;
-            btnCancel.Click += (s, e) => { this.Close(); };
+            btnCancel.Click += BtnCancel_Click;
             this.Controls.Add(btnCancel);
 
             btnPrint = new Guna2Button();
@@ -99,11 +111,11 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             btnPrint.Size = new Size(130, 55);
             btnPrint.Location = new Point(135, btnY);
             btnPrint.BorderRadius = 8;
-            btnPrint.FillColor = Color.FromArgb(46, 204, 113); // Màu xanh lá
+            btnPrint.FillColor = Color.FromArgb(46, 204, 113);
             btnPrint.ForeColor = Color.White;
             btnPrint.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnPrint.Cursor = Cursors.Hand;
-            btnPrint.Click += (s, e) => { printPreview.ShowDialog(); }; // Chỉ bật Preview Bill, không dọn bàn
+            btnPrint.Click += BtnPrint_Click;
             this.Controls.Add(btnPrint);
 
             btnConfirm = new Guna2Button();
@@ -111,7 +123,7 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             btnConfirm.Size = new Size(180, 55);
             btnConfirm.Location = new Point(275, btnY);
             btnConfirm.BorderRadius = 8;
-            btnConfirm.FillColor = Color.FromArgb(88, 28, 230); // Màu tím
+            btnConfirm.FillColor = Color.FromArgb(88, 28, 230);
             btnConfirm.ForeColor = Color.White;
             btnConfirm.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             btnConfirm.Cursor = Cursors.Hand;
@@ -119,20 +131,56 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             this.Controls.Add(btnConfirm);
 
             // Viền bo góc
-            Guna2BorderlessForm borderlessForm = new Guna2BorderlessForm();
+            borderlessForm = new Guna2BorderlessForm();
             borderlessForm.ContainerControl = this;
             borderlessForm.BorderRadius = 15;
         }
 
+        #endregion
+
+
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC
+        // ========================================================
+
         private void LoadTotalAmount()
         {
-            DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
-            totalAmount = 0;
-            foreach (DataRow row in dtDetails.Rows)
+            try
             {
-                totalAmount += Convert.ToDecimal(row["SubTotal"]);
+                DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
+                totalAmount = 0;
+                foreach (DataRow row in dtDetails.Rows)
+                {
+                    totalAmount += Convert.ToDecimal(row["SubTotal"]);
+                }
+                lblTotalAmount.Text = totalAmount.ToString("N0") + " đ";
             }
-            lblTotalAmount.Text = totalAmount.ToString("N0") + " đ";
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải thông tin hóa đơn: " + ex.Message);
+            }
+        }
+
+        #endregion
+
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void PaymentForm_Load(object sender, EventArgs e)
+        {
+            LoadTotalAmount();
+        }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void BtnPrint_Click(object sender, EventArgs e)
+        {
+            printPreview.ShowDialog();
         }
 
         private void BtnConfirm_Click(object sender, EventArgs e)
@@ -145,6 +193,7 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
                     my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
 
                     MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
@@ -155,30 +204,25 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             }
         }
 
-        // ===============================================
-        // BÍ QUYẾT VẼ BILL RÕ NÉT CĂN CHỈNH TUYỆT ĐỐI
-        // ===============================================
+        // --- BÍ QUYẾT VẼ BILL RÕ NÉT CĂN CHỈNH TUYỆT ĐỐI ---
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
 
-            // Khai báo Font chữ to, rõ ràng
             Font fontTitle = new Font("Courier New", 18, FontStyle.Bold);
             Font fontSub = new Font("Courier New", 11, FontStyle.Regular);
             Font fontHeader = new Font("Courier New", 14, FontStyle.Bold);
             Font fontItem = new Font("Courier New", 11, FontStyle.Regular);
             Font fontBold = new Font("Courier New", 11, FontStyle.Bold);
 
-            // Công cụ căn giữa và căn phải tuyệt đối
             StringFormat centerAlign = new StringFormat() { Alignment = StringAlignment.Center };
             StringFormat rightAlign = new StringFormat() { Alignment = StringAlignment.Far };
 
             int yPos = 10;
             int leftMargin = 5;
-            int centerPoint = 157; // Điểm chính giữa của tờ giấy 315px
-            int rightMargin = 300; // Mép phải tờ giấy
+            int centerPoint = 157;
+            int rightMargin = 300;
 
-            // --- HEADER QUÁN ---
             g.DrawString("PBL3 RESTAURANT", fontTitle, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
             yPos += 30;
             g.DrawString("Đ/c: ĐH Bách Khoa Đà Nẵng", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
@@ -186,7 +230,6 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             g.DrawString("Hotline: 0123.456.789", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
             yPos += 35;
 
-            // --- TIÊU ĐỀ BILL ---
             g.DrawString("PHIẾU TẠM TÍNH", fontHeader, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
             yPos += 35;
 
@@ -199,40 +242,38 @@ namespace my_own_project.VIEW // Đảm bảo đúng namespace này nhé
             g.DrawString(line, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 20;
 
-            // --- TIÊU ĐỀ CÁC CỘT ---
             g.DrawString("Tên món", fontBold, Brushes.Black, leftMargin, yPos);
             g.DrawString("SL", fontBold, Brushes.Black, 170, yPos);
-            g.DrawString("T.Tiền", fontBold, Brushes.Black, rightMargin, yPos, rightAlign); // Ép sát mép phải
+            g.DrawString("T.Tiền", fontBold, Brushes.Black, rightMargin, yPos, rightAlign);
             yPos += 25;
             g.DrawString(line, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 20;
 
-            // --- CHI TIẾT MÓN ---
             DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
             foreach (DataRow row in dtDetails.Rows)
             {
                 string name = row["ItemName"].ToString();
-                if (name.Length > 15) name = name.Substring(0, 15) + ".."; // Chống tràn dòng
+                if (name.Length > 15) name = name.Substring(0, 15) + "..";
 
                 string qty = row["Quantity"].ToString();
                 string sub = Convert.ToDecimal(row["SubTotal"]).ToString("N0");
 
                 g.DrawString(name, fontItem, Brushes.Black, leftMargin, yPos);
                 g.DrawString(qty, fontItem, Brushes.Black, 170, yPos);
-                g.DrawString(sub, fontItem, Brushes.Black, rightMargin, yPos, rightAlign); // Tiền ép mép phải
+                g.DrawString(sub, fontItem, Brushes.Black, rightMargin, yPos, rightAlign);
                 yPos += 25;
             }
 
             g.DrawString(line, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 25;
 
-            // --- TỔNG CỘNG ---
             g.DrawString("TỔNG CỘNG:", fontHeader, Brushes.Black, leftMargin, yPos);
             g.DrawString(totalAmount.ToString("N0") + " đ", fontHeader, Brushes.Black, rightMargin, yPos, rightAlign);
             yPos += 45;
 
-            // --- FOOTER ---
             g.DrawString("Cảm ơn & Hẹn gặp lại!", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
         }
+
+        #endregion
     }
 }

@@ -10,13 +10,16 @@ namespace my_own_project.VIEW
 {
     public partial class HistoryForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private Guna2DateTimePicker dtpFrom;
         private Guna2DateTimePicker dtpTo;
         private Guna2Button btnFilter;
         private Label lblTotalRevenue;
         private DataGridView dgvHistory;
 
-        // --- BỘ ĐỒ NGHỀ XEM LẠI HÓA ĐƠN ---
+        // BỘ ĐỒ NGHỀ XEM LẠI HÓA ĐƠN
         private PrintDocument printDoc;
         private PrintPreviewDialog printPreview;
         private int selectedOrderID = -1;
@@ -27,7 +30,8 @@ namespace my_own_project.VIEW
         {
             InitializeComponent();
             this.Controls.Clear();
-            InitializeModernUI();
+
+            InitializeModernUI(); // Vẽ giao diện
 
             // Cấu hình máy in ảo khổ 80mm
             printDoc = new PrintDocument();
@@ -40,17 +44,20 @@ namespace my_own_project.VIEW
             printPreview.Size = new Size(450, 650);
             printPreview.PrintPreviewControl.Zoom = 1.0;
 
-            this.Load += (s, e) => { LoadHistoryData(); };
+            // Gắn sự kiện Load form
+            this.Load += HistoryForm_Load;
         }
+
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
 
         private void InitializeModernUI()
         {
             this.BackColor = Color.FromArgb(245, 246, 250);
             this.FormBorderStyle = FormBorderStyle.None;
 
-            // ==========================================
-            // 1. THANH CÔNG CỤ NẰM TRÊN CÙNG
-            // ==========================================
+            // --- 1. THANH CÔNG CỤ NẰM TRÊN CÙNG ---
             Guna2Panel pnlTop = new Guna2Panel();
             pnlTop.Dock = DockStyle.Top;
             pnlTop.Height = 100;
@@ -82,7 +89,7 @@ namespace my_own_project.VIEW
             pnlTop.Controls.Add(dtpTo);
 
             btnFilter = new Guna2Button { Text = "Lọc dữ liệu", Location = new Point(800, 32), Size = new Size(110, 40), BorderRadius = 8, FillColor = Color.FromArgb(88, 28, 230), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnFilter.Click += (s, e) => { LoadHistoryData(); };
+            btnFilter.Click += BtnFilter_Click; // Đã tách xuống Khu vực 3
             pnlTop.Controls.Add(btnFilter);
 
             Label lblTotalText = new Label { Text = "Tổng doanh thu:", Font = new Font("Segoe UI", 12F), ForeColor = Color.Gray, AutoSize = true, BackColor = Color.White, Anchor = AnchorStyles.Top | AnchorStyles.Right };
@@ -93,9 +100,7 @@ namespace my_own_project.VIEW
             lblTotalRevenue.Location = new Point(pnlTop.Width - 200, 45);
             pnlTop.Controls.Add(lblTotalRevenue);
 
-            // ==========================================
-            // 2. TẠO BẢNG DỮ LIỆU
-            // ==========================================
+            // --- 2. TẠO BẢNG DỮ LIỆU ---
             dgvHistory = new DataGridView();
             dgvHistory.Location = new Point(20, 120);
             dgvHistory.Size = new Size(this.Width - 40, this.Height - 140);
@@ -133,6 +138,13 @@ namespace my_own_project.VIEW
             this.Controls.Add(dgvHistory);
             dgvHistory.BringToFront();
         }
+
+        #endregion
+
+
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC DATABASE
+        // ========================================================
 
         private void LoadHistoryData()
         {
@@ -180,9 +192,23 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ===============================================
-        // BẮT SỰ KIỆN CLICK ĐÚP CHUỘT VÀO HÓA ĐƠN
-        // ===============================================
+        #endregion
+
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void HistoryForm_Load(object sender, EventArgs e)
+        {
+            LoadHistoryData();
+        }
+
+        private void BtnFilter_Click(object sender, EventArgs e)
+        {
+            LoadHistoryData();
+        }
+
         private void DgvHistory_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -197,9 +223,6 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ===============================================
-        // VẼ "BẢN SAO HÓA ĐƠN" CHI TIẾT
-        // ===============================================
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -270,5 +293,7 @@ namespace my_own_project.VIEW
 
             g.DrawString("*** BẢN SAO (REPRINT) ***", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
         }
+
+        #endregion
     }
 }

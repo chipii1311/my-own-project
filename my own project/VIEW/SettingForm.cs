@@ -8,15 +8,18 @@ namespace my_own_project.VIEW
 {
     public partial class SettingForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private Panel pageTables, pageCategories, pageInfo;
         private Guna2Button btnMenuTable, btnMenuCategory, btnMenuInfo;
 
-        // BIẾN TOÀN CỤC CHO TAB DANH MỤC
+        // BIẾN CHO TAB DANH MỤC
         private Guna2DataGridView dgvCategories;
         private Guna2TextBox txtCategoryName;
         private Guna2TextBox txtCategoryID;
 
-        // BIẾN TOÀN CỤC CHO TAB BÀN ĂN
+        // BIẾN CHO TAB BÀN ĂN
         private Guna2DataGridView dgvTables;
         private Guna2TextBox txtTableName;
         private Guna2ComboBox cboTableStatus;
@@ -30,12 +33,15 @@ namespace my_own_project.VIEW
             this.FormBorderStyle = FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            BuildBulletproofLayout();
+            BuildBulletproofLayout(); // Vẽ giao diện
 
-            // Tải dữ liệu lên bảng ngay khi mở form
-            LoadTableData();
-            LoadCategoryData();
+            // Chuyển việc tải dữ liệu xuống sự kiện Load
+            this.Load += SettingForm_Load;
         }
+
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
 
         private void BuildBulletproofLayout()
         {
@@ -48,7 +54,7 @@ namespace my_own_project.VIEW
             tlpMain.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             this.Controls.Add(tlpMain);
 
-            // SIDEBAR
+            // --- SIDEBAR ---
             Guna2Panel pnlMenu = new Guna2Panel();
             pnlMenu.Dock = DockStyle.Fill;
             pnlMenu.FillColor = Color.White;
@@ -71,18 +77,18 @@ namespace my_own_project.VIEW
             flpMenu.Controls.Add(lblTitle);
 
             btnMenuTable = CreateMenuButton("Quản lý Bàn");
-            btnMenuTable.Click += (s, e) => { SwitchPage(pageTables, btnMenuTable); };
+            btnMenuTable.Click += BtnMenuTable_Click;
             flpMenu.Controls.Add(btnMenuTable);
 
             btnMenuCategory = CreateMenuButton("Danh mục món");
-            btnMenuCategory.Click += (s, e) => { SwitchPage(pageCategories, btnMenuCategory); };
+            btnMenuCategory.Click += BtnMenuCategory_Click;
             flpMenu.Controls.Add(btnMenuCategory);
 
             btnMenuInfo = CreateMenuButton("Thông tin quán");
-            btnMenuInfo.Click += (s, e) => { SwitchPage(pageInfo, btnMenuInfo); };
+            btnMenuInfo.Click += BtnMenuInfo_Click;
             flpMenu.Controls.Add(btnMenuInfo);
 
-            // NỘI DUNG
+            // --- NỘI DUNG (CONTENT) ---
             Guna2Panel pnlContent = new Guna2Panel();
             pnlContent.Dock = DockStyle.Fill;
             pnlContent.Padding = new Padding(30);
@@ -100,9 +106,6 @@ namespace my_own_project.VIEW
             SwitchPage(pageTables, btnMenuTable); // Mặc định mở trang Bàn
         }
 
-        // ==========================================
-        // GIAO DIỆN & LOGIC: QUẢN LÝ BÀN ĂN
-        // ==========================================
         private Panel BuildPageTables()
         {
             Panel pnl = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(245, 246, 250), Padding = new Padding(20) };
@@ -195,113 +198,6 @@ namespace my_own_project.VIEW
             return pnl;
         }
 
-        private void LoadTableData()
-        {
-            try
-            {
-                // Đổi TableName thành TableNumber, và đổi tiêu đề hiển thị thành "Số Bàn"
-                string query = "SELECT TableID AS [Mã], TableNumber AS [Số Bàn], Status AS [Trạng Thái] FROM DiningTable";
-                DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(query);
-                dgvTables.DataSource = dt;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tải danh sách bàn: " + ex.Message);
-            }
-        }
-
-        private void DgvTables_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = dgvTables.Rows[e.RowIndex];
-                txtTableID.Text = row.Cells["Mã"].Value.ToString();
-                txtTableName.Text = row.Cells["Số Bàn"].Value.ToString(); // Nạp số bàn lên textbox
-                cboTableStatus.Text = row.Cells["Trạng Thái"].Value.ToString();
-            }
-        }
-
-        private void BtnAddTable_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtTableName.Text))
-            {
-                MessageBox.Show("Vui lòng nhập số bàn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            // Ép kiểu dữ liệu: Ép cái chữ người dùng gõ thành Số nguyên (int)
-            if (!int.TryParse(txtTableName.Text, out int tableNum))
-            {
-                MessageBox.Show("Số bàn chỉ được phép nhập số (Ví dụ: 1, 2, 3...), không được nhập chữ!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                // Dùng cột TableNumber thay vì TableName
-                string query = $"INSERT INTO DiningTable (TableNumber, Status) VALUES ({tableNum}, N'{cboTableStatus.Text}')";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
-                MessageBox.Show("Thêm bàn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                txtTableName.Text = "";
-                LoadTableData();
-            }
-            catch (Exception ex) { MessageBox.Show("Lỗi khi thêm: " + ex.Message); }
-        }
-
-        private void BtnEditTable_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtTableID.Text))
-            {
-                MessageBox.Show("Vui lòng nhấp chọn 1 bàn trên bảng để sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!int.TryParse(txtTableName.Text, out int tableNum))
-            {
-                MessageBox.Show("Số bàn chỉ được phép nhập số (Ví dụ: 1, 2, 3...), không được nhập chữ!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            try
-            {
-                // Dùng cột TableNumber thay vì TableName
-                string query = $"UPDATE DiningTable SET TableNumber = {tableNum}, Status = N'{cboTableStatus.Text}' WHERE TableID = {txtTableID.Text}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
-                MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                txtTableName.Text = "";
-                txtTableID.Text = "";
-                LoadTableData();
-            }
-            catch (Exception ex) { MessageBox.Show("Lỗi khi sửa: " + ex.Message); }
-        }
-
-
-
-        private void BtnDeleteTable_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtTableID.Text))
-            {
-                MessageBox.Show("Vui lòng chọn 1 bàn trên bảng để xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (MessageBox.Show("Bạn có chắc chắn muốn xóa bàn này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                try
-                {
-                    string query = $"DELETE FROM DiningTable WHERE TableID = {txtTableID.Text}";
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
-                    MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    txtTableName.Text = "";
-                    txtTableID.Text = "";
-                    LoadTableData();
-                }
-                catch (Exception ex) { MessageBox.Show("Lỗi khi xóa: " + ex.Message); }
-            }
-        }
-
-        // ==========================================
-        // GIAO DIỆN & LOGIC: DANH MỤC MÓN ĂN
-        // ==========================================
         private Panel BuildPageCategories()
         {
             Panel pnl = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(245, 246, 250), Padding = new Padding(20) };
@@ -388,6 +284,53 @@ namespace my_own_project.VIEW
             return pnl;
         }
 
+        private Panel BuildPageInfo()
+        {
+            Panel pnl = new Panel { Dock = DockStyle.Fill };
+            Label lblHeader = new Label { Text = "THIẾT LẬP THÔNG TIN (Sắp hoàn thiện)", Font = new Font("Segoe UI", 18F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), AutoSize = true, Dock = DockStyle.Top };
+            pnl.Controls.Add(lblHeader);
+            return pnl;
+        }
+
+        private Guna2Button CreateMenuButton(string text)
+        {
+            Guna2Button btn = new Guna2Button();
+            btn.Size = new Size(200, 45);
+            btn.Margin = new Padding(0, 0, 0, 10);
+            btn.BorderRadius = 8;
+            btn.Text = text;
+            btn.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btn.TextAlign = HorizontalAlignment.Left;
+            btn.TextOffset = new Point(10, 0);
+            btn.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
+            btn.Cursor = Cursors.Hand;
+            btn.FillColor = Color.Transparent;
+            btn.ForeColor = Color.FromArgb(64, 64, 64);
+            btn.CheckedState.FillColor = Color.FromArgb(240, 235, 255);
+            btn.CheckedState.ForeColor = Color.FromArgb(88, 28, 230);
+            return btn;
+        }
+
+        #endregion
+
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC
+        // ========================================================
+
+        private void LoadTableData()
+        {
+            try
+            {
+                string query = "SELECT TableID AS [Mã], TableNumber AS [Số Bàn], Status AS [Trạng Thái] FROM DiningTable";
+                DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(query);
+                dgvTables.DataSource = dt;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải danh sách bàn: " + ex.Message);
+            }
+        }
+
         private void LoadCategoryData()
         {
             try
@@ -399,6 +342,136 @@ namespace my_own_project.VIEW
             catch (Exception ex) { MessageBox.Show("Lỗi tải danh mục: " + ex.Message); }
         }
 
+        private void SwitchPage(Panel targetPage, Guna2Button targetButton)
+        {
+            pageTables.Visible = false;
+            pageCategories.Visible = false;
+            pageInfo.Visible = false;
+
+            targetPage.Visible = true;
+            targetPage.BringToFront();
+
+            btnMenuTable.Checked = false;
+            btnMenuCategory.Checked = false;
+            btnMenuInfo.Checked = false;
+
+            targetButton.Checked = true;
+        }
+
+        #endregion
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void SettingForm_Load(object sender, EventArgs e)
+        {
+            LoadTableData();
+            LoadCategoryData();
+        }
+
+        // --- SỰ KIỆN CHUYỂN TAB ---
+        private void BtnMenuTable_Click(object sender, EventArgs e)
+        {
+            SwitchPage(pageTables, btnMenuTable);
+        }
+
+        private void BtnMenuCategory_Click(object sender, EventArgs e)
+        {
+            SwitchPage(pageCategories, btnMenuCategory);
+        }
+
+        private void BtnMenuInfo_Click(object sender, EventArgs e)
+        {
+            SwitchPage(pageInfo, btnMenuInfo);
+        }
+
+        // --- SỰ KIỆN TAB BÀN ĂN ---
+        private void DgvTables_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = dgvTables.Rows[e.RowIndex];
+                txtTableID.Text = row.Cells["Mã"].Value.ToString();
+                txtTableName.Text = row.Cells["Số Bàn"].Value.ToString();
+                cboTableStatus.Text = row.Cells["Trạng Thái"].Value.ToString();
+            }
+        }
+
+        private void BtnAddTable_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtTableName.Text))
+            {
+                MessageBox.Show("Vui lòng nhập số bàn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtTableName.Text, out int tableNum))
+            {
+                MessageBox.Show("Số bàn chỉ được phép nhập số (Ví dụ: 1, 2, 3...), không được nhập chữ!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                string query = $"INSERT INTO DiningTable (TableNumber, Status) VALUES ({tableNum}, N'{cboTableStatus.Text}')";
+                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                MessageBox.Show("Thêm bàn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtTableName.Text = "";
+                LoadTableData();
+            }
+            catch (Exception ex) { MessageBox.Show("Lỗi khi thêm: " + ex.Message); }
+        }
+
+        private void BtnEditTable_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtTableID.Text))
+            {
+                MessageBox.Show("Vui lòng nhấp chọn 1 bàn trên bảng để sửa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtTableName.Text, out int tableNum))
+            {
+                MessageBox.Show("Số bàn chỉ được phép nhập số (Ví dụ: 1, 2, 3...), không được nhập chữ!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                string query = $"UPDATE DiningTable SET TableNumber = {tableNum}, Status = N'{cboTableStatus.Text}' WHERE TableID = {txtTableID.Text}";
+                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtTableName.Text = "";
+                txtTableID.Text = "";
+                LoadTableData();
+            }
+            catch (Exception ex) { MessageBox.Show("Lỗi khi sửa: " + ex.Message); }
+        }
+
+        private void BtnDeleteTable_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtTableID.Text))
+            {
+                MessageBox.Show("Vui lòng chọn 1 bàn trên bảng để xóa!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (MessageBox.Show("Bạn có chắc chắn muốn xóa bàn này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    string query = $"DELETE FROM DiningTable WHERE TableID = {txtTableID.Text}";
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                    MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtTableName.Text = "";
+                    txtTableID.Text = "";
+                    LoadTableData();
+                }
+                catch (Exception ex) { MessageBox.Show("Lỗi khi xóa: " + ex.Message); }
+            }
+        }
+
+        // --- SỰ KIỆN TAB DANH MỤC ---
         private void DgvCategories_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -469,53 +542,6 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ==========================================
-        // TRANG THÔNG TIN QUÁN (GIỮ TẠM)
-        // ==========================================
-        private Panel BuildPageInfo()
-        {
-            Panel pnl = new Panel { Dock = DockStyle.Fill };
-            Label lblHeader = new Label { Text = "THIẾT LẬP THÔNG TIN (Sắp hoàn thiện)", Font = new Font("Segoe UI", 18F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), AutoSize = true, Dock = DockStyle.Top };
-            pnl.Controls.Add(lblHeader);
-            return pnl;
-        }
-
-        // ==========================================
-        // CÁC HÀM HỖ TRỢ MENU
-        // ==========================================
-        private Guna2Button CreateMenuButton(string text)
-        {
-            Guna2Button btn = new Guna2Button();
-            btn.Size = new Size(200, 45);
-            btn.Margin = new Padding(0, 0, 0, 10);
-            btn.BorderRadius = 8;
-            btn.Text = text;
-            btn.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btn.TextAlign = HorizontalAlignment.Left;
-            btn.TextOffset = new Point(10, 0);
-            btn.ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton;
-            btn.Cursor = Cursors.Hand;
-            btn.FillColor = Color.Transparent;
-            btn.ForeColor = Color.FromArgb(64, 64, 64);
-            btn.CheckedState.FillColor = Color.FromArgb(240, 235, 255);
-            btn.CheckedState.ForeColor = Color.FromArgb(88, 28, 230);
-            return btn;
-        }
-
-        private void SwitchPage(Panel targetPage, Guna2Button targetButton)
-        {
-            pageTables.Visible = false;
-            pageCategories.Visible = false;
-            pageInfo.Visible = false;
-
-            targetPage.Visible = true;
-            targetPage.BringToFront();
-
-            btnMenuTable.Checked = false;
-            btnMenuCategory.Checked = false;
-            btnMenuInfo.Checked = false;
-
-            targetButton.Checked = true;
-        }
+        #endregion
     }
 }

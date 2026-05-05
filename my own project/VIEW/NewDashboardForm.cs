@@ -7,14 +7,15 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace my_own_project.VIEW
 {
-    // ĐÃ ĐỔI TÊN THÀNH NewDashboardForm
     public partial class NewDashboardForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private Label lblRevenue, lblOrderCount, lblTopItem;
         private Chart chartRevenue, chartCategory;
         private Guna2DataGridView dgvRecentOrders;
 
-        // ĐÃ ĐỔI TÊN HÀM KHỞI TẠO
         public NewDashboardForm()
         {
             InitializeComponent();
@@ -24,15 +25,15 @@ namespace my_own_project.VIEW
             this.FormBorderStyle = FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            BuildDashboardUI();
+            BuildDashboardUI(); // Gọi hàm vẽ giao diện
 
-            this.Load += (s, e) => {
-                LoadKPIs();
-                LoadRevenueChart();
-                LoadCategoryChart();
-                LoadRecentOrders();
-            };
+            // Chuyển sự kiện Load form xuống Khu vực 3 (Events)
+            this.Load += NewDashboardForm_Load;
         }
+
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
 
         private void BuildDashboardUI()
         {
@@ -43,9 +44,7 @@ namespace my_own_project.VIEW
             tlpMain.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             this.Controls.Add(tlpMain);
 
-            // ==========================================
-            // HÀNG 1: 3 THẺ KPI
-            // ==========================================
+            // --- HÀNG 1: 3 THẺ KPI ---
             TableLayoutPanel tlpKPI = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, Margin = new Padding(0, 0, 0, 20) };
             tlpKPI.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
             tlpKPI.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
@@ -61,9 +60,7 @@ namespace my_own_project.VIEW
             lblTopItem = new Label();
             tlpKPI.Controls.Add(CreateKPICard("MÓN BÁN CHẠY NHẤT", lblTopItem, Color.FromArgb(255, 159, 67), ""), 2, 0);
 
-            // ==========================================
-            // HÀNG 2: 2 BIỂU ĐỒ (CỘT & TRÒN)
-            // ==========================================
+            // --- HÀNG 2: 2 BIỂU ĐỒ (CỘT & TRÒN) ---
             TableLayoutPanel tlpCharts = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, Margin = new Padding(0, 0, 0, 20) };
             tlpCharts.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
             tlpCharts.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
@@ -92,9 +89,7 @@ namespace my_own_project.VIEW
             cardChart2.Controls.Add(chartCategory);
             tlpCharts.Controls.Add(cardChart2, 1, 0);
 
-            // ==========================================
-            // HÀNG 3: BẢNG LỊCH SỬ ĐƠN MỚI NHẤT
-            // ==========================================
+            // --- HÀNG 3: BẢNG LỊCH SỬ ĐƠN MỚI NHẤT ---
             Guna2Panel cardGrid = new Guna2Panel { Dock = DockStyle.Fill, FillColor = Color.White, BorderRadius = 10, Padding = new Padding(10) };
             tlpMain.Controls.Add(cardGrid, 0, 2);
 
@@ -140,6 +135,13 @@ namespace my_own_project.VIEW
 
             return pnl;
         }
+
+        #endregion
+
+
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC DATABASE
+        // ========================================================
 
         private void LoadKPIs()
         {
@@ -200,19 +202,49 @@ namespace my_own_project.VIEW
 
                 dgvRecentOrders.DataSource = dt;
 
-                // --- THÊM ĐOẠN NÀY ĐỂ TRANG TRÍ CÁC CỘT ---
+                // --- TRANG TRÍ CÁC CỘT VÀ VIỆT HÓA ---
                 if (dgvRecentOrders.Columns.Count > 0)
                 {
                     dgvRecentOrders.Columns["OrderID"].HeaderText = "Mã HĐ";
                     dgvRecentOrders.Columns["Customer"].HeaderText = "Khách hàng";
 
                     dgvRecentOrders.Columns["Total"].HeaderText = "Tổng tiền (VNĐ)";
-                    dgvRecentOrders.Columns["Total"].DefaultCellStyle.Format = "N0"; // Thêm dấu phẩy hàng nghìn
+                    dgvRecentOrders.Columns["Total"].DefaultCellStyle.Format = "N0";
 
                     dgvRecentOrders.Columns["Status"].HeaderText = "Trạng thái";
+                }
+
+                // --- DỊCH TRẠNG THÁI SANG TIẾNG VIỆT ---
+                foreach (DataGridViewRow row in dgvRecentOrders.Rows)
+                {
+                    if (row.Cells["Status"].Value != null)
+                    {
+                        string currentStatus = row.Cells["Status"].Value.ToString();
+                        if (currentStatus == "Pending")
+                            row.Cells["Status"].Value = "Chưa thanh toán";
+                        else if (currentStatus == "Completed")
+                            row.Cells["Status"].Value = "Đã thanh toán";
+                    }
                 }
             }
             catch { }
         }
+
+        #endregion
+
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void NewDashboardForm_Load(object sender, EventArgs e)
+        {
+            LoadKPIs();
+            LoadRevenueChart();
+            LoadCategoryChart();
+            LoadRecentOrders();
+        }
+
+        #endregion
     }
 }

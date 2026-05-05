@@ -9,10 +9,13 @@ namespace my_own_project.VIEW
 {
     public partial class ProductForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private Guna2TextBox txtID, txtName, txtPrice;
         private Guna2PictureBox picFood;
-        private Guna2Button btnBrowse, btnEdit, btnDelete; // Đã xóa btnAdd và btnClear
-        private Guna2Button btnAddNewProduct; // Nút mới ở trên cùng
+        private Guna2Button btnBrowse, btnEdit, btnDelete;
+        private Guna2Button btnAddNewProduct;
 
         private Guna2ComboBox cboFilterCategory;
         private Guna2ComboBox cboInputCategory;
@@ -27,16 +30,19 @@ namespace my_own_project.VIEW
             InitializeComponent();
             this.Controls.Clear();
 
+            // Đảm bảo thư mục lưu ảnh luôn tồn tại
             if (!Directory.Exists(imageFolder))
                 Directory.CreateDirectory(imageFolder);
 
-            InitializeModernUI();
+            InitializeModernUI(); // Vẽ giao diện
 
-            this.Load += (s, e) => {
-                LoadCategories();
-                LoadProductData();
-            };
+            // Gắn sự kiện Load form
+            this.Load += ProductForm_Load;
         }
+
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
 
         private void InitializeModernUI()
         {
@@ -44,9 +50,7 @@ namespace my_own_project.VIEW
             this.FormBorderStyle = FormBorderStyle.None;
             this.Dock = DockStyle.Fill;
 
-            // ==========================================
-            // CỘT BÊN PHẢI (CHỈ CÒN SỬA VÀ XÓA)
-            // ==========================================
+            // --- CỘT BÊN PHẢI (SỬA VÀ XÓA) ---
             Guna2Panel pnlRight = new Guna2Panel();
             pnlRight.Dock = DockStyle.Right;
             pnlRight.Width = 380;
@@ -121,9 +125,7 @@ namespace my_own_project.VIEW
 
             flpInput.Controls.Add(tlpAction);
 
-            // ==========================================
-            // BÊN TRÁI - THANH TOP BAR CÓ NÚT THÊM
-            // ==========================================
+            // --- BÊN TRÁI - THANH TOP BAR CÓ NÚT THÊM ---
             Guna2Panel pnlCenter = new Guna2Panel();
             pnlCenter.Dock = DockStyle.Fill;
             this.Controls.Add(pnlCenter);
@@ -158,7 +160,7 @@ namespace my_own_project.VIEW
                 FillColor = Color.White,
                 BorderColor = Color.LightGray
             };
-            cboFilterCategory.SelectedIndexChanged += (s, e) => { LoadProductData(); };
+            cboFilterCategory.SelectedIndexChanged += CboFilterCategory_SelectedIndexChanged; // Tách xuống Events
             pnlTopCenter.Controls.Add(cboFilterCategory);
 
             // NÚT POPUP THÊM MÓN NẰM Ở ĐÂY
@@ -175,7 +177,7 @@ namespace my_own_project.VIEW
             btnAddNewProduct.Click += BtnAddNewProduct_Click;
             pnlTopCenter.Controls.Add(btnAddNewProduct);
 
-            // --- Hàng 2: Danh sách thẻ món ăn ---
+            // --- Danh sách thẻ món ăn ---
             flpProducts = new FlowLayoutPanel();
             flpProducts.Dock = DockStyle.Fill;
             flpProducts.AutoScroll = true;
@@ -184,40 +186,12 @@ namespace my_own_project.VIEW
             tlpLeft.Controls.Add(flpProducts, 0, 1);
         }
 
-        private void BtnAddNewProduct_Click(object sender, EventArgs e)
-        {
-            // Mở Popup thêm món
-            using (my_own_project.VIEW.ProductAddForm addForm = new my_own_project.VIEW.ProductAddForm())
-            {
-                // Làm mờ form chính ở dưới
-                Form blackBackground = new Form();
-                blackBackground.StartPosition = FormStartPosition.Manual;
-                blackBackground.FormBorderStyle = FormBorderStyle.None;
-                blackBackground.Opacity = 0.5d;
-                blackBackground.BackColor = Color.Black;
-                blackBackground.Size = this.Size; // Lấy kích thước form cha (không phải mainform tổng)
+        #endregion
 
-                // Mẹo nhỏ: Để form mờ bao phủ toàn màn hình, ta gán tọa độ tuyệt đối
-                try
-                {
-                    blackBackground.Location = this.Parent.PointToScreen(this.Location);
-                }
-                catch
-                {
-                    blackBackground.Location = this.PointToScreen(Point.Empty);
-                }
 
-                blackBackground.Show();
-
-                // Nếu thêm thành công và bấm Xác nhận
-                if (addForm.ShowDialog() == DialogResult.OK)
-                {
-                    LoadProductData(); // Load lại lưới dữ liệu
-                }
-
-                blackBackground.Dispose(); // Tắt mờ
-            }
-        }
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC DATABASE
+        // ========================================================
 
         private void LoadCategories()
         {
@@ -323,6 +297,7 @@ namespace my_own_project.VIEW
                     card.Controls.Add(lblName);
                     card.Controls.Add(lblPrice);
 
+                    // Gắn sự kiện click để đưa dữ liệu lên cột bên phải
                     EventHandler clickEvent = (s, e) => { Card_Click(row); };
                     card.Click += clickEvent;
                     pic.Click += clickEvent;
@@ -339,6 +314,34 @@ namespace my_own_project.VIEW
             {
                 MessageBox.Show("Có lỗi khi tải Menu: " + ex.Message);
             }
+        }
+
+        private void ClearInputs()
+        {
+            txtID.Text = "";
+            txtName.Text = "";
+            txtPrice.Text = "";
+            picFood.Image = null;
+            currentImagePath = "";
+            if (cboInputCategory.Items.Count > 0) cboInputCategory.SelectedIndex = 0;
+        }
+
+        #endregion
+
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void ProductForm_Load(object sender, EventArgs e)
+        {
+            LoadCategories();
+            LoadProductData();
+        }
+
+        private void CboFilterCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadProductData();
         }
 
         private void Card_Click(DataRow row)
@@ -368,6 +371,40 @@ namespace my_own_project.VIEW
                 else picFood.Image = null;
             }
             catch { picFood.Image = null; }
+        }
+
+        private void BtnAddNewProduct_Click(object sender, EventArgs e)
+        {
+            // Mở Popup thêm món
+            using (my_own_project.VIEW.ProductAddForm addForm = new my_own_project.VIEW.ProductAddForm())
+            {
+                // Làm mờ form chính ở dưới
+                Form blackBackground = new Form();
+                blackBackground.StartPosition = FormStartPosition.Manual;
+                blackBackground.FormBorderStyle = FormBorderStyle.None;
+                blackBackground.Opacity = 0.5d;
+                blackBackground.BackColor = Color.Black;
+                blackBackground.Size = this.Size;
+
+                try
+                {
+                    blackBackground.Location = this.Parent.PointToScreen(this.Location);
+                }
+                catch
+                {
+                    blackBackground.Location = this.PointToScreen(Point.Empty);
+                }
+
+                blackBackground.Show();
+
+                // Nếu thêm thành công và bấm Xác nhận
+                if (addForm.ShowDialog() == DialogResult.OK)
+                {
+                    LoadProductData();
+                }
+
+                blackBackground.Dispose();
+            }
         }
 
         private void BtnBrowse_Click(object sender, EventArgs e)
@@ -441,14 +478,6 @@ namespace my_own_project.VIEW
             }
         }
 
-        private void ClearInputs()
-        {
-            txtID.Text = "";
-            txtName.Text = "";
-            txtPrice.Text = "";
-            picFood.Image = null;
-            currentImagePath = "";
-            if (cboInputCategory.Items.Count > 0) cboInputCategory.SelectedIndex = 0;
-        }
+        #endregion
     }
 }

@@ -8,11 +8,15 @@ namespace my_own_project.VIEW
 {
     public partial class NewMainForm : Form
     {
+        // ========================================================
+        // KHAI BÁO BIẾN TOÀN CỤC
+        // ========================================================
         private Guna2Panel pnlSidebar;
         private Guna2Panel pnlMainContent;
         private Guna2Panel pnlBody;
         private Guna2DragControl dragControl;
         private Guna2ShadowForm shadowForm;
+        private Form activeForm = null;
 
         // Bảng màu từ thiết kế mới
         private Color colorMainBG = Color.FromArgb(245, 246, 250);
@@ -20,8 +24,13 @@ namespace my_own_project.VIEW
 
         public NewMainForm()
         {
+            // Tùy vào việc bạn có tách file hay không. Nếu không, chỉ cần gọi hàm này:
             InitializeModernUI();
         }
+
+        // ========================================================
+        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // ========================================================
 
         private void InitializeModernUI()
         {
@@ -33,23 +42,19 @@ namespace my_own_project.VIEW
 
             shadowForm = new Guna2ShadowForm(this);
 
-            // ==========================================
-            // VÙNG NỘI DUNG CHÍNH (Bao gồm TopBar và Body)
-            // ==========================================
+            // --- VÙNG NỘI DUNG CHÍNH ---
             pnlMainContent = new Guna2Panel();
             pnlMainContent.Dock = DockStyle.Fill;
             pnlMainContent.BackColor = Color.Transparent;
 
-            // --- THANH TIÊU ĐỀ (TOPBAR) KÉO THẢ ---
+            // --- THANH TIÊU ĐỀ (TOPBAR) ---
             Guna2Panel pnlTopBar = new Guna2Panel();
             pnlTopBar.Dock = DockStyle.Top;
             pnlTopBar.Height = 40;
             pnlTopBar.Width = this.Width;
             pnlTopBar.BackColor = colorMainBG;
 
-            // === CÁCH TRỊ BỆNH LỘN NÚT: TỌA ĐỘ VẬT LÝ TUYỆT ĐỐI ===
-
-            // 1. NÚT TẮT (Đóng đinh sát mép phải: Width - 50)
+            // 1. NÚT TẮT
             Guna2ControlBox btnClose = new Guna2ControlBox();
             btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnClose.Size = new Size(50, 40);
@@ -59,9 +64,9 @@ namespace my_own_project.VIEW
             btnClose.HoverState.FillColor = Color.FromArgb(255, 71, 87);
             btnClose.HoverState.IconColor = Color.White;
             btnClose.CustomClick = true;
-            btnClose.Click += (s, e) => { Application.Exit(); };
+            btnClose.Click += BtnClose_Click; // Đã chuyển xuống Khu vực Sự kiện
 
-            // 2. NÚT PHÓNG TO (Đóng đinh cách mép phải 100px)
+            // 2. NÚT PHÓNG TO
             Guna2ControlBox btnMax = new Guna2ControlBox();
             btnMax.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MaximizeBox;
             btnMax.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -70,7 +75,7 @@ namespace my_own_project.VIEW
             btnMax.FillColor = Color.Transparent;
             btnMax.IconColor = Color.Gray;
 
-            // 3. NÚT THU NHỎ (Đóng đinh cách mép phải 150px)
+            // 3. NÚT THU NHỎ
             Guna2ControlBox btnMin = new Guna2ControlBox();
             btnMin.ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox;
             btnMin.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -96,9 +101,7 @@ namespace my_own_project.VIEW
 
             pnlTopBar.BringToFront();
 
-            // ==========================================
-            // SIDEBAR SIÊU MỎNG (MINI SIDEBAR)
-            // ==========================================
+            // --- SIDEBAR SIÊU MỎNG ---
             pnlSidebar = new Guna2Panel();
             pnlSidebar.Dock = DockStyle.Left;
             pnlSidebar.Width = 90;
@@ -106,7 +109,6 @@ namespace my_own_project.VIEW
             pnlSidebar.CustomBorderThickness = new Padding(0, 0, 1, 0);
             pnlSidebar.CustomBorderColor = Color.FromArgb(235, 235, 235);
 
-            // Logo
             Label lblLogo = new Label();
             lblLogo.Text = "🍩";
             lblLogo.Font = new Font("Segoe UI", 24F);
@@ -114,35 +116,32 @@ namespace my_own_project.VIEW
             lblLogo.Location = new Point(25, 20);
             pnlSidebar.Controls.Add(lblLogo);
 
-            // CÁC NÚT MENU (Khoảng cách tăng thêm 70px cho mỗi nút)
+            // --- CÁC NÚT MENU ---
             Guna2Button btnPOS = CreateIconButton("🛒", 120);
             btnPOS.Checked = true;
-            btnPOS.Click += (s, e) => { OpenChildForm(new POSForm()); }; // Tùy thuộc vào namespace của POSForm của bạn
+            btnPOS.Click += BtnPOS_Click;
 
             Guna2Button btnHistory = CreateIconButton("🧾", 190);
-            btnHistory.Click += (s, e) => { OpenChildForm(new HistoryForm()); };
+            btnHistory.Click += BtnHistory_Click;
 
             Guna2Button btnProduct = CreateIconButton("🍔", 260);
-            btnProduct.Click += (s, e) => { OpenChildForm(new ProductForm()); };
+            btnProduct.Click += BtnProduct_Click;
 
-            // === ĐÂY LÀ NÚT DASHBOARD MỚI ĐƯỢC THÊM VÀO ===
             Guna2Button btnDashboard = CreateIconButton("📊", 330);
-            btnDashboard.Click += (s, e) => { OpenChildForm(new NewDashboardForm()); }; // Gọi form NewDashboardForm ra
+            btnDashboard.Click += BtnDashboard_Click;
 
-            // Dời nút Cài đặt xuống 1 nấc (từ 330 -> 400)
             Guna2Button btnSettings = CreateIconButton("⚙️", 400);
-            btnSettings.Click += (s, e) => { OpenChildForm(new SettingForm()); };
+            btnSettings.Click += BtnSettings_Click;
 
-            // Nút Tắt app
             Guna2Button btnExit = CreateIconButton("🛑", this.Height - 80);
             btnExit.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnExit.Location = new Point(20, this.Height - 80);
-            btnExit.Click += (s, e) => { Application.Exit(); };
+            btnExit.Click += BtnClose_Click; // Tái sử dụng hàm tắt form
 
             pnlSidebar.Controls.Add(btnPOS);
             pnlSidebar.Controls.Add(btnHistory);
             pnlSidebar.Controls.Add(btnProduct);
-            pnlSidebar.Controls.Add(btnDashboard); // Ném nút Dashboard vào Sidebar
+            pnlSidebar.Controls.Add(btnDashboard);
             pnlSidebar.Controls.Add(btnSettings);
             pnlSidebar.Controls.Add(btnExit);
 
@@ -174,7 +173,13 @@ namespace my_own_project.VIEW
             return btn;
         }
 
-        private Form activeForm = null;
+        #endregion
+
+
+        // ========================================================
+        #region 2. KHU VỰC CHỨC NĂNG & LOGIC
+        // ========================================================
+
         private void OpenChildForm(Form childForm)
         {
             if (activeForm != null) activeForm.Close();
@@ -186,5 +191,44 @@ namespace my_own_project.VIEW
             pnlBody.Controls.Add(childForm);
             childForm.Show();
         }
+
+        #endregion
+
+
+        // ========================================================
+        #region 3. KHU VỰC SỰ KIỆN (EVENTS)
+        // ========================================================
+
+        private void BtnClose_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void BtnPOS_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new POSForm());
+        }
+
+        private void BtnHistory_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new HistoryForm());
+        }
+
+        private void BtnProduct_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new ProductForm());
+        }
+
+        private void BtnDashboard_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new NewDashboardForm());
+        }
+
+        private void BtnSettings_Click(object sender, EventArgs e)
+        {
+            OpenChildForm(new SettingForm());
+        }
+
+        #endregion
     }
 }
