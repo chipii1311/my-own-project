@@ -73,7 +73,7 @@ namespace my_own_project.VIEW
             lblTitle.Text = "CÀI ĐẶT";
             lblTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblTitle.AutoSize = true;
-            lblTitle.Margin = new Padding(10, 0, 0, 30);
+            lblTitle.Margin = new Padding(10, 20, 0, 30);
             flpMenu.Controls.Add(lblTitle);
 
             btnMenuTable = CreateMenuButton("Quản lý Bàn");

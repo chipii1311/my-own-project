@@ -122,7 +122,7 @@ namespace my_own_project.DesignForms
             lblPageTitle.Text = "Menu Items";
             lblPageTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblPageTitle.ForeColor = Color.FromArgb(88, 28, 230);
-            lblPageTitle.Location = new Point(10, 10);
+            lblPageTitle.Location = new Point(10, 15);
             lblPageTitle.AutoSize = true;
             pnlHeader.Controls.Add(lblPageTitle);
 

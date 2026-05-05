@@ -69,26 +69,26 @@ namespace my_own_project.VIEW
             // Ép thanh Top nằm đè lên trên để không bị Grid che
             pnlTop.BringToFront();
 
-            Label lblTitle = new Label { Text = "LỊCH SỬ DOANH THU", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), Location = new Point(20, 25), AutoSize = true, BackColor = Color.White };
+            Label lblTitle = new Label { Text = "LỊCH SỬ DOANH THU", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), Location = new Point(20, 40), AutoSize = true, BackColor = Color.White };
             pnlTop.Controls.Add(lblTitle);
 
             // Dòng hướng dẫn nhỏ
-            Label lblHint = new Label { Text = "(Nhấp đúp chuột vào một dòng để xem chi tiết Bill)", Font = new Font("Segoe UI", 9F, FontStyle.Italic), ForeColor = Color.Gray, Location = new Point(23, 60), AutoSize = true, BackColor = Color.White };
+            Label lblHint = new Label { Text = "(Nhấp đúp chuột vào một dòng để xem chi tiết Bill)", Font = new Font("Segoe UI", 9F, FontStyle.Italic), ForeColor = Color.Gray, Location = new Point(23, 70), AutoSize = true, BackColor = Color.White };
             pnlTop.Controls.Add(lblHint);
 
             Label lblFrom = new Label { Text = "Từ ngày:", Font = new Font("Segoe UI", 10F), ForeColor = Color.Gray, Location = new Point(350, 42), AutoSize = true, BackColor = Color.White };
             pnlTop.Controls.Add(lblFrom);
 
-            dtpFrom = new Guna2DateTimePicker { Location = new Point(420, 32), Size = new Size(130, 40), BorderRadius = 8, Format = DateTimePickerFormat.Short, FillColor = Color.FromArgb(240, 240, 240), Value = DateTime.Today };
+            dtpFrom = new Guna2DateTimePicker { Location = new Point(420, 35), Size = new Size(130, 40), BorderRadius = 8, Format = DateTimePickerFormat.Short, FillColor = Color.FromArgb(240, 240, 240), Value = DateTime.Today };
             pnlTop.Controls.Add(dtpFrom);
 
             Label lblTo = new Label { Text = "Đến ngày:", Font = new Font("Segoe UI", 10F), ForeColor = Color.Gray, Location = new Point(570, 42), AutoSize = true, BackColor = Color.White };
             pnlTop.Controls.Add(lblTo);
 
-            dtpTo = new Guna2DateTimePicker { Location = new Point(650, 32), Size = new Size(130, 40), BorderRadius = 8, Format = DateTimePickerFormat.Short, FillColor = Color.FromArgb(240, 240, 240), Value = DateTime.Today };
+            dtpTo = new Guna2DateTimePicker { Location = new Point(650, 35), Size = new Size(130, 40), BorderRadius = 8, Format = DateTimePickerFormat.Short, FillColor = Color.FromArgb(240, 240, 240), Value = DateTime.Today };
             pnlTop.Controls.Add(dtpTo);
 
-            btnFilter = new Guna2Button { Text = "Lọc dữ liệu", Location = new Point(800, 32), Size = new Size(110, 40), BorderRadius = 8, FillColor = Color.FromArgb(88, 28, 230), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnFilter = new Guna2Button { Text = "Lọc dữ liệu", Location = new Point(800, 35), Size = new Size(110, 40), BorderRadius = 8, FillColor = Color.FromArgb(88, 28, 230), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnFilter.Click += BtnFilter_Click; // Đã tách xuống Khu vực 3
             pnlTop.Controls.Add(btnFilter);
 
