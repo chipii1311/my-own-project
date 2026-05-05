@@ -245,14 +245,26 @@ namespace my_own_project.VIEW
                 btnAccount.Text = "🙂 Hi, " + shortName;
             }
 
-            // 2. TÍNH NĂNG PHÂN QUYỀN (ROLE-BASED ACCESS)
+            // 2. TÍNH NĂNG PHÂN QUYỀN VÀ CĂN CHỈNH GIAO DIỆN
             if (UserRole == "Nhân viên")
             {
-                // Giấu các tính năng nhạy cảm không cho nhân viên thấy
-                btnProduct.Visible = false;
-                btnDashboard.Visible = false;
-                btnSettings.Visible = false;
-                btnStaff.Visible = false;
+                // Bước 1: Ẩn các tính năng Quản lý
+                btnHistory.Visible = false;   // Ẩn Lịch sử đơn hàng
+                btnDashboard.Visible = false; // Ẩn Thống kê doanh thu
+                btnSettings.Visible = false;  // Ẩn Cài đặt
+                btnStaff.Visible = false;     // Ẩn Quản lý nhân sự
+
+                // Bước 2: Đôn nút Chỉnh món (btnProduct) lên sát dưới nút POS
+                // Ban đầu btnPOS ở y=120, khoảng cách mỗi nút là 70px -> vị trí tiếp theo là 190
+                btnProduct.Location = new Point(20, 190);
+            }
+            else if (UserRole == "Quản lý")
+            {
+                // Quản lý thì hiển thị toàn bộ, vị trí giữ nguyên như lúc BuildUI
+                btnHistory.Visible = true;
+                btnDashboard.Visible = true;
+                btnSettings.Visible = true;
+                btnStaff.Visible = true;
             }
         }
 
