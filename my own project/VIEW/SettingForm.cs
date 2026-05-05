@@ -115,10 +115,16 @@ namespace my_own_project.VIEW
                 Text = "QUẢN LÝ BÀN ĂN",
                 Font = new Font("Segoe UI", 20F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(88, 28, 230),
-                AutoSize = true,
                 Dock = DockStyle.Top,
-                Padding = new Padding(0, 5, 0, 10) // Nới viền trên 5px, dưới 10px để không bị lẹm dấu
+
+                // --- BỘ 3 QUYỀN LỰC CHỐNG LẸM CHỮ ---
+                AutoSize = false,          // Tắt tự động co giãn
+                Height = 50,               // Chốt chiều cao cố định 50px dư sức chứa dấu
+                TextAlign = ContentAlignment.MiddleLeft // Căn lề trái, ở giữa theo chiều dọc
             };
+            pnl.Controls.Add(lblHeader);
+            lblHeader.SendToBack();
+      
 
             TableLayoutPanel tlp = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
             tlp.Padding = new Padding(0, 20, 0, 0);
@@ -126,6 +132,7 @@ namespace my_own_project.VIEW
             tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
             tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             pnl.Controls.Add(tlp);
+            tlp.BringToFront();
 
             // CARD TRÁI: BẢNG DỮ LIỆU BÀN
             Guna2Panel cardLeft = new Guna2Panel { Dock = DockStyle.Fill, FillColor = Color.White, BorderRadius = 10, Margin = new Padding(0, 0, 10, 0), Padding = new Padding(5) };
