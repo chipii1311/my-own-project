@@ -207,6 +207,12 @@
     <Compile Include="VIEWSTAFF\Uctablemanagement.Designer.cs">
       <DependentUpon>Uctablemanagement.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\AccountForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\AccountForm.Designer.cs">
+      <DependentUpon>AccountForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\AddTable.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -353,6 +359,12 @@
     <Compile Include="VIEW\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\StaffForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\StaffForm.Designer.cs">
+      <DependentUpon>StaffForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\TableForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -364,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VIEWSTAFF\Frmpayment.resx">
       <DependentUpon>Frmpayment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VIEWSTAFF\StaffMainFormgpt.resx">
+      <DependentUpon>StaffMainFormgpt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\AddTable.resx">
       <DependentUpon>AddTable.cs</DependentUpon>
