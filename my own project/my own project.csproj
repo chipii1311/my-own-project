@@ -261,6 +261,18 @@
     <Compile Include="VIEW\MenuForm.Designer.cs">
       <DependentUpon>MenuForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\NewDashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\NewDashboardForm.Designer.cs">
+      <DependentUpon>NewDashboardForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEW\NewMainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\NewMainForm.Designer.cs">
+      <DependentUpon>NewMainForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\OrderDetailView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -328,6 +340,12 @@
     </Compile>
     <Compile Include="UCFoodItem.Designer.cs">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="VIEW\SettingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\SettingForm.Designer.cs">
+      <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
     <Compile Include="VIEW\Settings.cs">
       <SubType>Form</SubType>
