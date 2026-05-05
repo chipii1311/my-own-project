@@ -110,8 +110,15 @@ namespace my_own_project.VIEW
         {
             Panel pnl = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(245, 246, 250), Padding = new Padding(20) };
 
-            Label lblHeader = new Label { Text = "QUẢN LÝ BÀN ĂN", Font = new Font("Segoe UI", 20F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), AutoSize = true, Dock = DockStyle.Top };
-            pnl.Controls.Add(lblHeader);
+            Label lblHeader = new Label
+            {
+                Text = "QUẢN LÝ BÀN ĂN",
+                Font = new Font("Segoe UI", 20F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(88, 28, 230),
+                AutoSize = true,
+                Dock = DockStyle.Top,
+                Padding = new Padding(0, 5, 0, 10) // Nới viền trên 5px, dưới 10px để không bị lẹm dấu
+            };
 
             TableLayoutPanel tlp = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
             tlp.Padding = new Padding(0, 20, 0, 0);
