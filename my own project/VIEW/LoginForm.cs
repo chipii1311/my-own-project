@@ -36,7 +36,7 @@ namespace my_own_project.DesignForms
                 UserDTO user = UserBLL.Login(email, password);
                 CurrentUser.Login(user);
 
-                NewMainForm mainForm = new NewMainForm();
+                MainForm mainForm = new MainForm();
                 mainForm.Show();
                 this.Hide();
             }
