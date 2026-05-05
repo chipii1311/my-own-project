@@ -101,7 +101,7 @@ namespace my_own_project.DesignForms
 
             // Gắn sự kiện cho các nút
             Guna2Button btnClear = new Guna2Button { Text = "Xóa tất cả", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(20, 590), FillColor = Color.White, ForeColor = Color.Red, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.Red, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
-            btnClear.Click += BtnClear_Click; // Tách sự kiện xuống Khu vực 3
+            btnClear.Click += BtnClear_Click;
 
             Guna2Button btnSave = new Guna2Button { Text = "Lưu tạm", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(130, 590), FillColor = Color.FromArgb(240, 240, 240), ForeColor = Color.Black, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
 
@@ -122,7 +122,7 @@ namespace my_own_project.DesignForms
             lblPageTitle.Text = "Menu Items";
             lblPageTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
             lblPageTitle.ForeColor = Color.FromArgb(88, 28, 230);
-            lblPageTitle.Location = new Point(10, 10);
+            lblPageTitle.Location = new Point(10, 15);
             lblPageTitle.AutoSize = true;
             pnlHeader.Controls.Add(lblPageTitle);
 
@@ -172,7 +172,6 @@ namespace my_own_project.DesignForms
 
         #endregion
 
-
         // ========================================================
         #region 2. KHU VỰC CHỨC NĂNG & LOGIC DATABASE
         // ========================================================
@@ -221,8 +220,6 @@ namespace my_own_project.DesignForms
             }
         }
 
-        
-
         private void LoadCategories()
         {
             flpCategories.Controls.Clear();
@@ -243,7 +240,6 @@ namespace my_own_project.DesignForms
 
         private void LoadMenuItems()
         {
-            // THAY ĐỔI 1: Gọi SQL trực tiếp thay vì dùng BLL cũ để chắc chắn lấy được cột Status
             string query = "SELECT MenuItemID, CategoryID, ItemName, Price, ISNULL(ImageUrl, '') AS ImageUrl, ISNULL(Status, N'Còn') AS Status FROM MenuItem WHERE ItemStatus = 1";
             dtAllMenu = my_own_project.DAL.DataHelper.ExecuteQuery(query);
 
@@ -279,28 +275,24 @@ namespace my_own_project.DesignForms
                     row["ImageUrl"].ToString()
                 );
 
-                // ==========================================
-                // THAY ĐỔI 2: CHẶN MÓN HẾT VÀ DÁN TEM BÁO HIỆU
-                // ==========================================
                 if (row["Status"].ToString() == "Hết")
                 {
-                    uc.Enabled = false; // Vô hiệu hóa thẻ này (Hệ thống tự bôi xám và khóa tính năng click)
+                    uc.Enabled = false;
 
                     Label lblOut = new Label();
                     lblOut.Text = "HẾT HÀNG";
                     lblOut.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
                     lblOut.ForeColor = Color.White;
-                    lblOut.BackColor = Color.FromArgb(255, 71, 87); // Màu đỏ báo động
+                    lblOut.BackColor = Color.FromArgb(255, 71, 87);
                     lblOut.AutoSize = true;
                     lblOut.Location = new Point(10, 10);
                     lblOut.Padding = new Padding(3);
 
                     uc.Controls.Add(lblOut);
-                    lblOut.BringToFront(); // Nổi cái tem đỏ lên trên cùng
+                    lblOut.BringToFront();
                 }
                 else
                 {
-                    // CHỈ NHỮNG MÓN "CÒN" mới được cấp quyền click để thêm vào giỏ hàng
                     uc.OnSelect += Uc_OnSelect;
                 }
 
@@ -333,8 +325,24 @@ namespace my_own_project.DesignForms
                     Label lblSTT = new Label { Text = stt.ToString(), Location = new Point(0, 15), Font = new Font("Segoe UI", 10F), AutoSize = true };
                     Label lblName = new Label { Text = name, Location = new Point(40, 15), Font = new Font("Segoe UI Semibold", 10F), AutoSize = false, Size = new Size(130, 25), AutoEllipsis = true };
 
-                    // Các nút Tăng/Giảm/Xóa được giữ nguyên sự kiện lồng (Lambda) vì nó cần truy cập trực tiếp biến detailID và qty của từng dòng dữ liệu
-                    Guna2Button btnMinus = new Guna2Button { Size = new Size(26, 26), BorderRadius = 5, Location = new Point(175, 12), FillColor = Color.White, ForeColor = Color.Black, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.LightGray, Text = "-", Font = new Font("Arial", 11F, FontStyle.Bold), Padding = new Padding(0), Cursor = Cursors.Hand };
+                    // ==========================================
+                    // 1. NÚT TRỪ (Đã nắn lại giữa chuẩn chỉ)
+                    // ==========================================
+                    Button btnMinus = new Button
+                    {
+                        Size = new Size(24, 24),
+                        Location = new Point(172, 13),
+                        BackColor = Color.FromArgb(230, 230, 230),
+                        ForeColor = Color.Black,
+                        Text = "-",
+                        Font = new Font("Arial", 14F, FontStyle.Bold), // Đổi sang Arial và tăng size chữ
+                        TextAlign = ContentAlignment.MiddleCenter, // Ép ra giữa
+                        Padding = new Padding(0), // Xóa mọi viền đệm ẩn
+                        UseCompatibleTextRendering = true, // Phép thuật cân bằng chữ của WinForms
+                        FlatStyle = FlatStyle.Flat,
+                        Cursor = Cursors.Hand
+                    };
+                    btnMinus.FlatAppearance.BorderSize = 0;
                     btnMinus.Click += (s, ev) => {
                         if (qty > 1)
                         {
@@ -347,18 +355,52 @@ namespace my_own_project.DesignForms
                         ShowBill();
                     };
 
-                    Label lblQty = new Label { Text = qty.ToString(), Location = new Point(205, 14), Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = false, Size = new Size(25, 25), TextAlign = ContentAlignment.MiddleCenter };
+                    Label lblQty = new Label { Text = qty.ToString(), Location = new Point(200, 13), Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = false, Size = new Size(30, 24), TextAlign = ContentAlignment.MiddleCenter };
 
-                    Guna2Button btnPlus = new Guna2Button { Size = new Size(26, 26), BorderRadius = 5, Location = new Point(235, 12), FillColor = Color.White, ForeColor = Color.Black, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.LightGray, Text = "+", Font = new Font("Arial", 11F, FontStyle.Bold), Padding = new Padding(0), Cursor = Cursors.Hand };
+                    // ==========================================
+                    // 2. NÚT CỘNG (Đã nắn lại giữa chuẩn chỉ)
+                    // ==========================================
+                    Button btnPlus = new Button
+                    {
+                        Size = new Size(24, 24),
+                        Location = new Point(234, 13),
+                        BackColor = Color.FromArgb(230, 230, 230),
+                        ForeColor = Color.Black,
+                        Text = "+",
+                        Font = new Font("Arial", 14F, FontStyle.Bold),
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Padding = new Padding(0),
+                        UseCompatibleTextRendering = true,
+                        FlatStyle = FlatStyle.Flat,
+                        Cursor = Cursors.Hand
+                    };
+                    btnPlus.FlatAppearance.BorderSize = 0;
                     btnPlus.Click += (s, ev) => {
                         my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE OrderDetail SET Quantity = Quantity + 1 WHERE OrderDetailID = {detailID}");
                         ShowBill();
                     };
 
-                    Label lblPrice = new Label { Text = price.ToString("N0"), Location = new Point(280, 15), Font = new Font("Segoe UI", 10F), AutoSize = true };
-                    Label lblRowTotal = new Label { Text = rowTotal.ToString("N0"), Location = new Point(370, 15), Font = new Font("Segoe UI", 10F, FontStyle.Bold), AutoSize = true };
+                    Label lblPrice = new Label { Text = price.ToString("N0"), Location = new Point(275, 15), Font = new Font("Segoe UI", 10F), AutoSize = true };
+                    Label lblRowTotal = new Label { Text = rowTotal.ToString("N0"), Location = new Point(355, 15), Font = new Font("Segoe UI", 10F, FontStyle.Bold), AutoSize = true };
 
-                    Guna2Button btnDelete = new Guna2Button { Size = new Size(24, 24), Location = new Point(435, 12), FillColor = Color.Transparent, ForeColor = Color.Red, Text = "X", Font = new Font("Arial", 10F, FontStyle.Bold), Padding = new Padding(0), Cursor = Cursors.Hand };
+                    // ==========================================
+                    // 3. NÚT XÓA NHANH (Nắn lại chữ X)
+                    // ==========================================
+                    Button btnDelete = new Button
+                    {
+                        Size = new Size(24, 24),
+                        Location = new Point(425, 13),
+                        BackColor = Color.FromArgb(255, 200, 200),
+                        ForeColor = Color.Red,
+                        Text = "X",
+                        Font = new Font("Arial", 9F, FontStyle.Bold),
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Padding = new Padding(0),
+                        UseCompatibleTextRendering = true,
+                        FlatStyle = FlatStyle.Flat,
+                        Cursor = Cursors.Hand
+                    };
+                    btnDelete.FlatAppearance.BorderSize = 0;
                     btnDelete.Click += (s, ev) => {
                         my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderDetailID = {detailID}");
                         ShowBill();
@@ -384,7 +426,6 @@ namespace my_own_project.DesignForms
         }
 
         #endregion
-
 
         // ========================================================
         #region 3. KHU VỰC SỰ KIỆN (EVENTS)

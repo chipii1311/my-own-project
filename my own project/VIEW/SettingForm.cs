@@ -95,8 +95,12 @@ namespace my_own_project.VIEW
             };
             pnlTabs.Paint += PaintBottomBorder;
 
-            var btnTabTables = MakeTabBtn("🍽️   Quản lý bàn ăn", 24);
-            var btnTabCats = MakeTabBtn("📋   Danh mục món ăn", 190);
+            Label lblTitle = new Label();
+            lblTitle.Text = "CÀI ĐẶT";
+            lblTitle.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            lblTitle.AutoSize = true;
+            lblTitle.Margin = new Padding(10, 0, 0, 30);
+            flpMenu.Controls.Add(lblTitle);
 
             btnTabTables.Click += (s, e) => SwitchTab(pageTable, btnTabTables,
                                                        btnTabCats);
@@ -173,18 +177,16 @@ namespace my_own_project.VIEW
         {
             var pnl = new Panel { Dock = DockStyle.Fill, BackColor = C_BG, Padding = new Padding(24, 20, 24, 24) };
 
-            // Main layout: left grid + right form
-            var tlp = new TableLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                ColumnCount = 2,
-                RowCount = 1,
-                BackColor = Color.Transparent
-            };
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 62F));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 38F));
+            Label lblHeader = new Label { Text = "QUẢN LÝ BÀN ĂN", Font = new Font("Segoe UI", 20F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), AutoSize = true, Dock = DockStyle.Top };
+            pnl.Controls.Add(lblHeader);
+
+            TableLayoutPanel tlp = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1 };
+            tlp.Padding = new Padding(0, 20, 0, 0);
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
             tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             pnl.Controls.Add(tlp);
+            tlp.BringToFront();
 
             // ── LEFT: Grid card ──
             var cardLeft = new Panel

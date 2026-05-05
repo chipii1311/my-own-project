@@ -409,23 +409,12 @@ namespace my_own_project.VIEW
                 Location = new Point(24, 44)
             };
 
-            pnlHeader.Controls.Add(lblTitle);
-            pnlHeader.Controls.Add(lblLastUpdated);
+            Label lblTitle = new Label { Text = "LỊCH SỬ DOANH THU", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), Location = new Point(20, 25), AutoSize = true, BackColor = Color.White };
+            pnlTop.Controls.Add(lblTitle);
 
-            // ── 2. FILTER BAR ──────────────────────────────────
-            var pnlFilter = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 60,
-                BackColor = C_WHITE,
-                Padding = new Padding(16, 10, 16, 10)
-            };
-            pnlFilter.Paint += (s, e) =>
-            {
-                using (var p = new System.Drawing.Pen(C_BORDER, 1))
-                    e.Graphics.DrawLine(p, 0, pnlFilter.Height - 1,
-                                           pnlFilter.Width, pnlFilter.Height - 1);
-            };
+            // Dòng hướng dẫn nhỏ
+            Label lblHint = new Label { Text = "(Nhấp đúp chuột vào một dòng để xem chi tiết Bill)", Font = new Font("Segoe UI", 9F, FontStyle.Italic), ForeColor = Color.Gray, Location = new Point(23, 60), AutoSize = true, BackColor = Color.White };
+            pnlTop.Controls.Add(lblHint);
 
             // Quick filter buttons
             void QBtn(Guna2Button b, string t, int x, bool active = false)
@@ -441,63 +430,8 @@ namespace my_own_project.VIEW
                 b.Cursor = Cursors.Hand;
             }
 
-            var btnToday = new Guna2Button(); QBtn(btnToday, "Hôm nay", 16, true);
-            var btn7Days = new Guna2Button(); QBtn(btn7Days, "7 ngày", 106);
-            var btn30Days = new Guna2Button(); QBtn(btn30Days, "30 ngày", 196);
-            var btnThisMonth = new Guna2Button(); QBtn(btnThisMonth, "Tháng này", 286);
-
-            void SetQuickActive(Guna2Button active)
-            {
-                foreach (var b in new[] { btnToday, btn7Days, btn30Days, btnThisMonth })
-                {
-                    b.FillColor = (b == active) ? C_PURPLE : C_PURPLE_S;
-                    b.ForeColor = (b == active) ? C_WHITE : C_PURPLE;
-                }
-            }
-
-            btnToday.Click += (s, e) =>
-            {
-                dtpFrom.Value = DateTime.Today;
-                dtpTo.Value = DateTime.Today;
-                SetQuickActive(btnToday); LoadData();
-            };
-            btn7Days.Click += (s, e) =>
-            {
-                dtpFrom.Value = DateTime.Today.AddDays(-6);
-                dtpTo.Value = DateTime.Today;
-                SetQuickActive(btn7Days); LoadData();
-            };
-            btn30Days.Click += (s, e) =>
-            {
-                dtpFrom.Value = DateTime.Today.AddDays(-29);
-                dtpTo.Value = DateTime.Today;
-                SetQuickActive(btn30Days); LoadData();
-            };
-            btnThisMonth.Click += (s, e) =>
-            {
-                dtpFrom.Value = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-                dtpTo.Value = DateTime.Today;
-                SetQuickActive(btnThisMonth); LoadData();
-            };
-
-            // Date range pickers
-            var lblSep = new Label
-            {
-                Text = "Từ:",
-                Font = new Font("Segoe UI", 9.5F),
-                ForeColor = C_MUTED,
-                AutoSize = true,
-                Location = new Point(390, 21)
-            };
-
-            dtpFrom = new Guna2DateTimePicker
-            {
-                Size = new Size(118, 34),
-                Location = new Point(412, 13),
-                BorderRadius = 6,
-                Format = DateTimePickerFormat.Short,
-                Value = DateTime.Today
-            };
+            dtpFrom = new Guna2DateTimePicker { Location = new Point(420, 32), Size = new Size(130, 40), BorderRadius = 8, Format = DateTimePickerFormat.Short, FillColor = Color.FromArgb(240, 240, 240), Value = DateTime.Today };
+            pnlTop.Controls.Add(dtpFrom);
 
             var lblSep2 = new Label
             {
@@ -508,28 +442,12 @@ namespace my_own_project.VIEW
                 Location = new Point(536, 21)
             };
 
-            dtpTo = new Guna2DateTimePicker
-            {
-                Size = new Size(118, 34),
-                Location = new Point(562, 13),
-                BorderRadius = 6,
-                Format = DateTimePickerFormat.Short,
-                Value = DateTime.Today
-            };
+            dtpTo = new Guna2DateTimePicker { Location = new Point(650, 32), Size = new Size(130, 40), BorderRadius = 8, Format = DateTimePickerFormat.Short, FillColor = Color.FromArgb(240, 240, 240), Value = DateTime.Today };
+            pnlTop.Controls.Add(dtpTo);
 
-            btnFilter = new Guna2Button
-            {
-                Text = "Lọc",
-                Size = new Size(70, 34),
-                Location = new Point(686, 13),
-                BorderRadius = 6,
-                BorderThickness = 0,
-                FillColor = C_PURPLE,
-                ForeColor = C_WHITE,
-                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnFilter.Click += (s, e) => { SetQuickActive(null); LoadData(); };
+            btnFilter = new Guna2Button { Text = "Lọc dữ liệu", Location = new Point(800, 32), Size = new Size(110, 40), BorderRadius = 8, FillColor = Color.FromArgb(88, 28, 230), Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnFilter.Click += BtnFilter_Click; // Đã tách xuống Khu vực 3
+            pnlTop.Controls.Add(btnFilter);
 
             btnExport = new Guna2Button
             {
