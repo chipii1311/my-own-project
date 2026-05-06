@@ -50,7 +50,7 @@ namespace my_own_project
                 cipStatus.FillColor = Color.FromArgb(255, 235, 235);
                 cipStatus.ForeColor = Color.FromArgb(220, 53, 69);
                 btnConfirm.Visible = true;
-                btnConfirm.Text = "$0.00";
+                btnConfirm.Text = "Đặt";
             }
         }
     }
