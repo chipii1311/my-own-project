@@ -136,8 +136,9 @@ namespace my_own_project.DAL
                 IngredientName = row["IngredientName"]?.ToString() ?? "",
                 Unit = row["Unit"]?.ToString() ?? "",
                 StockQuantity = row["StockQuantity"] != DBNull.Value ? (float)row["StockQuantity"] : 0,
+                MinStock = row["MinStock"] != DBNull.Value ? (float)row["MinStock"] : 0,
                 IsActive = row["IsActive"] != DBNull.Value && (bool)row["IsActive"],
-                MinStock = row["MinStock"] != DBNull.Value ? (float)row["MinStock"] : 0
+                PurchasePrice = row["PurchasePrice"] != DBNull.Value ? (decimal)row["PurchasePrice"] : 0
             };
         }
     }
