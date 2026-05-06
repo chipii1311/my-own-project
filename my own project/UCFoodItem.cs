@@ -35,9 +35,10 @@ namespace my_own_project
             cardPanel.Dock = DockStyle.Fill;
             cardPanel.BorderRadius = 20;
             cardPanel.FillColor = Color.White;
-            cardPanel.ShadowDecoration.Enabled = true;
+            cardPanel.ShadowDecoration.Enabled = false;
             cardPanel.ShadowDecoration.Depth = 10;
             cardPanel.ShadowDecoration.BorderRadius = 20;
+            cardPanel.BackColor = Color.Transparent;
 
             // ==========================================
             // ẢNH MÓN ĂN (Dùng Guna2PictureBox)
