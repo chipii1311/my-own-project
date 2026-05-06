@@ -28,19 +28,13 @@ namespace my_own_project.DAL
         /// </summary>
         public static bool TestConnection()
         {
-            try
-            {
+            
                 using (SqlConnection conn = GetConnection())
                 {
                     conn.Open();
                     return true;
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Connection Test Failed: " + ex.Message);
-                return false;
-            }
+           
         }
 
         // ========== EXECUTE STORED PROCEDURES ==========
