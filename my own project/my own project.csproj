@@ -291,6 +291,12 @@
     <Compile Include="VIEW\NewMainForm.Designer.cs">
       <DependentUpon>NewMainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\NewPromotionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\NewPromotionForm.Designer.cs">
+      <DependentUpon>NewPromotionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\OrderDetailView.cs">
       <SubType>Form</SubType>
     </Compile>
