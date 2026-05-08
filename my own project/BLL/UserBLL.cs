@@ -52,37 +52,24 @@ namespace my_own_project.BLL
                 }
             }
 
-            // ==================== CREATE ====================
-            /// <summary>
-            /// Thêm User mới (với validate + hash password)
-            /// </summary>
-            public static int AddUser(UserDTO user)
-            {
-                try
-                {
-                    ValidateUser(user);
+        // ==================== CREATE ====================
+        /// <summary>
+        /// Thêm User mới (với validate + hash password)
+        /// </summary>
+        public static int AddUser(UserDTO user)
+        {
+            ValidateUser(user);
+            if (UserDAL.GetByEmail(user.Email) != null)
+                throw new Exception("Email đã được sử dụng!");
 
-                    // Kiểm tra email đã tồn tại
-                    if (UserDAL.GetByEmail(user.Email) != null)
-                        throw new Exception("Email đã được sử dụng!");
+            return UserDAL.Insert(user);
+        }
 
-                    // Hash password
-                    user.PasswordHash = HashPassword(user.PasswordHash);
-
-                    return UserDAL.Insert(user);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"UserBLL.AddUser Error: {ex.Message}");
-                    throw;
-                }
-            }
-
-            // ==================== READ ====================
-            /// <summary>
-            /// Lấy User theo ID
-            /// </summary>
-            public static UserDTO GetUserByID(int userID)
+        // ==================== READ ====================
+        /// <summary>
+        /// Lấy User theo ID
+        /// </summary>
+        public static UserDTO GetUserByID(int userID)
             {
                 try
                 {
