@@ -1,5 +1,5 @@
 ﻿using Guna.UI2.WinForms;
-using my_own_project.DesignForms; // chứa ProductForm, AccountForm, StaffForm,... (nếu cần)
+using my_own_project.DesignForms;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -11,23 +11,19 @@ namespace my_own_project.VIEW
         // ========================================================
         // BIẾN TOÀN CỤC
         // ========================================================
-        private Guna2Panel pnlSidebar;
-        private Guna2Panel pnlBody;
-        private Guna2DragControl dragSidebar;
+        private Guna2Panel pnlSidebar, pnlTopBar, pnlBody;
+        private Guna2DragControl dragSidebar, dragTopBar;
         private Form activeForm = null;
 
-        // Màu sắc
         private Color colorMainBG = Color.FromArgb(245, 246, 250);
         private Color colorPurple = Color.FromArgb(88, 28, 230);
 
-        // Thông tin người dùng (truyền từ Login)
         public string UserRole { get; set; } = "Quản lý";
         public string LoggedInUserName { get; set; } = "";
         public int LoggedInUserID { get; set; } = 0;
 
-        // Các nút menu
         private Guna2Button btnPOS, btnHistory, btnProduct, btnDashboard,
-                            btnSettings, btnStaff, btnInventory, btnAccount, btnExit;
+                            btnSettings, btnStaff, btnInventory, btnPromotion, btnAccount, btnExit;
 
         public NewMainForm()
         {
@@ -37,49 +33,49 @@ namespace my_own_project.VIEW
         }
 
         // ========================================================
-        #region 1. VẼ GIAO DIỆN
+        #region 1. VẼ GIAO DIỆN CHUẨN (CÓ TOP BAR)
         // ========================================================
         private void InitializeModernUI()
         {
             this.Size = new Size(1366, 768);
             this.FormBorderStyle = FormBorderStyle.None;
+            this.MaximizedBounds = Screen.PrimaryScreen.WorkingArea;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Maximized;
             this.BackColor = colorMainBG;
 
-            // Drag control gán vào sidebar
             dragSidebar = new Guna2DragControl();
+            dragTopBar = new Guna2DragControl();
 
-            // ── Vùng chứa form con (bên phải) ──
-            pnlBody = new Guna2Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.Transparent
-            };
-            this.Controls.Add(pnlBody);
-
-            // ── SIDEBAR ──
-            pnlSidebar = new Guna2Panel
-            {
-                Dock = DockStyle.Left,
-                Width = 90,
-                FillColor = Color.White,
-                CustomBorderThickness = new Padding(0, 0, 1, 0),
-                CustomBorderColor = Color.FromArgb(235, 235, 235)
-            };
+            // 1. THANH MENU TRÁI (SIDEBAR)
+            pnlSidebar = new Guna2Panel { Dock = DockStyle.Left, Width = 90, FillColor = Color.White, CustomBorderThickness = new Padding(0, 0, 1, 0), CustomBorderColor = Color.FromArgb(235, 235, 235) };
             dragSidebar.TargetControl = pnlSidebar;
+            pnlSidebar.Controls.Add(new Label { Text = "🍩", Font = new Font("Segoe UI", 24F), AutoSize = true, Location = new Point(25, 20) });
 
-            // Logo
-            Label lblLogo = new Label
-            {
-                Text = "🍩",
-                Font = new Font("Segoe UI", 24F),
-                AutoSize = true,
-                Location = new Point(25, 20)
-            };
-            pnlSidebar.Controls.Add(lblLogo);
+            // 2. THANH ĐIỀU KHIỂN TRÊN CÙNG (TOP BAR) - Giải quyết triệt để lỗi đè nút
+            pnlTopBar = new Guna2Panel { Dock = DockStyle.Top, Height = 45, FillColor = Color.White, CustomBorderThickness = new Padding(0, 0, 0, 1), CustomBorderColor = Color.FromArgb(235, 235, 235) };
+            dragTopBar.TargetControl = pnlTopBar;
 
-            // ── CÁC NÚT CHỨC NĂNG ──
+            Guna2ControlBox btnClose = new Guna2ControlBox { Dock = DockStyle.Right, Width = 55, FillColor = Color.Transparent, IconColor = Color.Gray, HoverState = { FillColor = Color.Red, IconColor = Color.White }, Cursor = Cursors.Hand };
+            Guna2ControlBox btnMax = new Guna2ControlBox { Dock = DockStyle.Right, ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MaximizeBox, Width = 55, FillColor = Color.Transparent, IconColor = Color.Gray, Cursor = Cursors.Hand };
+            Guna2ControlBox btnMin = new Guna2ControlBox { Dock = DockStyle.Right, ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox, Width = 55, FillColor = Color.Transparent, IconColor = Color.Gray, Cursor = Cursors.Hand };
+
+            pnlTopBar.Controls.Add(btnMin);
+            pnlTopBar.Controls.Add(btnMax);
+            pnlTopBar.Controls.Add(btnClose);
+
+            // 3. VÙNG CHỨA FORM CON (BODY)
+            pnlBody = new Guna2Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
+
+            // Render theo thứ tự chuẩn để không bị đè Layout
+            this.Controls.Add(pnlBody);
+            this.Controls.Add(pnlTopBar);
+            this.Controls.Add(pnlSidebar);
+
+            pnlSidebar.SendToBack(); // Ép Sidebar chiếm trọn lề trái
+            pnlBody.BringToFront();  // Ép Body lấp đầy khoảng trống còn lại
+
+            // THÊM NÚT MENU
             btnPOS = AddSidebarButton("🛒", 120);
             btnHistory = AddSidebarButton("🧾", 190);
             btnProduct = AddSidebarButton("🍔", 260);
@@ -87,8 +83,8 @@ namespace my_own_project.VIEW
             btnSettings = AddSidebarButton("⚙️", 400);
             btnStaff = AddSidebarButton("👥", 470);
             btnInventory = AddSidebarButton("📦", 540);
+            btnPromotion = AddSidebarButton("🎁", 610);
 
-            // Gắn sự kiện
             btnPOS.Click += (s, e) => OpenChildForm(new POSForm());
             btnHistory.Click += (s, e) => OpenChildForm(new HistoryForm());
             btnProduct.Click += (s, e) => OpenChildForm(new ProductForm());
@@ -96,60 +92,29 @@ namespace my_own_project.VIEW
             btnSettings.Click += (s, e) => OpenChildForm(new SettingForm());
             btnStaff.Click += (s, e) => OpenChildForm(new StaffForm());
             btnInventory.Click += (s, e) => OpenChildForm(new InventoryForm());
+            btnPromotion.Click += (s, e) => OpenChildForm(new NewPromotionForm());
 
-            // Nút Tài khoản và Thoát (tạm vị trí 0, sẽ chỉnh lại sau)
             btnAccount = AddSidebarButton("👤", 0);
             btnExit = AddSidebarButton("🛑", 0);
-
             btnAccount.Click += BtnAccount_Click;
             btnExit.Click += (s, e) => Application.Exit();
 
-            // Thêm tất cả vào sidebar
-            pnlSidebar.Controls.Add(btnPOS);
-            pnlSidebar.Controls.Add(btnHistory);
-            pnlSidebar.Controls.Add(btnProduct);
-            pnlSidebar.Controls.Add(btnDashboard);
-            pnlSidebar.Controls.Add(btnSettings);
-            pnlSidebar.Controls.Add(btnStaff);
-            pnlSidebar.Controls.Add(btnInventory);
-            pnlSidebar.Controls.Add(btnAccount);
-            pnlSidebar.Controls.Add(btnExit);
+            pnlSidebar.Controls.AddRange(new Control[] { btnPOS, btnHistory, btnProduct, btnDashboard, btnSettings, btnStaff, btnInventory, btnPromotion, btnAccount, btnExit });
 
-            this.Controls.Add(pnlSidebar);
-
-            // Mở form POS mặc định
             btnPOS.Checked = true;
             OpenChildForm(new POSForm());
         }
 
-        // Tạo nút icon trong sidebar
         private Guna2Button AddSidebarButton(string icon, int y)
         {
-            var btn = new Guna2Button
-            {
-                Size = new Size(50, 50),
-                Location = new Point(20, y),
-                BorderRadius = 15,
-                Text = icon,
-                Font = new Font("Segoe UI", 16F),
-                ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton,
-                Cursor = Cursors.Hand,
-                Animated = true,
-                FillColor = Color.Transparent,
-                ForeColor = Color.Gray,
-                CheckedState = { FillColor = Color.FromArgb(240, 235, 255), ForeColor = colorPurple }
-            };
-            return btn;
+            return new Guna2Button { Size = new Size(50, 50), Location = new Point(20, y), BorderRadius = 15, Text = icon, Font = new Font("Segoe UI", 16F), ButtonMode = Guna.UI2.WinForms.Enums.ButtonMode.RadioButton, Cursor = Cursors.Hand, Animated = true, FillColor = Color.Transparent, ForeColor = Color.Gray, CheckedState = { FillColor = Color.FromArgb(240, 235, 255), ForeColor = colorPurple } };
         }
 
-        // Đặt vị trí nút Account và Exit xuống đáy sidebar
         private void PositionBottomButtons()
         {
-            int sidebarH = pnlSidebar.Height;
-            int spacing = 6;
-            btnExit.Top = sidebarH - btnExit.Height - 10;
+            btnExit.Top = pnlSidebar.Height - btnExit.Height - 10;
             btnExit.Left = 20;
-            btnAccount.Top = btnExit.Top - btnAccount.Height - spacing;
+            btnAccount.Top = btnExit.Top - btnAccount.Height - 6;
             btnAccount.Left = 20;
         }
         #endregion
@@ -159,8 +124,7 @@ namespace my_own_project.VIEW
         // ========================================================
         private void OpenChildForm(Form childForm)
         {
-            if (activeForm != null)
-                activeForm.Close();
+            if (activeForm != null) activeForm.Close();
             activeForm = childForm;
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
@@ -175,46 +139,27 @@ namespace my_own_project.VIEW
         // ========================================================
         private void NewMainForm_Load(object sender, EventArgs e)
         {
-            // Tên hiển thị trên nút Account (có thể để tooltip nếu thích)
             if (!string.IsNullOrEmpty(LoggedInUserName))
             {
-                // Gợi ý: có thể hiển thị tên viết tắt cạnh icon, nhưng giữ nguyên icon đơn giản
                 string[] parts = LoggedInUserName.Trim().Split(' ');
-                string shortName = parts[parts.Length - 1];
-                btnAccount.Text = "👤"; // hoặc "👤 " + shortName nếu muốn
+                btnAccount.Text = "👤";
             }
 
-            // Phân quyền
             if (UserRole == "Nhân viên")
             {
-                btnHistory.Visible = false;
-                btnDashboard.Visible = false;
-                btnSettings.Visible = false;
-                btnStaff.Visible = false;
-                btnInventory.Visible = false;
-
-                // Đôn nút Product lên sát POS (y=190)
+                btnHistory.Visible = btnDashboard.Visible = btnSettings.Visible = btnStaff.Visible = btnInventory.Visible = btnPromotion.Visible = false;
                 btnProduct.Location = new Point(20, 190);
             }
-            else // Quản lý
+            else
             {
-                btnHistory.Visible = true;
-                btnDashboard.Visible = true;
-                btnSettings.Visible = true;
-                btnStaff.Visible = true;
-                btnInventory.Visible = true;
+                btnHistory.Visible = btnDashboard.Visible = btnSettings.Visible = btnStaff.Visible = btnInventory.Visible = btnPromotion.Visible = true;
             }
-
-            // Căn chỉnh nút Account và Exit
             PositionBottomButtons();
         }
 
         private void BtnAccount_Click(object sender, EventArgs e)
         {
-            // Bỏ trạng thái checked của các nút khác
-            btnPOS.Checked = btnHistory.Checked = btnProduct.Checked =
-            btnDashboard.Checked = btnSettings.Checked = btnStaff.Checked = false;
-
+            btnPOS.Checked = btnHistory.Checked = btnProduct.Checked = btnDashboard.Checked = btnSettings.Checked = btnStaff.Checked = btnInventory.Checked = btnPromotion.Checked = false;
             OpenChildForm(new AccountForm(this.LoggedInUserID));
         }
         #endregion
