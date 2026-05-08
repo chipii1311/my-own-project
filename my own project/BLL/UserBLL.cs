@@ -58,12 +58,28 @@ namespace my_own_project.BLL
         /// </summary>
         public static int AddUser(UserDTO user)
         {
-            ValidateUser(user);
-            if (UserDAL.GetByEmail(user.Email) != null)
-                throw new Exception("Email đã được sử dụng!");
+            try
+            {
+                ValidateUser(user);
 
-            return UserDAL.Insert(user);
+                // Kiểm tra email đã tồn tại
+                if (UserDAL.GetByEmail(user.Email) != null)
+                    throw new Exception("Email đã được sử dụng!");
+
+                // Hash password
+                user.PasswordHash = HashPassword(user.PasswordHash);
+
+                return UserDAL.Insert(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UserBLL.AddUser Error: {ex.Message}");
+                throw;
+            }
         }
+
+
+
 
         // ==================== READ ====================
         /// <summary>
