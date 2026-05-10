@@ -28,12 +28,12 @@ namespace my_own_project.DesignForms
             LoadMenuItems();
         }
 
-        #region 1. UI BUILDER (CHỐNG LẸM KHUNG)
+        #region 1. UI BUILDER (CHỐNG LẸM KHUNG & TỐI ƯU NÚT)
         private void InitializeModernPOS()
         {
             this.BackColor = Color.FromArgb(245, 246, 250);
 
-            // 👉 ĐÃ XÓA PADDING: Ép Form lấp đầy 100% không gian, không còn khoảng khuyết xám
+            // Ép Form lấp đầy 100% không gian
             this.Padding = new Padding(0);
 
             // ─── 1. GIỎ HÀNG (PANEL BÊN PHẢI) ───
@@ -57,13 +57,14 @@ namespace my_own_project.DesignForms
             pnlCartBottom.Controls.Add(new Label { Text = "Tổng cộng", Font = new Font("Segoe UI", 14F, FontStyle.Bold), Location = new Point(20, 50), AutoSize = true });
             lblTotal = new Label { Name = "lblTotalAmount", Text = "0 đ", Font = new Font("Segoe UI", 14F, FontStyle.Bold), ForeColor = Color.Red, Location = new Point(310, 50), Size = new Size(170, 30), TextAlign = ContentAlignment.MiddleRight };
 
+            // 👉 ĐÃ XÓA NÚT LƯU TẠM & KÉO DÀI NÚT THANH TOÁN
             Guna2Button btnClear = new Guna2Button { Text = "Xóa tất cả", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(20, 95), FillColor = Color.White, ForeColor = Color.Red, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.Red, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
             btnClear.Click += BtnClear_Click;
-            Guna2Button btnSave = new Guna2Button { Text = "Lưu tạm", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(130, 95), FillColor = Color.FromArgb(240, 240, 240), ForeColor = Color.Black, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
-            btnContinue = new Guna2Button { Text = "Thanh toán", BorderRadius = 5, Size = new Size(240, 45), Location = new Point(240, 95), FillColor = Color.FromArgb(88, 28, 230), Font = new Font("Segoe UI", 12F, FontStyle.Bold), Cursor = Cursors.Hand };
+
+            btnContinue = new Guna2Button { Text = "Thanh toán", BorderRadius = 5, Size = new Size(350, 45), Location = new Point(130, 95), FillColor = Color.FromArgb(88, 28, 230), Font = new Font("Segoe UI", 12F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnContinue.Click += BtnContinue_Click;
 
-            pnlCartBottom.Controls.AddRange(new Control[] { lblTotal, btnClear, btnSave, btnContinue });
+            pnlCartBottom.Controls.AddRange(new Control[] { lblTotal, btnClear, btnContinue });
 
             flpCart = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, FlowDirection = FlowDirection.TopDown, WrapContents = false, Padding = new Padding(20, 5, 0, 0), BackColor = Color.White };
 
@@ -71,7 +72,7 @@ namespace my_own_project.DesignForms
             pnlCart.Controls.Add(pnlCartTop);
             pnlCart.Controls.Add(pnlCartBottom);
 
-            // ─── 2. HEADER TÌM KIẾM (Đã thêm khoảng cách 20px lề trái cho đẹp) ───
+            // ─── 2. HEADER TÌM KIẾM ───
             pnlHeader = new Guna2Panel { Dock = DockStyle.Top, Height = 120, BackColor = Color.Transparent };
             pnlHeader.Controls.Add(new Label { Text = "Menu Items", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = Color.FromArgb(88, 28, 230), Location = new Point(20, 15), AutoSize = true });
             txtSearch = new Guna2TextBox { Size = new Size(350, 45), Location = new Point(20, 50), BorderRadius = 20, PlaceholderText = "Search items..." };
