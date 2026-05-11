@@ -421,29 +421,29 @@ namespace my_own_project.VIEW
         }
 
         // ════════════════════════════════════════════════════════
-        // LOAD DATA
+        // LOAD DATA (ĐÃ FIX LỖI TÀNG HÌNH & TÍNH SAI DOANH THU)
         // ════════════════════════════════════════════════════════
         private void LoadData()
         {
             try
             {
-                string fromDate = dtpFrom.Value.ToString("yyyy-MM-dd");
-                string toDate = dtpTo.Value.ToString("yyyy-MM-dd");
+                // Dùng yyyyMMdd để SQL Server không bị lú ngày/tháng
+                string fromDate = dtpFrom.Value.ToString("yyyyMMdd");
+                string toDate = dtpTo.Value.ToString("yyyyMMdd");
 
+                // Lấy trực tiếp o.TotalAmount (Đã trừ khuyến mãi) thay vì SUM()
                 string query = $@"
                     SELECT
                         o.OrderID                                            AS [Mã HĐ],
                         o.OrderDate                                          AS [Ngày giờ],
                         ISNULL(CAST(t.TableNumber AS NVARCHAR), N'Mang đi') AS [Bàn],
                         o.OrderType                                          AS [Loại],
-                        SUM(od.Quantity * od.UnitPrice)                      AS [Tổng tiền]
+                        o.TotalAmount                                        AS [Tổng tiền]
                     FROM Orders o
                     LEFT JOIN DiningTable t  ON o.TableID  = t.TableID
-                    INNER JOIN OrderDetail od ON o.OrderID  = od.OrderID
                     WHERE o.Status = 'Completed'
                       AND CAST(o.OrderDate AS DATE) >= '{fromDate}'
                       AND CAST(o.OrderDate AS DATE) <= '{toDate}'
-                    GROUP BY o.OrderID, o.OrderDate, t.TableNumber, o.OrderType
                     ORDER BY o.OrderDate DESC";
 
                 DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(query);
@@ -454,8 +454,7 @@ namespace my_own_project.VIEW
                 {
                     var col = dgvHistory.Columns["Tổng tiền"];
                     col.DefaultCellStyle.Format = "N0";
-                    col.DefaultCellStyle.Alignment =
-                        DataGridViewContentAlignment.MiddleRight;
+                    col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                     col.DefaultCellStyle.Padding = new Padding(0, 0, 16, 0);
                 }
 
@@ -583,7 +582,7 @@ namespace my_own_project.VIEW
         }
 
         // ════════════════════════════════════════════════════════
-        // PRINT PAGE
+        // PRINT PAGE (ĐÃ FIX: THÊM DÒNG KHUYẾN MÃI NẾU CÓ)
         // ════════════════════════════════════════════════════════
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -613,12 +612,17 @@ namespace my_own_project.VIEW
             g.DrawString(line, fItem, Brushes.Black, lx, y); y += 20;
 
             var dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(selectedOrderID);
+            decimal subTotal = 0; // Biến tính giá gốc
+
             foreach (DataRow row in dtDetails.Rows)
             {
                 string name = row["ItemName"].ToString();
                 if (name.Length > 15) name = name.Substring(0, 15) + "..";
                 string qty = row["Quantity"].ToString();
-                string sub = Convert.ToDecimal(row["SubTotal"]).ToString("N0");
+
+                decimal rowSub = Convert.ToDecimal(row["SubTotal"]);
+                subTotal += rowSub;
+                string sub = rowSub.ToString("N0");
 
                 g.DrawString(name, fItem, Brushes.Black, lx, y);
                 g.DrawString(qty, fItem, Brushes.Black, 170, y);
@@ -627,11 +631,20 @@ namespace my_own_project.VIEW
             }
 
             g.DrawString(line, fItem, Brushes.Black, lx, y); y += 25;
+
+            // Kiểm tra xem có khuyến mãi không (Tạm tính > Tiền khách trả)
+            decimal discount = subTotal - selectedTotal;
+            if (discount > 0)
+            {
+                g.DrawString("Tạm tính:", fBold, Brushes.Black, lx, y);
+                g.DrawString(subTotal.ToString("N0") + " đ", fBold, Brushes.Black, rx, y, right); y += 25;
+                g.DrawString("Khuyến mãi:", fBold, Brushes.Black, lx, y);
+                g.DrawString("-" + discount.ToString("N0") + " đ", fBold, Brushes.Black, rx, y, right); y += 25;
+            }
+
             g.DrawString("TỔNG CỘNG:", fHeader, Brushes.Black, lx, y);
-            g.DrawString(selectedTotal.ToString("N0") + " đ", fHeader,
-                         Brushes.Black, rx, y, right); y += 45;
-            g.DrawString("*** BẢN SAO (REPRINT) ***", fSub,
-                         Brushes.Black, new PointF(cx, y), center);
+            g.DrawString(selectedTotal.ToString("N0") + " đ", fHeader, Brushes.Black, rx, y, right); y += 45;
+            g.DrawString("*** BẢN SAO (REPRINT) ***", fSub, Brushes.Black, new PointF(cx, y), center);
         }
 
         // P/Invoke cho rounded card corners
