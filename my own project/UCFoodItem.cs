@@ -1,7 +1,7 @@
 ﻿using Guna.UI2.WinForms;
 using System;
 using System.Drawing;
-using System.IO; // Thêm thư viện này để xử lý file ảnh
+using System.IO;
 using System.Windows.Forms;
 
 namespace my_own_project
@@ -15,7 +15,7 @@ namespace my_own_project
         public event EventHandler OnSelect;
 
         private Guna2Panel cardPanel;
-        private Guna2PictureBox picFood; // Đã lên đời Guna2PictureBox xịn sò
+        private Guna2PictureBox picFood;
         private Label lblName;
         private Label lblPrice;
         private Guna2CircleButton btnAdd;
@@ -41,15 +41,15 @@ namespace my_own_project
             cardPanel.BackColor = Color.Transparent;
 
             // ==========================================
-            // ẢNH MÓN ĂN (Dùng Guna2PictureBox)
+            // ẢNH MÓN ĂN
             // ==========================================
             picFood = new Guna2PictureBox();
             picFood.Size = new Size(140, 120);
             picFood.Location = new Point(20, 15);
             picFood.SizeMode = PictureBoxSizeMode.Zoom;
-            picFood.BorderRadius = 15; // Bo góc ảnh cho hiện đại
-            picFood.ErrorImage = null;   // Bùa chống X đỏ
-            picFood.InitialImage = null; // Bùa chống X đỏ
+            picFood.BorderRadius = 15;
+            picFood.ErrorImage = null;
+            picFood.InitialImage = null;
             cardPanel.Controls.Add(picFood);
 
             // ==========================================
@@ -68,19 +68,25 @@ namespace my_own_project
             cardPanel.Controls.Add(lblPrice);
 
             // ==========================================
-            // NÚT CỘNG MÀU ĐEN
+            // NÚT CỘNG (ĐÃ NÂNG CẤP LÊN TÍM NHẠT)
             // ==========================================
             btnAdd = new Guna2CircleButton();
             btnAdd.Size = new Size(35, 35);
             btnAdd.Location = new Point(130, 190);
-            btnAdd.FillColor = Color.FromArgb(30, 30, 30);
-            btnAdd.ForeColor = Color.White;
+
+            // Đổi màu mặc định
+            btnAdd.FillColor = Color.FromArgb(240, 235, 255); // Nền màu Tím nhạt
+            btnAdd.ForeColor = Color.FromArgb(88, 28, 230);   // Chữ dấu cộng màu Tím đậm
+
             btnAdd.Text = "+";
             btnAdd.Font = new Font("Arial", 16F, FontStyle.Bold);
             btnAdd.TextOffset = new Point(1, -2); // Căn giữa dấu cộng
             btnAdd.Cursor = Cursors.Hand;
             btnAdd.Animated = true;
-            btnAdd.HoverState.FillColor = Color.FromArgb(88, 28, 230);
+
+            // Hiệu ứng khi lướt chuột qua (Hover)
+            btnAdd.HoverState.FillColor = Color.FromArgb(88, 28, 230); // Nền đổi thành Tím đậm
+            btnAdd.HoverState.ForeColor = Color.White;                 // Chữ đổi thành Trắng
 
             btnAdd.Click += (s, e) => { OnSelect?.Invoke(this, EventArgs.Empty); };
             cardPanel.Controls.Add(btnAdd);
@@ -104,7 +110,7 @@ namespace my_own_project
                     string imagePath = Path.Combine(Application.StartupPath, "MenuImages", imgUrl);
                     if (File.Exists(imagePath))
                     {
-                        picFood.ImageLocation = imagePath; // Guna2PictureBox load cực mượt
+                        picFood.ImageLocation = imagePath;
                     }
                     else
                     {

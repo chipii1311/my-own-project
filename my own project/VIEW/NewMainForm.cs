@@ -8,9 +8,6 @@ namespace my_own_project.VIEW
 {
     public partial class NewMainForm : Form
     {
-        // ========================================================
-        // BIẾN TOÀN CỤC
-        // ========================================================
         private Guna2Panel pnlSidebar, pnlTopBar, pnlBody;
         private Guna2DragControl dragSidebar, dragTopBar;
         private Form activeForm = null;
@@ -18,6 +15,7 @@ namespace my_own_project.VIEW
         private Color colorMainBG = Color.FromArgb(245, 246, 250);
         private Color colorPurple = Color.FromArgb(88, 28, 230);
 
+        // Thông tin người dùng từ màn hình Login
         public string UserRole { get; set; } = "Quản lý";
         public string LoggedInUserName { get; set; } = "";
         public int LoggedInUserID { get; set; } = 0;
@@ -32,14 +30,11 @@ namespace my_own_project.VIEW
             this.Resize += (s, e) => PositionBottomButtons();
         }
 
-        // ========================================================
-        #region 1. VẼ GIAO DIỆN CHUẨN (CÓ TOP BAR)
-        // ========================================================
         private void InitializeModernUI()
         {
             this.Size = new Size(1366, 768);
             this.FormBorderStyle = FormBorderStyle.None;
-            this.MaximizedBounds = Screen.PrimaryScreen.WorkingArea;
+            this.MaximizedBounds = Screen.PrimaryScreen.WorkingArea; // Chống lẹm Taskbar
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Maximized;
             this.BackColor = colorMainBG;
@@ -47,35 +42,30 @@ namespace my_own_project.VIEW
             dragSidebar = new Guna2DragControl();
             dragTopBar = new Guna2DragControl();
 
-            // 1. THANH MENU TRÁI (SIDEBAR)
+            // 1. SIDEBAR
             pnlSidebar = new Guna2Panel { Dock = DockStyle.Left, Width = 90, FillColor = Color.White, CustomBorderThickness = new Padding(0, 0, 1, 0), CustomBorderColor = Color.FromArgb(235, 235, 235) };
             dragSidebar.TargetControl = pnlSidebar;
             pnlSidebar.Controls.Add(new Label { Text = "🍩", Font = new Font("Segoe UI", 24F), AutoSize = true, Location = new Point(25, 20) });
 
-            // 2. THANH ĐIỀU KHIỂN TRÊN CÙNG (TOP BAR) - Giải quyết triệt để lỗi đè nút
+            // 2. TOPBAR (Chứa nút điều khiển góc phải)
             pnlTopBar = new Guna2Panel { Dock = DockStyle.Top, Height = 45, FillColor = Color.White, CustomBorderThickness = new Padding(0, 0, 0, 1), CustomBorderColor = Color.FromArgb(235, 235, 235) };
             dragTopBar.TargetControl = pnlTopBar;
 
             Guna2ControlBox btnClose = new Guna2ControlBox { Dock = DockStyle.Right, Width = 55, FillColor = Color.Transparent, IconColor = Color.Gray, HoverState = { FillColor = Color.Red, IconColor = Color.White }, Cursor = Cursors.Hand };
             Guna2ControlBox btnMax = new Guna2ControlBox { Dock = DockStyle.Right, ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MaximizeBox, Width = 55, FillColor = Color.Transparent, IconColor = Color.Gray, Cursor = Cursors.Hand };
             Guna2ControlBox btnMin = new Guna2ControlBox { Dock = DockStyle.Right, ControlBoxType = Guna.UI2.WinForms.Enums.ControlBoxType.MinimizeBox, Width = 55, FillColor = Color.Transparent, IconColor = Color.Gray, Cursor = Cursors.Hand };
+            pnlTopBar.Controls.AddRange(new Control[] { btnMin, btnMax, btnClose });
 
-            pnlTopBar.Controls.Add(btnMin);
-            pnlTopBar.Controls.Add(btnMax);
-            pnlTopBar.Controls.Add(btnClose);
-
-            // 3. VÙNG CHỨA FORM CON (BODY)
+            // 3. BODY
             pnlBody = new Guna2Panel { Dock = DockStyle.Fill, BackColor = Color.Transparent };
 
-            // Render theo thứ tự chuẩn để không bị đè Layout
             this.Controls.Add(pnlBody);
             this.Controls.Add(pnlTopBar);
             this.Controls.Add(pnlSidebar);
+            pnlSidebar.SendToBack();
+            pnlBody.BringToFront();
 
-            pnlSidebar.SendToBack(); // Ép Sidebar chiếm trọn lề trái
-            pnlBody.BringToFront();  // Ép Body lấp đầy khoảng trống còn lại
-
-            // THÊM NÚT MENU
+            // NÚT MENU
             btnPOS = AddSidebarButton("🛒", 120);
             btnHistory = AddSidebarButton("🧾", 190);
             btnProduct = AddSidebarButton("🍔", 260);
@@ -84,8 +74,11 @@ namespace my_own_project.VIEW
             btnStaff = AddSidebarButton("👥", 470);
             btnInventory = AddSidebarButton("📦", 540);
             btnPromotion = AddSidebarButton("🎁", 610);
+            btnAccount = AddSidebarButton("👤", 0);
+            btnExit = AddSidebarButton("🛑", 0);
 
-            btnPOS.Click += (s, e) => OpenChildForm(new POSForm());
+            // Gắn sự kiện (Có truyền thông tin nhân viên)
+            btnPOS.Click += (s, e) => OpenChildForm(new POSForm(this.LoggedInUserID, this.LoggedInUserName));
             btnHistory.Click += (s, e) => OpenChildForm(new HistoryForm());
             btnProduct.Click += (s, e) => OpenChildForm(new ProductForm());
             btnDashboard.Click += (s, e) => OpenChildForm(new NewDashboardForm());
@@ -93,16 +86,12 @@ namespace my_own_project.VIEW
             btnStaff.Click += (s, e) => OpenChildForm(new StaffForm());
             btnInventory.Click += (s, e) => OpenChildForm(new InventoryForm());
             btnPromotion.Click += (s, e) => OpenChildForm(new NewPromotionForm());
-
-            btnAccount = AddSidebarButton("👤", 0);
-            btnExit = AddSidebarButton("🛑", 0);
             btnAccount.Click += BtnAccount_Click;
             btnExit.Click += (s, e) => Application.Exit();
 
             pnlSidebar.Controls.AddRange(new Control[] { btnPOS, btnHistory, btnProduct, btnDashboard, btnSettings, btnStaff, btnInventory, btnPromotion, btnAccount, btnExit });
 
-            btnPOS.Checked = true;
-            OpenChildForm(new POSForm());
+           
         }
 
         private Guna2Button AddSidebarButton(string icon, int y)
@@ -117,11 +106,7 @@ namespace my_own_project.VIEW
             btnAccount.Top = btnExit.Top - btnAccount.Height - 6;
             btnAccount.Left = 20;
         }
-        #endregion
 
-        // ========================================================
-        #region 2. MỞ FORM CON
-        // ========================================================
         private void OpenChildForm(Form childForm)
         {
             if (activeForm != null) activeForm.Close();
@@ -132,29 +117,18 @@ namespace my_own_project.VIEW
             pnlBody.Controls.Add(childForm);
             childForm.Show();
         }
-        #endregion
 
-        // ========================================================
-        #region 3. SỰ KIỆN & PHÂN QUYỀN
-        // ========================================================
         private void NewMainForm_Load(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(LoggedInUserName))
-            {
-                string[] parts = LoggedInUserName.Trim().Split(' ');
-                btnAccount.Text = "👤";
-            }
-
             if (UserRole == "Nhân viên")
             {
                 btnHistory.Visible = btnDashboard.Visible = btnSettings.Visible = btnStaff.Visible = btnInventory.Visible = btnPromotion.Visible = false;
                 btnProduct.Location = new Point(20, 190);
             }
-            else
-            {
-                btnHistory.Visible = btnDashboard.Visible = btnSettings.Visible = btnStaff.Visible = btnInventory.Visible = btnPromotion.Visible = true;
-            }
             PositionBottomButtons();
+
+            btnPOS.Checked = true;
+            OpenChildForm(new POSForm(this.LoggedInUserID, this.LoggedInUserName));
         }
 
         private void BtnAccount_Click(object sender, EventArgs e)
@@ -162,6 +136,5 @@ namespace my_own_project.VIEW
             btnPOS.Checked = btnHistory.Checked = btnProduct.Checked = btnDashboard.Checked = btnSettings.Checked = btnStaff.Checked = btnInventory.Checked = btnPromotion.Checked = false;
             OpenChildForm(new AccountForm(this.LoggedInUserID));
         }
-        #endregion
     }
 }
