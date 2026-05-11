@@ -15,14 +15,22 @@ namespace my_own_project.DesignForms
         private DataTable dtAllMenu;
         private int currentOrderID = -1;
 
+        // Biến lưu thông tin thu ngân
+        private int currentStaffID;
+        private string currentStaffName;
+
         private Guna2Panel pnlCart, pnlHeader;
         private FlowLayoutPanel flpMenu, flpCategories, flpCart;
         private Guna2TextBox txtSearch;
         private Label lblTotal;
         private Guna2Button btnContinue;
 
-        public POSForm()
+        // Cập nhật Constructor để nhận thẻ bài nhân viên
+        public POSForm(int staffID = 0, string staffName = "Admin")
         {
+            this.currentStaffID = staffID;
+            this.currentStaffName = staffName;
+
             InitializeModernPOS();
             LoadDiningTables();
             LoadMenuItems();
@@ -57,7 +65,7 @@ namespace my_own_project.DesignForms
             pnlCartBottom.Controls.Add(new Label { Text = "Tổng cộng", Font = new Font("Segoe UI", 14F, FontStyle.Bold), Location = new Point(20, 50), AutoSize = true });
             lblTotal = new Label { Name = "lblTotalAmount", Text = "0 đ", Font = new Font("Segoe UI", 14F, FontStyle.Bold), ForeColor = Color.Red, Location = new Point(310, 50), Size = new Size(170, 30), TextAlign = ContentAlignment.MiddleRight };
 
-            // 👉 ĐÃ XÓA NÚT LƯU TẠM & KÉO DÀI NÚT THANH TOÁN
+            // ĐÃ XÓA NÚT LƯU TẠM & KÉO DÀI NÚT THANH TOÁN
             Guna2Button btnClear = new Guna2Button { Text = "Xóa tất cả", BorderRadius = 5, Size = new Size(100, 45), Location = new Point(20, 95), FillColor = Color.White, ForeColor = Color.Red, CustomBorderThickness = new Padding(1), CustomBorderColor = Color.Red, Font = new Font("Segoe UI", 10F), Cursor = Cursors.Hand };
             btnClear.Click += BtnClear_Click;
 
@@ -311,7 +319,10 @@ namespace my_own_project.DesignForms
         private void BtnContinue_Click(object sender, EventArgs e)
         {
             if (currentOrderID == -1) { MessageBox.Show("Giỏ hàng đang trống!"); return; }
-            PaymentForm frm = new PaymentForm(currentOrderID, -1);
+
+            // 👉 ĐÃ FIX: TRUYỀN ID VÀ TÊN NHÂN VIÊN SANG PAYMENT FORM ĐỂ LƯU VẾT VÀ IN BILL
+            PaymentForm frm = new PaymentForm(currentOrderID, -1, currentStaffID, currentStaffName);
+
             if (frm.ShowDialog() == DialogResult.OK) { currentOrderID = -1; ShowBill(); LoadDiningTables(); }
         }
         #endregion

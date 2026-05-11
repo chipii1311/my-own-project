@@ -16,6 +16,10 @@ namespace my_own_project.VIEW
         private int currentOrderID;
         private int tableID;
 
+        // Thẻ bài nhân viên (nhận từ POSForm)
+        private int currentStaffID;
+        private string currentStaffName;
+
         // Biến phục vụ tính toán tiền nong
         private decimal subTotal = 0;       // Tiền nguyên giá
         private decimal discountAmount = 0; // Tiền được giảm
@@ -37,13 +41,16 @@ namespace my_own_project.VIEW
         private PrintDocument printDoc;
         private PrintPreviewDialog printPreview;
 
-        public PaymentForm(int orderID, int tableID = -1)
+        // Cập nhật hàm khởi tạo để nhận thêm ID và Tên thu ngân
+        public PaymentForm(int orderID, int tableID = -1, int staffID = 0, string staffName = "Admin")
         {
             InitializeComponent();
             this.Controls.Clear();
 
             this.currentOrderID = orderID;
             this.tableID = tableID;
+            this.currentStaffID = staffID;
+            this.currentStaffName = staffName;
 
             // Khởi tạo máy in khổ 80mm
             printDoc = new PrintDocument();
@@ -67,7 +74,7 @@ namespace my_own_project.VIEW
 
         private void BuildPaymentUI()
         {
-            this.Size = new Size(480, 480); // ĐÃ NỚI RỘNG FORM ĐỂ CHỨA KHUYẾN MÃI
+            this.Size = new Size(480, 480);
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterParent;
             this.BackColor = Color.White;
@@ -105,7 +112,7 @@ namespace my_own_project.VIEW
             this.Controls.Add(lblTotalAmount);
             currentY += 70;
 
-            // --- 3 NÚT BẤM RÕ RÀNG ---
+            // --- 3 NÚT BẤM ---
             btnCancel = new Guna2Button { Text = "Hủy bỏ", Size = new Size(100, 55), Location = new Point(25, currentY), BorderRadius = 8, FillColor = Color.FromArgb(235, 235, 235), ForeColor = Color.Black, Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
             btnCancel.Click += BtnCancel_Click;
             this.Controls.Add(btnCancel);
@@ -149,12 +156,10 @@ namespace my_own_project.VIEW
             catch (Exception ex) { MessageBox.Show("Lỗi tải thông tin hóa đơn: " + ex.Message); }
         }
 
-        // TẢI MÃ KHUYẾN MÃI HỢP LỆ VÀO COMBOBOX
         private void LoadActivePromotions()
         {
             try
             {
-                // Chỉ lấy mã Active và ngày hôm nay nằm trong khoảng StartDate - EndDate
                 string query = @"SELECT PromotionID, 
                                         PromotionName + ' (-' + CAST(CAST(DiscountPercent AS int) AS VARCHAR) + '%)' AS PromoDisplay, 
                                         DiscountPercent 
@@ -162,7 +167,6 @@ namespace my_own_project.VIEW
                                  WHERE Status = 'Active' AND CAST(GETDATE() AS DATE) BETWEEN StartDate AND EndDate";
                 DataTable dtPromo = my_own_project.DAL.DataHelper.ExecuteQuery(query);
 
-                // Thêm dòng mặc định "Không áp dụng"
                 DataRow dr = dtPromo.NewRow();
                 dr["PromotionID"] = -1;
                 dr["PromoDisplay"] = "-- Không áp dụng khuyến mãi --";
@@ -174,13 +178,11 @@ namespace my_own_project.VIEW
                 cboPromotion.ValueMember = "PromotionID";
                 cboPromotion.SelectedIndex = 0;
 
-                // Gắn sự kiện đổi mã là tính lại tiền
                 cboPromotion.SelectedIndexChanged += (s, e) => CalculateFinalAmount();
             }
             catch (Exception ex) { MessageBox.Show("Lỗi tải mã khuyến mãi: " + ex.Message); }
         }
 
-        // TÍNH TOÁN REAL-TIME: Tạm tính -> Giảm giá -> Khách trả
         private void CalculateFinalAmount()
         {
             discountAmount = 0;
@@ -194,7 +196,6 @@ namespace my_own_project.VIEW
 
             finalAmount = subTotal - discountAmount;
 
-            // Hiển thị lên UI
             lblSubTotal.Text = $"Tạm tính: {subTotal.ToString("N0")} đ";
             lblDiscount.Text = $"Giảm giá: -{discountAmount.ToString("N0")} đ";
             lblTotalAmount.Text = finalAmount.ToString("N0") + " đ";
@@ -216,19 +217,18 @@ namespace my_own_project.VIEW
             {
                 try
                 {
-                    // Lấy ID Khuyến mãi (nếu có)
                     int selectedPromoID = Convert.ToInt32(cboPromotion.SelectedValue);
                     string promoSQL = (selectedPromoID == -1) ? "NULL" : selectedPromoID.ToString();
 
-                    // Cập nhật Hóa đơn (Lưu kèm Tổng tiền và Mã Khuyến Mãi)
+                    // Cập nhật Hóa đơn kèm ID Khuyến mãi và ID Thu ngân (Lưu ý: Bạn nhắc Việt check lại xem cột là StaffID hay EmployeeID nhé)
                     string updateOrderSQL = $@"UPDATE Orders 
                                                SET Status = 'Completed', 
                                                    TotalAmount = {finalAmount}, 
-                                                   PromotionID = {promoSQL} 
+                                                   PromotionID = {promoSQL},
+                                                   StaffID = {currentStaffID} 
                                                WHERE OrderID = {currentOrderID}";
                     my_own_project.DAL.DataHelper.ExecuteNonQuery(updateOrderSQL);
 
-                    // Giải phóng bàn
                     my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
 
                     MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -240,7 +240,7 @@ namespace my_own_project.VIEW
             }
         }
 
-        // --- IN HÓA ĐƠN CÓ THÊM DÒNG KHUYẾN MÃI ---
+        // --- IN HÓA ĐƠN ---
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -272,6 +272,10 @@ namespace my_own_project.VIEW
             g.DrawString("Mã HD: " + currentOrderID, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 20;
             g.DrawString("Ngày : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), fontItem, Brushes.Black, leftMargin, yPos);
+            yPos += 20;
+
+            // In tên Thu ngân
+            g.DrawString("Thu ngân: " + currentStaffName, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 25;
 
             string line = new string('-', 33);
