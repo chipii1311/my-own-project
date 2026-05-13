@@ -19,17 +19,24 @@ namespace my_own_project.VIEW
 
         private Guna2ComboBox cboFilterCategory;
         private Guna2ComboBox cboInputCategory;
-        private Guna2ComboBox cboInputStatus; // Thêm biến trạng thái
+        private Guna2ComboBox cboInputStatus;
 
         private FlowLayoutPanel flpProducts;
 
         private string currentImagePath = "";
         private string imageFolder = Path.Combine(Application.StartupPath, "MenuImages");
 
-        public ProductForm()
+        // 👉 THÊM BIẾN LƯU QUYỀN
+        private string currentUserRole;
+
+        // 👉 SỬA HÀM TẠO ĐỂ NHẬN QUYỀN TRUYỀN VÀO TỪ MAIN FORM
+        public ProductForm(string role)
         {
             InitializeComponent();
             this.Controls.Clear();
+
+            // Lưu lại quyền để sử dụng
+            this.currentUserRole = role;
 
             if (!Directory.Exists(imageFolder))
                 Directory.CreateDirectory(imageFolder);
@@ -97,12 +104,12 @@ namespace my_own_project.VIEW
             txtPrice = new Guna2TextBox { Size = new Size(cWidth, 42), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), ForeColor = Color.Black, BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 15) };
             flpInput.Controls.Add(txtPrice);
 
-            // --- THÊM CHỌN TRẠNG THÁI (ĐANG BÁN / HẾT MÓN) ---
+            // --- CHỌN TRẠNG THÁI (ĐANG BÁN / HẾT MÓN) ---
             Label lblStatus = new Label { Text = "Trạng thái:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, AutoSize = true, Margin = new Padding(0, 0, 0, 5) };
             flpInput.Controls.Add(lblStatus);
 
             cboInputStatus = new Guna2ComboBox { Size = new Size(cWidth, 40), BorderRadius = 5, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(245, 246, 250), BorderColor = Color.FromArgb(213, 218, 223), Margin = new Padding(0, 0, 0, 25) };
-            cboInputStatus.Items.AddRange(new object[] { "Còn", "Hết" }); // Căn theo chữ CÒN/HẾT trong CSDL
+            cboInputStatus.Items.AddRange(new object[] { "Còn", "Hết" });
             flpInput.Controls.Add(cboInputStatus);
 
             txtID = new Guna2TextBox { Visible = false, Size = new Size(0, 0) };
@@ -167,10 +174,34 @@ namespace my_own_project.VIEW
 
         #endregion
 
-
         // ========================================================
         #region 2. KHU VỰC CHỨC NĂNG & LOGIC DATABASE
         // ========================================================
+
+        // 👉 HÀM MỚI: PHÂN QUYỀN TRÊN GIAO DIỆN
+        private void ApplyRolePermissions()
+        {
+            if (currentUserRole == "Nhân viên")
+            {
+                // 1. Khóa TextBox Tên món và Giá
+                txtName.ReadOnly = true;
+                txtPrice.ReadOnly = true;
+
+                // Đổi màu nền xám nhạt để báo hiệu ReadOnly
+                txtName.FillColor = Color.FromArgb(243, 244, 246);
+                txtPrice.FillColor = Color.FromArgb(243, 244, 246);
+
+                // 2. Khóa Combobox Danh mục
+                cboInputCategory.Enabled = false;
+
+                // 3. Ẩn các nút thêm/xóa/đổi ảnh
+                btnAddNewProduct.Visible = false;
+                btnDelete.Visible = false;
+                btnBrowse.Visible = false;
+
+                // Nút "LƯU CẬP NHẬT" và Combobox "Trạng thái" vẫn được giữ lại để thao tác
+            }
+        }
 
         private void LoadCategories()
         {
@@ -211,7 +242,6 @@ namespace my_own_project.VIEW
                     filterCatID = id;
                 }
 
-                // Cập nhật câu SQL: Lấy thêm cột Status (Còn/Hết)
                 string query = "SELECT MenuItemID AS [Mã món], CategoryID, ItemName AS [Tên món], Price AS [Giá bán], ISNULL(ImageUrl, '') AS [Ảnh], ISNULL(Status, N'Còn') AS [Trạng thái] FROM MenuItem WHERE ItemStatus = 1";
 
                 if (filterCatID > 0)
@@ -241,14 +271,13 @@ namespace my_own_project.VIEW
                         lblOut.Text = "HẾT MÓN";
                         lblOut.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
                         lblOut.ForeColor = Color.White;
-                        lblOut.BackColor = Color.FromArgb(255, 71, 87); // Màu đỏ chót
+                        lblOut.BackColor = Color.FromArgb(255, 71, 87);
                         lblOut.AutoSize = true;
                         lblOut.Location = new Point(10, 10);
                         lblOut.Padding = new Padding(3);
                         card.Controls.Add(lblOut);
-                        lblOut.BringToFront(); // Nổi lên trên ảnh
+                        lblOut.BringToFront();
 
-                        // Hiệu ứng làm mờ ảnh nếu hết món
                         card.FillColor = Color.FromArgb(245, 245, 245);
                     }
 
@@ -302,7 +331,6 @@ namespace my_own_project.VIEW
                     lblName.Click += clickEvent;
                     lblPrice.Click += clickEvent;
 
-                    // Gắn click cho nhãn đỏ nữa để ấn vào phần nhãn vẫn ăn lệnh
                     if (card.Controls.Count > 3) card.Controls[0].Click += clickEvent;
 
                     flpProducts.Controls.Add(card);
@@ -324,11 +352,10 @@ namespace my_own_project.VIEW
             picFood.Image = null;
             currentImagePath = "";
             if (cboInputCategory.Items.Count > 0) cboInputCategory.SelectedIndex = 0;
-            if (cboInputStatus.Items.Count > 0) cboInputStatus.SelectedIndex = 0; // Đưa về mặc định "Còn"
+            if (cboInputStatus.Items.Count > 0) cboInputStatus.SelectedIndex = 0;
         }
 
         #endregion
-
 
         // ========================================================
         #region 3. KHU VỰC SỰ KIỆN (EVENTS)
@@ -338,6 +365,9 @@ namespace my_own_project.VIEW
         {
             LoadCategories();
             LoadProductData();
+
+            // 👉 GỌI HÀM KHÓA QUYỀN KHI LOAD FORM
+            ApplyRolePermissions();
         }
 
         private void CboFilterCategory_SelectedIndexChanged(object sender, EventArgs e)
@@ -358,7 +388,6 @@ namespace my_own_project.VIEW
                 cboInputCategory.SelectedValue = row["CategoryID"];
             }
 
-            // --- Lấy trạng thái Còn / Hết gán vào Combo Box ---
             string status = row["Trạng thái"].ToString();
             cboInputStatus.Text = (status == "Hết") ? "Hết" : "Còn";
 
@@ -414,6 +443,7 @@ namespace my_own_project.VIEW
             }
         }
 
+        // 👉 SỬA LẠI SỰ KIỆN CẬP NHẬT ĐỂ ÁP DỤNG LUỒNG SQL THEO QUYỀN
         private void BtnEdit_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))
@@ -421,24 +451,46 @@ namespace my_own_project.VIEW
                 MessageBox.Show("Vui lòng click chọn 1 món ăn từ danh sách để cập nhật!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            // --- BƯỚC XÁC NHẬN (CONFIRMATION) ---
+            DialogResult confirm = MessageBox.Show(
+                $"Bạn có chắc chắn muốn lưu các thay đổi cho món '{txtName.Text}' không?",
+                "Xác nhận cập nhật",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+            if (confirm == DialogResult.No)
+            {
+                return;
+            }
+            // ------------------------------------
 
             try
             {
-                int catID = Convert.ToInt32(cboInputCategory.SelectedValue);
-                string status = cboInputStatus.Text; // Lấy trạng thái người dùng vừa chọn
+                string status = cboInputStatus.Text;
+                string query = "";
 
-                string fileNameQuery = "";
-                if (!string.IsNullOrEmpty(currentImagePath) && File.Exists(currentImagePath) && !currentImagePath.Contains(imageFolder))
+                if (currentUserRole == "Nhân viên" || currentUserRole == "User")
                 {
-                    string fileName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.GetExtension(currentImagePath);
-                    string destPath = Path.Combine(imageFolder, fileName);
-                    File.Copy(currentImagePath, destPath, true);
-                    fileNameQuery = $", ImageUrl = '{fileName}'";
+                    // LƯỚI NHÂN VIÊN: Chỉ cho phép cập nhật mỗi trạng thái
+                    query = $"UPDATE MenuItem SET Status = N'{status}' WHERE MenuItemID = {txtID.Text}";
                 }
+                else
+                {
+                    // LƯỚI QUẢN LÝ: Cập nhật full (Giá, Tên, Ảnh, Danh mục...)
+                    int catID = Convert.ToInt32(cboInputCategory.SelectedValue);
+                    string fileNameQuery = "";
 
-                // Cập nhật thêm Status vào câu lệnh SQL
-                string query = $"UPDATE MenuItem SET CategoryID = {catID}, ItemName = N'{txtName.Text}', Price = {txtPrice.Text}, Status = N'{status}' {fileNameQuery} " +
-                               $"WHERE MenuItemID = {txtID.Text}";
+                    if (!string.IsNullOrEmpty(currentImagePath) && File.Exists(currentImagePath) && !currentImagePath.Contains(imageFolder))
+                    {
+                        string fileName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.GetExtension(currentImagePath);
+                        string destPath = Path.Combine(imageFolder, fileName);
+                        File.Copy(currentImagePath, destPath, true);
+                        fileNameQuery = $", ImageUrl = '{fileName}'";
+                    }
+
+                    query = $"UPDATE MenuItem SET CategoryID = {catID}, ItemName = N'{txtName.Text}', Price = {txtPrice.Text}, Status = N'{status}' {fileNameQuery} " +
+                            $"WHERE MenuItemID = {txtID.Text}";
+                }
 
                 my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
                 MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -44,7 +44,7 @@ namespace my_own_project
 
         private void btnProducts_Click(object sender, EventArgs e)
         {
-            AddControls(new ProductForm());
+          
         }
 
         private void btnPOS_Click(object sender, EventArgs e)
