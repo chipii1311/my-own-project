@@ -43,6 +43,24 @@ namespace my_own_project.BLL
         {
             return InventoryTransactionDAL.GetRecentTransactions();
         }
+        public static DataTable CheckStockForOrder(int orderID)
+        {
+            if (orderID <= 0)
+                throw new Exception("Hóa đơn không hợp lệ.");
+
+            return InventoryTransactionDAL.CheckStockForOrder(orderID);
+        }
+
+        public static void ExportByOrderRecipe(int orderID, int staffID, string note)
+        {
+            if (orderID <= 0)
+                throw new Exception("Hóa đơn không hợp lệ.");
+
+            if (staffID <= 0)
+                throw new Exception("Không tìm thấy thông tin nhân viên.");
+
+            InventoryTransactionDAL.ExportByOrderRecipe(orderID, staffID, note);
+        }
     }
 }
 

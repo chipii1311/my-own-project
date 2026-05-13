@@ -363,6 +363,12 @@
     <Compile Include="VIEW\PromotionForm.Designer.cs">
       <DependentUpon>PromotionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\RecipeManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\RecipeManagementForm.Designer.cs">
+      <DependentUpon>RecipeManagementForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\RegisterForm.cs">
       <SubType>Form</SubType>
     </Compile>

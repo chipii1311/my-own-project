@@ -28,7 +28,7 @@ namespace my_own_project.DesignForms
         // Cập nhật Constructor để nhận thẻ bài nhân viên
         public POSForm(int staffID = 0, string staffName = "Admin")
         {
-            this.currentStaffID = staffID;
+            this.currentStaffID = staffID <= 0 ? 1 : staffID;
             this.currentStaffName = staffName;
 
             InitializeModernPOS();
@@ -148,7 +148,7 @@ namespace my_own_project.DesignForms
 
         private void LoadMenuItems()
         {
-            dtAllMenu = my_own_project.DAL.DataHelper.ExecuteQuery("SELECT MenuItemID, CategoryID, ItemName, Price, ISNULL(ImageUrl, '') AS ImageUrl, ISNULL(Status, N'Còn') AS Status FROM MenuItem WHERE ItemStatus = 1");
+            dtAllMenu = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_POS_GetMenuWithStockStatus");
             LoadCategories();
             FilterMenu(0, "");
         }
@@ -318,12 +318,71 @@ namespace my_own_project.DesignForms
 
         private void BtnContinue_Click(object sender, EventArgs e)
         {
-            if (currentOrderID == -1) { MessageBox.Show("Giỏ hàng đang trống!"); return; }
+            if (currentOrderID == -1)
+            {
+                MessageBox.Show("Giỏ hàng đang trống!");
+                return;
+            }
 
-            // 👉 ĐÃ FIX: TRUYỀN ID VÀ TÊN NHÂN VIÊN SANG PAYMENT FORM ĐỂ LƯU VẾT VÀ IN BILL
-            PaymentForm frm = new PaymentForm(currentOrderID, -1, currentStaffID, currentStaffName);
+            try
+            {
+                // 1. Kiểm tra kho trước khi mở thanh toán
+                DataTable dtMissing = InventoryTransactionBLL.CheckStockForOrder(currentOrderID);
 
-            if (frm.ShowDialog() == DialogResult.OK) { currentOrderID = -1; ShowBill(); LoadDiningTables(); }
+                if (dtMissing != null && dtMissing.Rows.Count > 0)
+                {
+                    string message = "Không đủ nguyên liệu để thanh toán đơn này:\n\n";
+
+                    foreach (DataRow row in dtMissing.Rows)
+                    {
+                        string name = row["IngredientName"].ToString();
+                        string unit = row["Unit"].ToString();
+                        decimal required = Convert.ToDecimal(row["RequiredQuantity"]);
+                        decimal current = Convert.ToDecimal(row["CurrentStock"]);
+
+                        message += $"- {name}: cần {required:N2} {unit}, hiện có {current:N2} {unit}\n";
+                    }
+
+                    MessageBox.Show(
+                        message,
+                        "Thiếu nguyên liệu",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    return;
+                }
+
+                // 2. Thanh toán như cũ
+                PaymentForm frm = new PaymentForm(currentOrderID, -1, currentStaffID, currentStaffName);
+
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    // 3. Sau thanh toán thành công mới trừ kho
+                    InventoryTransactionBLL.ExportByOrderRecipe(
+                        currentOrderID,
+                        currentStaffID,
+                        "Tự động trừ kho từ POS - Order #" + currentOrderID);
+
+                    currentOrderID = -1;
+                    ShowBill();
+                    LoadDiningTables();
+                    LoadMenuItems();
+
+                    MessageBox.Show(
+                        "Thanh toán thành công và đã trừ kho nguyên liệu.",
+                        "Thành công",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    "Lỗi khi thanh toán / trừ kho: " + ex.Message,
+                    "Lỗi",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
         #endregion
     }

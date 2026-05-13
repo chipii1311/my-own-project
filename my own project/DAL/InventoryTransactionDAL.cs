@@ -41,5 +41,26 @@ namespace my_own_project.DAL
         {
             return DataHelper.ExecuteSPGetTable("sp_InventoryTransaction_GetRecent", null);
         }
+        public static DataTable CheckStockForOrder(int orderID)
+        {
+            SqlParameter[] parameters =
+            {
+        new SqlParameter("@OrderID", orderID)
+    };
+
+            return DataHelper.ExecuteSPGetTable("sp_Inventory_CheckStockForOrder", parameters);
+        }
+
+        public static int ExportByOrderRecipe(int orderID, int staffID, string note)
+        {
+            SqlParameter[] parameters =
+            {
+        new SqlParameter("@OrderID", orderID),
+        new SqlParameter("@StaffID", staffID),
+        new SqlParameter("@Note", string.IsNullOrWhiteSpace(note) ? "Tự động trừ kho từ POS" : note)
+    };
+
+            return DataHelper.ExecuteSP("sp_Inventory_ExportByOrderRecipe", parameters);
+        }
     }
 }
