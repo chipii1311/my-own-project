@@ -451,58 +451,52 @@ namespace my_own_project.VIEW
                 MessageBox.Show("Vui lòng click chọn 1 món ăn từ danh sách để cập nhật!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            // --- BƯỚC XÁC NHẬN (CONFIRMATION) ---
-            DialogResult confirm = MessageBox.Show(
-                $"Bạn có chắc chắn muốn lưu các thay đổi cho món '{txtName.Text}' không?",
-                "Xác nhận cập nhật",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question
-            );
-            if (confirm == DialogResult.No)
-            {
-                return;
-            }
-            // ------------------------------------
 
+            DialogResult confirm = MessageBox.Show($"Bạn có chắc chắn muốn lưu các thay đổi cho món '{txtName.Text}' không?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm == DialogResult.No) return;
+
+            // --- LƯU ẢNH (Chỉ Quản lý mới xử lý ảnh) ---
+            string savedImageFileName = "";
+            if (currentUserRole != "Nhân viên" && currentUserRole != "User")
+            {
+                if (!string.IsNullOrEmpty(currentImagePath) && System.IO.File.Exists(currentImagePath) && !currentImagePath.Contains(imageFolder))
+                {
+                    savedImageFileName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + System.IO.Path.GetExtension(currentImagePath);
+                    string destPath = System.IO.Path.Combine(imageFolder, savedImageFileName);
+                    System.IO.File.Copy(currentImagePath, destPath, true);
+                }
+            }
+
+            // --- GỌI BLL XỬ LÝ VÀ BẮT LỖI BẰNG TRY...CATCH ---
             try
             {
-                string status = cboInputStatus.Text;
-                string query = "";
+                int id = Convert.ToInt32(txtID.Text);
+                int catID = Convert.ToInt32(cboInputCategory.SelectedValue);
 
-                if (currentUserRole == "Nhân viên" || currentUserRole == "User")
+                // Gọi hàm BLL mới tạo
+                bool isDone = my_own_project.BLL.MenuItemBLL.UpdateProductWithRole(
+                    currentUserRole, id, txtPrice.Text, catID, txtName.Text, cboInputStatus.Text, savedImageFileName
+                );
+
+                if (isDone)
                 {
-                    // LƯỚI NHÂN VIÊN: Chỉ cho phép cập nhật mỗi trạng thái
-                    query = $"UPDATE MenuItem SET Status = N'{status}' WHERE MenuItemID = {txtID.Text}";
+                    var checkDB = my_own_project.BLL.MenuItemBLL.GetMenuItemByID(id);
+                    MessageBox.Show($"SỰ THẬT TỪ DATABASE:\nTên đang lưu: {checkDB.ItemName}\nGiá đang lưu: {checkDB.Price}", "Khám nghiệm tử thi");
+
+                    MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadProductData();
                 }
-                else
-                {
-                    // LƯỚI QUẢN LÝ: Cập nhật full (Giá, Tên, Ảnh, Danh mục...)
-                    int catID = Convert.ToInt32(cboInputCategory.SelectedValue);
-                    string fileNameQuery = "";
-
-                    if (!string.IsNullOrEmpty(currentImagePath) && File.Exists(currentImagePath) && !currentImagePath.Contains(imageFolder))
-                    {
-                        string fileName = "ITEM_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + Path.GetExtension(currentImagePath);
-                        string destPath = Path.Combine(imageFolder, fileName);
-                        File.Copy(currentImagePath, destPath, true);
-                        fileNameQuery = $", ImageUrl = '{fileName}'";
-                    }
-
-                    query = $"UPDATE MenuItem SET CategoryID = {catID}, ItemName = N'{txtName.Text}', Price = {txtPrice.Text}, Status = N'{status}' {fileNameQuery} " +
-                            $"WHERE MenuItemID = {txtID.Text}";
-                }
-
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
-                MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                LoadProductData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi sửa: " + ex.Message);
+                // Hứng trọn mọi lỗi do hàm ValidateMenuItem hoặc do sai giá tiền ném ra!
+                MessageBox.Show(ex.Message, "Lỗi cập nhật", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Trợ giúp UX: Đưa con trỏ chuột về ô Giá nếu lỗi liên quan đến giá
+                if (ex.Message.Contains("Giá")) txtPrice.Focus();
+                else if (ex.Message.Contains("Tên")) txtName.Focus();
             }
         }
-
         private void BtnDelete_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtID.Text))

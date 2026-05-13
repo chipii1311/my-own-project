@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace my_own_project.DAL
 {
@@ -114,28 +115,12 @@ namespace my_own_project.DAL
         // ==================== UPDATE ====================
         public static bool Update(MenuItemDTO item)
         {
-            try
-            {
-                SqlParameter[] parameters = new SqlParameter[]
-                {
-                    new SqlParameter("@MenuItemID", item.MenuItemID),
-                    new SqlParameter("@CategoryID", item.CategoryID),
-                    new SqlParameter("@ItemName", item.ItemName ?? ""),
-                    new SqlParameter("@Description", item.Description ?? ""),
-                    new SqlParameter("@Price", item.Price),
-                    new SqlParameter("@Status", item.Status ?? "Active"),
-                    new SqlParameter("@ImageUrl", item.ImageUrl ?? ""),
-                    new SqlParameter("@ItemStatus", item.ItemStatus)
-                };
+            string imgQuery = string.IsNullOrEmpty(item.ImageUrl) ? "" : $", ImageUrl = '{item.ImageUrl}'";
 
-                DataHelper.ExecuteSP("sp_MenuItem_Update", parameters);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"MenuItemDAL.Update Error: {ex.Message}");
-                throw;
-            }
+            string query = $"UPDATE MenuItem SET CategoryID = {item.CategoryID}, ItemName = N'{item.ItemName}', Price = {item.Price}, Status = N'{item.Status}' {imgQuery} WHERE MenuItemID = {item.MenuItemID}";
+
+            int rowsAffected = DataHelper.ExecuteNonQuery(query);
+            return rowsAffected > 0;
         }
 
         // ==================== DELETE ====================
