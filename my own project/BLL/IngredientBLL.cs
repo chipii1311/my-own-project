@@ -6,161 +6,89 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace my_own_project.BLL
 {
     public class IngredientBLL
     {
-        // ==================== VALIDATE ====================
-        private static bool ValidateIngredient(IngredientDTO ingredient)
-        {
-            if (string.IsNullOrWhiteSpace(ingredient.IngredientName))
-                throw new Exception("Tên nguyên liệu không được để trống!");
-
-            if (string.IsNullOrWhiteSpace(ingredient.Unit))
-                throw new Exception("Đơn vị không được để trống!");
-
-            if (ingredient.StockQuantity < 0)
-                throw new Exception("Số lượng tồn kho không được âm!");
-
-            if (ingredient.MinStock < 0)
-                throw new Exception("Tồn kho tối thiểu không được âm!");
-
-            return true;
-        }
-
-        // ==================== CREATE ====================
-        public static int AddIngredient(IngredientDTO ingredient)
-        {
-            try
-            {
-                ValidateIngredient(ingredient);
-                return IngredientDAL.Insert(ingredient);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.AddIngredient Error: {ex.Message}");
-                throw;
-            }
-        }
-
-        // ==================== READ ====================
         public static DataTable GetAllIngredients()
         {
-            try
-            {
-                return IngredientDAL.GetAll();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.GetAllIngredients Error: {ex.Message}");
-                throw;
-            }
+            return IngredientDAL.GetAll();
         }
 
-        public static IngredientDTO GetIngredientByID(int ingredientID)
+        public static IngredientDTO GetIngredientByID(int id)
         {
-            try
-            {
-                if (ingredientID <= 0)
-                    throw new Exception("IngredientID không hợp lệ!");
+            DataTable dt = IngredientDAL.GetByID(id);
 
-                return IngredientDAL.GetByID(ingredientID);
-            }
-            catch (Exception ex)
+            if (dt == null || dt.Rows.Count == 0)
+                return null;
+
+            DataRow row = dt.Rows[0];
+
+            return new IngredientDTO
             {
-                Console.WriteLine($"IngredientBLL.GetIngredientByID Error: {ex.Message}");
-                throw;
-            }
+                IngredientID = Convert.ToInt32(row["IngredientID"]),
+                IngredientName = row["IngredientName"].ToString(),
+                Unit = row["Unit"].ToString(),
+                StockQuantity = Convert.ToSingle(row["StockQuantity"]),
+                MinStock = Convert.ToSingle(row["MinStock"]),
+                PurchasePrice = Convert.ToDecimal(row["PurchasePrice"]),
+                IsActive = Convert.ToBoolean(row["IsActive"])
+            };
+        }
+
+        public static void AddIngredient(IngredientDTO ingredient)
+        {
+            ValidateIngredient(ingredient, false);
+            IngredientDAL.Insert(ingredient);
+        }
+
+        public static void UpdateIngredient(IngredientDTO ingredient)
+        {
+            ValidateIngredient(ingredient, true);
+            IngredientDAL.Update(ingredient);
+        }
+
+        public static void DeleteIngredient(int id)
+        {
+            if (id <= 0)
+                throw new Exception("Nguyên liệu không hợp lệ.");
+
+            IngredientDAL.SoftDelete(id);
         }
 
         public static DataTable GetLowStockIngredients()
         {
-            try
-            {
-                return IngredientDAL.GetLowStock();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.GetLowStockIngredients Error: {ex.Message}");
-                throw;
-            }
+            return IngredientDAL.GetLowStock();
         }
 
-        // ==================== UPDATE ====================
-        public static bool UpdateIngredient(IngredientDTO ingredient)
+        public static int GetLowStockCount()
         {
-            try
-            {
-                ValidateIngredient(ingredient);
-
-                if (ingredient.IngredientID <= 0)
-                    throw new Exception("IngredientID không hợp lệ!");
-
-                return IngredientDAL.Update(ingredient);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.UpdateIngredient Error: {ex.Message}");
-                throw;
-            }
+            return IngredientDAL.GetLowStockCount();
         }
 
-        // ==================== DELETE ====================
-        public static bool DeleteIngredient(int ingredientID)
+        private static void ValidateIngredient(IngredientDTO ingredient, bool isUpdate)
         {
-            try
-            {
-                if (ingredientID <= 0)
-                    throw new Exception("IngredientID không hợp lệ!");
+            if (ingredient == null)
+                throw new Exception("Dữ liệu nguyên liệu không hợp lệ.");
 
-                return IngredientDAL.Delete(ingredientID);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.DeleteIngredient Error: {ex.Message}");
-                throw;
-            }
-        }
+            if (isUpdate && ingredient.IngredientID <= 0)
+                throw new Exception("ID nguyên liệu không hợp lệ.");
 
-        // ==================== HELPER ====================
-        /// <summary>
-        /// Kiểm tra nguyên liệu sắp hết
-        /// </summary>
-        public static bool IsLowStock(int ingredientID)
-        {
-            try
-            {
-                IngredientDTO ingredient = IngredientDAL.GetByID(ingredientID);
-                if (ingredient == null)
-                    return false;
+            if (string.IsNullOrWhiteSpace(ingredient.IngredientName))
+                throw new Exception("Tên nguyên liệu không được để trống.");
 
-                return ingredient.StockQuantity < ingredient.MinStock;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.IsLowStock Error: {ex.Message}");
-                return false;
-            }
-        }
+            if (string.IsNullOrWhiteSpace(ingredient.Unit))
+                throw new Exception("Đơn vị tính không được để trống.");
 
-        /// <summary>
-        /// Kiểm tra nguyên liệu hết hàng
-        /// </summary>
-        public static bool IsOutOfStock(int ingredientID)
-        {
-            try
-            {
-                IngredientDTO ingredient = IngredientDAL.GetByID(ingredientID);
-                if (ingredient == null)
-                    return true;
+            if (ingredient.StockQuantity < 0)
+                throw new Exception("Số lượng tồn không được âm.");
 
-                return ingredient.StockQuantity <= 0;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"IngredientBLL.IsOutOfStock Error: {ex.Message}");
-                return true;
-            }
+            if (ingredient.MinStock < 0)
+                throw new Exception("Mức tồn tối thiểu không được âm.");
+
+            if (ingredient.PurchasePrice < 0)
+                throw new Exception("Giá nhập không được âm.");
         }
     }
 }

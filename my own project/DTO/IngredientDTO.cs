@@ -10,18 +10,10 @@ namespace my_own_project.DTO
     {
         public int IngredientID { get; set; }
         public string IngredientName { get; set; }
-        public string Unit { get; set; }  // kg, lít, cái, gram, ml
+        public string Unit { get; set; }
         public float StockQuantity { get; set; }
-        public bool IsActive { get; set; }
         public float MinStock { get; set; }
         public decimal PurchasePrice { get; set; }
-
-        // Tính toán thêm
-        public bool IsLowStock => StockQuantity < MinStock;
-
-        public override string ToString()
-        {
-            return $"{IngredientName} ({StockQuantity} {Unit})";
-        }
+        public bool IsActive { get; set; }
     }
 }
