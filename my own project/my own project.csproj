@@ -147,12 +147,6 @@
     <Compile Include="DTO\StaffDTO.cs" />
     <Compile Include="DTO\UserDTO.cs" />
     <Compile Include="DAL\UserDAL.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\CurrentUser.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -164,54 +158,6 @@
     </Compile>
     <Compile Include="UCTable.Designer.cs">
       <DependentUpon>UCTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Frmpayment.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Frmpayment.Designer.cs">
-      <DependentUpon>Frmpayment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Frmstaffmain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Frmstaffmain.Designer.cs">
-      <DependentUpon>Frmstaffmain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\StaffDashboard.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\StaffDashboard.Designer.cs">
-      <DependentUpon>StaffDashboard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\StaffMainFormgpt.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\StaffMainFormgpt.Designer.cs">
-      <DependentUpon>StaffMainFormgpt.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\StaffOrderForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\StaffOrderForm.Designer.cs">
-      <DependentUpon>StaffOrderForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Ucinvoicelist and ucstaffhome.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Ucinvoicelist and ucstaffhome.Designer.cs">
-      <DependentUpon>Ucinvoicelist and ucstaffhome.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Ucorderpos.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Ucorderpos.Designer.cs">
-      <DependentUpon>Ucorderpos.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Uctablemanagement.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="VIEWSTAFF\Uctablemanagement.Designer.cs">
-      <DependentUpon>Uctablemanagement.cs</DependentUpon>
     </Compile>
     <Compile Include="VIEW\AccountForm.cs">
       <SubType>Form</SubType>
@@ -284,12 +230,6 @@
     </Compile>
     <Compile Include="VIEW\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="VIEW\MenuForm.cs">
       <SubType>Form</SubType>
@@ -422,12 +362,6 @@
     <EmbeddedResource Include="UCTable.resx">
       <DependentUpon>UCTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VIEWSTAFF\Frmpayment.resx">
-      <DependentUpon>Frmpayment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEWSTAFF\StaffMainFormgpt.resx">
-      <DependentUpon>StaffMainFormgpt.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VIEW\AddTable.resx">
       <DependentUpon>AddTable.cs</DependentUpon>
     </EmbeddedResource>
@@ -451,9 +385,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\OrderDetailView.resx">
       <DependentUpon>OrderDetailView.cs</DependentUpon>
