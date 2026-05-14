@@ -49,7 +49,7 @@ namespace my_own_project.VIEW
 
             Label lblTitle = new Label
             {
-                Text = "QUẢN LÝ NHÂN VIÊN",
+                Text = "QUẢN LÝ TÀI KHOẢN",
                 Font = new Font("Segoe UI", 22F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(88, 28, 230),
                 AutoSize = true,
@@ -58,7 +58,7 @@ namespace my_own_project.VIEW
 
             btnAddAccount = new Guna2Button
             {
-                Text = "➕ THÊM NHÂN VIÊN MỚI",
+                Text = "➕ THÊM TÀI KHOẢN MỚI",
                 Size = new Size(240, 48),
                 BorderRadius = 6,
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
@@ -266,9 +266,17 @@ namespace my_own_project.VIEW
 
         private void BtnAddAccount_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Mở Form Thêm Tài Khoản (Popup) tại đây!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            // AddStaffForm frm = new AddStaffForm();
-            // if (frm.ShowDialog() == DialogResult.OK) { LoadStaffData(); }
+            NewAccountAddForm frmAdd = new NewAccountAddForm();
+
+            // 2. Mở Form lên dưới dạng Dialog (Popup)
+            // Lệnh ShowDialog() sẽ làm đóng băng màn hình StaffForm ở dưới, 
+            // bắt buộc người dùng phải thao tác xong trên form Thêm mới được quay lại.
+            frmAdd.ShowDialog();
+
+            // 3. Refresh (Làm mới) lại bảng dữ liệu ngay lập tức
+            // Sau khi Form Thêm đóng lại (dù là thêm thành công hay bấm dấu X tắt đi), 
+            // code sẽ tiếp tục chạy xuống dòng này để tải lại danh sách vào DataGridView.
+            LoadStaffData();
         }
 
         private void BtnEdit_Click(object sender, EventArgs e)
