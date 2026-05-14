@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace my_own_project.BLL
 {
@@ -169,5 +170,38 @@ namespace my_own_project.BLL
         }
 
         // ĐÃ XÓA hàm GetAvailableMenuItems (bị lỗi logic cũ)
+
+
+        public static bool UpdateProductWithRole(string role, int id, string priceText, int catID, string name, string status, string newImageUrl)
+        {
+            MenuItemDTO currentItem = GetMenuItemByID(id);
+            if (currentItem == null) throw new Exception("Không tìm thấy món!");
+
+            // Bỏ chữ "User" ra khỏi danh sách bị cấm sửa giá
+            if (role == "Nhân viên")
+            {
+                currentItem.Status = status;
+            }
+            else
+            {
+                if (!decimal.TryParse(priceText, out decimal validPrice) || validPrice < 0)
+                    throw new Exception("Giá tiền không hợp lệ!");
+
+                currentItem.CategoryID = catID;
+                currentItem.ItemName = name;
+                currentItem.Price = validPrice;
+                currentItem.Status = status;
+                if (!string.IsNullOrEmpty(newImageUrl)) currentItem.ImageUrl = newImageUrl;
+            }
+
+            return MenuItemDAL.Update(currentItem);
+        }
     }
+
+
+
 }
+
+
+
+

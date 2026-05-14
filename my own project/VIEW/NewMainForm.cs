@@ -131,7 +131,7 @@ namespace my_own_project.VIEW
 
             btnPOS.Click += (s, e) => OpenChildForm(new POSForm(this.LoggedInUserID, this.LoggedInUserName));
             btnHistory.Click += (s, e) => OpenChildForm(new HistoryForm());
-            btnProduct.Click += (s, e) => OpenChildForm(new ProductForm());
+            btnProduct.Click += (s, e) => OpenChildForm(new ProductForm(this.UserRole));
             btnDashboard.Click += (s, e) => OpenChildForm(new NewDashboardForm());
             btnSettings.Click += (s, e) => OpenChildForm(new SettingForm());
             btnStaff.Click += (s, e) => OpenChildForm(new StaffForm());

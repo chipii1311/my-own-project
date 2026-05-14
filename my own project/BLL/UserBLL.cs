@@ -12,34 +12,38 @@ namespace my_own_project.BLL
     
         public class UserBLL
         {
-            // ==================== VALIDATE ====================
-            /// <summary>
-            /// Kiểm tra thông tin User hợp lệ
-            /// </summary>
-            private static bool ValidateUser(UserDTO user)
+        // ==================== VALIDATE ====================
+        /// <summary>
+        /// Kiểm tra thông tin User hợp lệ
+        /// </summary>
+        private static bool ValidateUser(UserDTO user, bool isUpdate = false)
+        {
+            if (string.IsNullOrWhiteSpace(user.FullName))
+                throw new Exception("Tên đầy đủ không được để trống!");
+
+            if (string.IsNullOrWhiteSpace(user.Email))
+                throw new Exception("Email không được để trống!");
+
+            if (!IsValidEmail(user.Email))
+                throw new Exception("Email không hợp lệ!");
+
+            // NẾU KHÔNG PHẢI LÀ UPDATE THÌ MỚI BẮT BUỘC CHECK MẬT KHẨU
+            if (!isUpdate)
             {
-                if (string.IsNullOrWhiteSpace(user.FullName))
-                    throw new Exception("Tên đầy đủ không được để trống!");
-
-                if (string.IsNullOrWhiteSpace(user.Email))
-                    throw new Exception("Email không được để trống!");
-
-                if (!IsValidEmail(user.Email))
-                    throw new Exception("Email không hợp lệ!");
-
                 if (string.IsNullOrWhiteSpace(user.PasswordHash))
                     throw new Exception("Mật khẩu không được để trống!");
 
                 if (user.PasswordHash.Length < 6)
                     throw new Exception("Mật khẩu phải tối thiểu 6 ký tự!");
-
-                return true;
             }
 
-            /// <summary>
-            /// Kiểm tra email hợp lệ
-            /// </summary>
-            private static bool IsValidEmail(string email)
+            return true;
+        }
+
+        /// <summary>
+        /// Kiểm tra email hợp lệ
+        /// </summary>
+        private static bool IsValidEmail(string email)
             {
                 try
                 {
@@ -122,7 +126,7 @@ namespace my_own_project.BLL
             {
                 try
                 {
-                    ValidateUser(user);
+                    ValidateUser(user, true);
 
                     if (user.UserID <= 0)
                         throw new Exception("UserID không hợp lệ!");

@@ -237,6 +237,12 @@
     <Compile Include="VIEW\MenuForm.Designer.cs">
       <DependentUpon>MenuForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="VIEW\NewAccountAddForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VIEW\NewAccountAddForm.Designer.cs">
+      <DependentUpon>NewAccountAddForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="VIEW\NewDashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
