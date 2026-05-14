@@ -165,41 +165,11 @@
     <Compile Include="VIEW\AccountForm.Designer.cs">
       <DependentUpon>AccountForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="VIEW\AddTable.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\AddTable.Designer.cs">
-      <DependentUpon>AddTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\CategoryAddEditForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\CategoryAddEditForm.Designer.cs">
-      <DependentUpon>CategoryAddEditForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\CategoryForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\CategoryForm.Designer.cs">
-      <DependentUpon>CategoryForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\DashboardForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\DashboardForm.Designer.cs">
-      <DependentUpon>DashboardForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="VIEW\ExportStockForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="VIEW\ExportStockForm.Designer.cs">
       <DependentUpon>ExportStockForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\frmTables.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\frmTables.Designer.cs">
-      <DependentUpon>frmTables.cs</DependentUpon>
     </Compile>
     <Compile Include="VIEW\HistoryForm.cs">
       <SubType>Form</SubType>
@@ -230,12 +200,6 @@
     </Compile>
     <Compile Include="VIEW\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\MenuForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\MenuForm.Designer.cs">
-      <DependentUpon>MenuForm.cs</DependentUpon>
     </Compile>
     <Compile Include="VIEW\NewAccountAddForm.cs">
       <SubType>Form</SubType>
@@ -297,18 +261,6 @@
     <Compile Include="VIEW\ProductForm.Designer.cs">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="VIEW\PromotionAddForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\PromotionAddForm.Designer.cs">
-      <DependentUpon>PromotionAddForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\PromotionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\PromotionForm.Designer.cs">
-      <DependentUpon>PromotionForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="VIEW\RecipeManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -320,18 +272,6 @@
     </Compile>
     <Compile Include="VIEW\RegisterForm.Designer.cs">
       <DependentUpon>RegisterForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\SampleAdd.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\SampleAdd.Designer.cs">
-      <DependentUpon>SampleAdd.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VIEW\SampleView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\SampleView.Designer.cs">
-      <DependentUpon>SampleView.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -347,44 +287,17 @@
     <Compile Include="VIEW\SettingForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="VIEW\Settings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\Settings.Designer.cs">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </Compile>
     <Compile Include="VIEW\StaffForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="VIEW\StaffForm.Designer.cs">
       <DependentUpon>StaffForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="VIEW\TableForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VIEW\TableForm.Designer.cs">
-      <DependentUpon>TableForm.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="UCTable.resx">
       <DependentUpon>UCTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\AddTable.resx">
-      <DependentUpon>AddTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\CategoryAddEditForm.resx">
-      <DependentUpon>CategoryAddEditForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\CategoryForm.resx">
-      <DependentUpon>CategoryForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\DashboardForm.resx">
-      <DependentUpon>DashboardForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VIEW\ExportStockForm.resx">
       <DependentUpon>ExportStockForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\frmTables.resx">
-      <DependentUpon>frmTables.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VIEW\HistoryForm.resx">
       <DependentUpon>HistoryForm.cs</DependentUpon>
@@ -404,20 +317,8 @@
     <EmbeddedResource Include="VIEW\ProductForm.resx">
       <DependentUpon>ProductForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\PromotionAddForm.resx">
-      <DependentUpon>PromotionAddForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\PromotionForm.resx">
-      <DependentUpon>PromotionForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VIEW\RegisterForm.resx">
       <DependentUpon>RegisterForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\SampleAdd.resx">
-      <DependentUpon>SampleAdd.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\SampleView.resx">
-      <DependentUpon>SampleView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -426,12 +327,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UCFoodItem.resx">
       <DependentUpon>UCFoodItem.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\Settings.resx">
-      <DependentUpon>Settings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VIEW\TableForm.resx">
-      <DependentUpon>TableForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="App.config" />
     <None Include="packages.config" />
