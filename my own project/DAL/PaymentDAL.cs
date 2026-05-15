@@ -11,21 +11,23 @@
         public class PaymentDAL
         {
         // ==================== CREATE ====================
-        // ==================== CREATE ====================
         public static int Insert(PaymentDTO payment)
         {
             try
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-            new SqlParameter("@OrderID", payment.OrderID),
-            new SqlParameter("@Method", payment.Method ?? "Cash"),
-            new SqlParameter("@Amount", payment.Amount),
-            new SqlParameter("@TransactionID", payment.TransactionID ?? ""),
-            new SqlParameter("@ID", SqlDbType.Int) { Direction = ParameterDirection.Output }
+                    new SqlParameter("@OrderID", payment.OrderID),
+                    new SqlParameter("@Method", payment.Method ?? "Cash"),
+                    new SqlParameter("@Amount", payment.Amount),
+                    
+                    // Đã XÓA dòng SqlParameter("@Status"...) đi vì SQL tự set N'Thành công' rồi!
+                    
+                    new SqlParameter("@TransactionID", payment.TransactionID ?? ""),
+                    new SqlParameter("@ID", SqlDbType.Int) { Direction = ParameterDirection.Output }
                 };
 
-                // GỌI THẲNG HÀM VÀ RETURN LUÔN (Vì DataHelper.ExecuteSPWithOutput đã cấu hình sẵn việc trả về ID)
+                // Gọi thẳng hàm và return luôn
                 return DataHelper.ExecuteSPWithOutput("sp_Payment_Insert", parameters);
             }
             catch (Exception ex)
