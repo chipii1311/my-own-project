@@ -22,7 +22,8 @@ namespace my_own_project.BLL
             if (payment.Amount <= 0)
                 throw new Exception("Số tiền thanh toán phải lớn hơn 0!");
 
-            string[] validMethods = { "Cash", "Card", "Bank Transfer", "E-Wallet" };
+            // 🌟 SỬA LỖI 1: Cập nhật mảng này để chấp nhận cả Tiếng Việt (từ PaymentForm) và Tiếng Anh
+            string[] validMethods = { "Tiền mặt", "Chuyển khoản", "Quẹt thẻ", "Cash", "Card", "Bank Transfer", "E-Wallet" };
             bool isValidMethod = false;
 
             foreach (string method in validMethods)
@@ -39,7 +40,6 @@ namespace my_own_project.BLL
 
             return true;
         }
-
         // ==================== CREATE ====================
         public static int CreatePayment(PaymentDTO payment)
         {
@@ -52,12 +52,26 @@ namespace my_own_project.BLL
                 if (order == null)
                     throw new Exception("Đơn hàng không tồn tại!");
 
-                return PaymentDAL.Insert(payment);
+                // 🌟 SỬA LỖI 2: Tự động sinh mã TransactionID ảo nếu UI chưa truyền xuống để chống lỗi UNIQUE KEY
+                if (string.IsNullOrEmpty(payment.TransactionID))
+                {
+                    string prefix = (payment.Method == "Tiền mặt" || payment.Method == "Cash") ? "CASH_" : "TRANS_";
+                    payment.TransactionID = prefix + payment.OrderID + "_" + DateTime.Now.Ticks;
+                }
+
+                // Tự động set trạng thái mặc định nếu chưa có
+                if (string.IsNullOrEmpty(payment.Status))
+                {
+                    payment.Status = "Completed";
+                }
+
+                // Gọi DAL lưu xuống DB
+                return PaymentDAL.Insert(payment); // Lưu ý: hàm Insert trong PaymentDAL của bạn phải chắc chắn có viết câu lệnh INSERT INTO Payment... nhé
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"PaymentBLL.CreatePayment Error: {ex.Message}");
-                throw;
+                throw; // Ném lỗi lên cho UI (PaymentForm) hứng và hiển thị MessageBox
             }
         }
 

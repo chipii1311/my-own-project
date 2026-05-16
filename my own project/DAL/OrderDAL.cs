@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace my_own_project.DAL
 {
     public class OrderDAL
@@ -150,7 +151,7 @@ namespace my_own_project.DAL
             {
                 OrderID = (int)row["OrderID"],
                 CustomerID = row["CustomerID"] != DBNull.Value ? (int)row["CustomerID"] : (int?)null,
-               
+
                 TableID = row["TableID"] != DBNull.Value ? (int)row["TableID"] : (int?)null,
                 OrderDate = (DateTime)row["OrderDate"],
                 OrderType = row["OrderType"]?.ToString() ?? "",
@@ -159,10 +160,11 @@ namespace my_own_project.DAL
                 UpdatedAt = row["UpdatedAt"] != DBNull.Value ? (DateTime)row["UpdatedAt"] : DateTime.Now,
                 StaffID = row["StaffID"] != DBNull.Value ? (int)row["StaffID"] : (int?)null,
                 PromotionID = row["PromotionID"] != DBNull.Value ? (int)row["PromotionID"] : (int?)null,
-                CustomerName = row["CustomerName"]?.ToString() ?? "",
-                
-                TableNumber = row["TableNumber"] != DBNull.Value ? (int)row["TableNumber"] : 0,
-                StaffName = row["StaffName"]?.ToString() ?? ""
+
+                // 🌟 FIX LỖI Ở ĐÂY: Dùng Contains để check xem SQL có trả về cột này không, nếu không thì tự cho rỗng!
+                CustomerName = row.Table.Columns.Contains("CustomerName") && row["CustomerName"] != DBNull.Value ? row["CustomerName"].ToString() : "",
+                TableNumber = row.Table.Columns.Contains("TableNumber") && row["TableNumber"] != DBNull.Value ? Convert.ToInt32(row["TableNumber"]) : 0,
+                StaffName = row.Table.Columns.Contains("StaffName") && row["StaffName"] != DBNull.Value ? row["StaffName"].ToString() : ""
             };
         }
     }

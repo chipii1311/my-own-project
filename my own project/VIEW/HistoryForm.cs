@@ -43,6 +43,7 @@ namespace my_own_project.VIEW
         private int selectedOrderID = -1;
         private decimal selectedTotal = 0;
         private string selectedDate = "";
+        private string selectedPaymentMethod = ""; // 🌟 Lưu hình thức TT để in
 
         public HistoryForm()
         {
@@ -404,7 +405,9 @@ namespace my_own_project.VIEW
             return bar;
         }
 
-        // ===================== LOAD DATA =====================
+        // ════════════════════════════════════════════════════════
+        // LOAD DATA (ĐÃ FIX LỖI TÀNG HÌNH & TÍNH SAI DOANH THU)
+        // ════════════════════════════════════════════════════════
         private void LoadData()
         {
             try
@@ -412,19 +415,20 @@ namespace my_own_project.VIEW
                 string fromDate = dtpFrom.Value.ToString("yyyyMMdd");
                 string toDate = dtpTo.Value.ToString("yyyyMMdd");
 
+                // Lấy trực tiếp o.TotalAmount (Đã trừ khuyến mãi) thay vì SUM()
                 string query = $@"
-                    SELECT
-                        o.OrderID                                            AS [Mã HĐ],
-                        o.OrderDate                                          AS [Ngày giờ],
+                    SELECT 
+                        o.OrderID                                        AS [Mã HĐ],
+                        o.OrderDate                                      AS [Ngày giờ],
                         ISNULL(CAST(t.TableNumber AS NVARCHAR), N'Mang đi') AS [Bàn],
                         o.OrderType                                          AS [Loại],
                         o.TotalAmount                                        AS [Tổng tiền]
-                    FROM   Orders o
-                    LEFT  JOIN DiningTable t ON o.TableID = t.TableID
-                    WHERE  o.Status = 'Completed'
-                      AND  CAST(o.OrderDate AS DATE) >= '{fromDate}'
-                      AND  CAST(o.OrderDate AS DATE) <= '{toDate}'
-                    ORDER  BY o.OrderDate DESC";
+                    FROM Orders o
+                    LEFT JOIN DiningTable t  ON o.TableID  = t.TableID
+                    WHERE o.Status = 'Completed'
+                      AND CAST(o.OrderDate AS DATE) >= '{fromDate}'
+                      AND CAST(o.OrderDate AS DATE) <= '{toDate}'
+                    ORDER BY o.OrderDate DESC";
 
                 DataTable dt = DataHelper.ExecuteQuery(query);
                 dgvHistory.DataSource = dt;
@@ -460,8 +464,11 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ===================== CELL FORMATTING =====================
-        private void DgvHistory_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        // ════════════════════════════════════════════════════════
+        // CELL FORMATTING — màu trạng thái + loại đơn
+        // ════════════════════════════════════════════════════════
+        private void DgvHistory_CellFormatting(object sender,
+            DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
@@ -549,9 +556,14 @@ namespace my_own_project.VIEW
             if (e.RowIndex < 0) return;
             try
             {
-                selectedOrderID = Convert.ToInt32(dgvHistory.Rows[e.RowIndex].Cells["Mã HĐ"].Value);
-                selectedTotal = Convert.ToDecimal(dgvHistory.Rows[e.RowIndex].Cells["Tổng tiền"].Value);
-                selectedDate = Convert.ToDateTime(dgvHistory.Rows[e.RowIndex].Cells["Ngày giờ"].Value).ToString("dd/MM/yyyy HH:mm");
+                selectedOrderID = Convert.ToInt32(
+                    dgvHistory.Rows[e.RowIndex].Cells["Mã HĐ"].Value);
+                selectedTotal = Convert.ToDecimal(
+                    dgvHistory.Rows[e.RowIndex].Cells["Tổng tiền"].Value);
+                selectedDate = Convert.ToDateTime(
+                    dgvHistory.Rows[e.RowIndex].Cells["Ngày giờ"].Value)
+                    .ToString("dd/MM/yyyy HH:mm");
+
                 printPreview.ShowDialog();
             }
             catch (Exception ex)
@@ -560,7 +572,9 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ===================== PRINT PAGE =====================
+        // ════════════════════════════════════════════════════════
+        // PRINT PAGE (ĐÃ FIX: THÊM DÒNG KHUYẾN MÃI NẾU CÓ)
+        // ════════════════════════════════════════════════════════
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
             var g = e.Graphics;
@@ -613,8 +627,15 @@ namespace my_own_project.VIEW
                 g.DrawString("-" + discount.ToString("N0") + " đ", fBold, Brushes.Black, rx, y, right); y += 25;
             }
 
+            // 🌟 IN RA TỔNG TIỀN VÀ PHƯƠNG THỨC THANH TOÁN
             g.DrawString("TỔNG CỘNG:", fHeader, Brushes.Black, lx, y);
-            g.DrawString(selectedTotal.ToString("N0") + " đ", fHeader, Brushes.Black, rx, y, right); y += 45;
+            g.DrawString(selectedTotal.ToString("N0") + " đ", fHeader, Brushes.Black, rx, y, right);
+            y += 30; // Kéo khoảng cách gần lại một chút
+
+            g.DrawString("Hình thức TT:", fItem, Brushes.Black, lx, y);
+            g.DrawString(selectedPaymentMethod, fItem, Brushes.Black, rx, y, right);
+            y += 45;
+
             g.DrawString("*** BẢN SAO (REPRINT) ***", fSub, Brushes.Black, new PointF(cx, y), center);
         }
 

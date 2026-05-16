@@ -1,5 +1,6 @@
 ﻿using Guna.UI2.WinForms;
 using my_own_project.BLL;
+using my_own_project.DTO;
 using System;
 using System.Data;
 using System.Drawing;
@@ -27,6 +28,7 @@ namespace my_own_project.VIEW
 
         // Các control giao diện
         private Guna2ComboBox cboPromotion;
+        private Guna2ComboBox cboPaymentMethod; // Biến phương thức thanh toán
         private Label lblSubTotal;
         private Label lblDiscount;
         private Label lblTotalAmount;
@@ -41,7 +43,6 @@ namespace my_own_project.VIEW
         private PrintDocument printDoc;
         private PrintPreviewDialog printPreview;
 
-        // Cập nhật hàm khởi tạo để nhận thêm ID và Tên thu ngân
         public PaymentForm(int orderID, int tableID = -1, int staffID = 0, string staffName = "Admin")
         {
             InitializeComponent();
@@ -74,7 +75,8 @@ namespace my_own_project.VIEW
 
         private void BuildPaymentUI()
         {
-            this.Size = new Size(480, 480);
+            // Tăng chiều cao lên 560 để có chỗ cho ComboBox Phương thức TT
+            this.Size = new Size(480, 560);
             this.FormBorderStyle = FormBorderStyle.None;
             this.StartPosition = FormStartPosition.CenterParent;
             this.BackColor = Color.White;
@@ -87,13 +89,24 @@ namespace my_own_project.VIEW
             pnlHeader.Controls.Add(new Label { Text = "XÁC NHẬN THANH TOÁN", Font = new Font("Segoe UI", 15F, FontStyle.Bold), ForeColor = Color.White, Location = new Point(20, 15), AutoSize = true, BackColor = Color.Transparent });
             this.Controls.Add(pnlHeader);
 
-            // --- KHU VỰC KHUYẾN MÃI ---
             int currentY = 80;
+
+            // --- KHU VỰC KHUYẾN MÃI ---
             this.Controls.Add(new Label { Text = "Chương trình khuyến mãi áp dụng:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(25, currentY), AutoSize = true });
             currentY += 25;
 
             cboPromotion = new Guna2ComboBox { Location = new Point(25, currentY), Size = new Size(430, 36), BorderRadius = 5, Font = new Font("Segoe UI", 10F) };
             this.Controls.Add(cboPromotion);
+            currentY += 55;
+
+            // --- KHU VỰC PHƯƠNG THỨC THANH TOÁN ---
+            this.Controls.Add(new Label { Text = "Phương thức thanh toán:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(25, currentY), AutoSize = true });
+            currentY += 25;
+
+            cboPaymentMethod = new Guna2ComboBox { Location = new Point(25, currentY), Size = new Size(430, 36), BorderRadius = 5, Font = new Font("Segoe UI", 10F) };
+            cboPaymentMethod.Items.AddRange(new object[] { "Tiền mặt", "Chuyển khoản" });
+            cboPaymentMethod.SelectedIndex = 0; // Mặc định là Tiền mặt
+            this.Controls.Add(cboPaymentMethod);
             currentY += 55;
 
             // --- KHU VỰC TÍNH TIỀN ---
@@ -220,26 +233,49 @@ namespace my_own_project.VIEW
                     int selectedPromoID = Convert.ToInt32(cboPromotion.SelectedValue);
                     string promoSQL = (selectedPromoID == -1) ? "NULL" : selectedPromoID.ToString();
 
-                    // Cập nhật Hóa đơn kèm ID Khuyến mãi và ID Thu ngân (Lưu ý: Bạn nhắc Việt check lại xem cột là StaffID hay EmployeeID nhé)
+                    // 1. Cập nhật Hóa đơn (Vẫn dùng SQL tạm, nếu bạn có OrderBLL thì nên chuyển luôn)
                     string updateOrderSQL = $@"UPDATE Orders 
-                                               SET Status = 'Completed', 
-                                                   TotalAmount = {finalAmount}, 
-                                                   PromotionID = {promoSQL},
-                                                   StaffID = {currentStaffID} 
-                                               WHERE OrderID = {currentOrderID}";
+                                       SET Status = 'Completed', 
+                                           TotalAmount = {finalAmount}, 
+                                           PromotionID = {promoSQL},
+                                           StaffID = {currentStaffID} 
+                                       WHERE OrderID = {currentOrderID}";
                     my_own_project.DAL.DataHelper.ExecuteNonQuery(updateOrderSQL);
 
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
+                    // =========================================================
+                    // 🌟 CHỖ NÀY LÀ QUAN TRỌNG NHẤT: BẮT BUỘC PHẢI GỌI XUỐNG BLL
+                    // Tuyệt đối không dùng lệnh INSERT INTO Payment ở đây nữa!
+                    // =========================================================
+                    PaymentDTO newPayment = new PaymentDTO
+                    {
+                        OrderID = currentOrderID,
+                        Method = cboPaymentMethod.Text,
+                        Amount = finalAmount
+                        // TransactionID và Status cứ để trống, BLL sẽ tự lo!
+                    };
+
+                    // Gọi đúng tên hàm CreatePayment của bạn trong BLL
+                    my_own_project.BLL.PaymentBLL.CreatePayment(newPayment);
+                    // =========================================================
+
+                    // 3. Giải phóng bàn
+                    if (tableID > 0)
+                    {
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = {tableID}");
+                    }
 
                     MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
-                catch (Exception ex) { MessageBox.Show("Có lỗi xảy ra: " + ex.Message); }
+                catch (Exception ex)
+                {
+                    // Nếu BLL báo lỗi (ví dụ Amount <= 0), nó sẽ văng ra cái MessageBox này
+                    MessageBox.Show("Có lỗi xảy ra: " + ex.Message, "Lỗi Thanh Toán", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-
         // --- IN HÓA ĐƠN ---
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -321,7 +357,12 @@ namespace my_own_project.VIEW
 
             g.DrawString("TỔNG CỘNG:", fontHeader, Brushes.Black, leftMargin, yPos);
             g.DrawString(finalAmount.ToString("N0") + " đ", fontHeader, Brushes.Black, rightMargin, yPos, rightAlign);
-            yPos += 45;
+            yPos += 30;
+
+            // 🌟 CHÈN THÊM DÒNG IN PHƯƠNG THỨC THANH TOÁN Ở ĐÂY
+            g.DrawString("Hình thức TT:", fontItem, Brushes.Black, leftMargin, yPos);
+            g.DrawString(cboPaymentMethod.Text, fontItem, Brushes.Black, rightMargin, yPos, rightAlign);
+            yPos += 45; // Đẩy dòng "Cảm ơn" xuống dưới thêm một chút
 
             g.DrawString("Cảm ơn & Hẹn gặp lại!", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
         }

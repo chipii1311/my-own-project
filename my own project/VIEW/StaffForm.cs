@@ -12,7 +12,8 @@ namespace my_own_project.VIEW
         // KHAI BÁO BIẾN TOÀN CỤC
         // ========================================================
         private Guna2DataGridView dgvStaff;
-        private Guna2TextBox txtUserID, txtFullName, txtEmail, txtPhone, txtPassword;
+        // Đã xóa txtPassword khỏi khai báo
+        private Guna2TextBox txtUserID, txtFullName, txtEmail, txtPhone;
         private Guna2ComboBox cboRole, cboStatus;
         private Guna2Button btnEdit, btnClear, btnAddAccount;
 
@@ -142,9 +143,7 @@ namespace my_own_project.VIEW
             txtEmail = new Guna2TextBox { Width = ctrlWidth, Height = 42, BorderRadius = 5, Font = new Font("Segoe UI", 11F), Margin = new Padding(0, 0, 0, 15) };
             flp.Controls.Add(txtEmail);
 
-            flp.Controls.Add(MakeLbl("MẬT KHẨU:"));
-            txtPassword = new Guna2TextBox { Width = ctrlWidth, Height = 42, BorderRadius = 5, Font = new Font("Segoe UI", 11F), PasswordChar = '●', PlaceholderText = "(Giữ nguyên nếu không đổi mật khẩu)", Margin = new Padding(0, 0, 0, 15) };
-            flp.Controls.Add(txtPassword);
+            // ĐÃ XÓA MỤC MẬT KHẨU Ở ĐÂY
 
             flp.Controls.Add(MakeLbl("SỐ ĐIỆN THOẠI:"));
             txtPhone = new Guna2TextBox { Width = ctrlWidth, Height = 42, BorderRadius = 5, Font = new Font("Segoe UI", 11F), Margin = new Padding(0, 0, 0, 20) };
@@ -170,7 +169,7 @@ namespace my_own_project.VIEW
             flp.Controls.Add(txtUserID);
 
             // ==========================================
-            // NÚT CẬP NHẬT VÀ LÀM MỚI (Đã mang trở lại)
+            // NÚT CẬP NHẬT VÀ LÀM MỚI
             // ==========================================
             TableLayoutPanel tlpBtns = new TableLayoutPanel { Width = ctrlWidth, Height = 50, ColumnCount = 2, RowCount = 1, Margin = new Padding(0) };
             tlpBtns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
@@ -235,7 +234,7 @@ namespace my_own_project.VIEW
             txtFullName.Text = "";
             txtEmail.Text = "";
             txtPhone.Text = "";
-            txtPassword.Text = "";
+            // Đã xóa reset mật khẩu
             if (cboRole.Items.Count > 0) cboRole.SelectedIndex = 0;
             if (cboStatus.Items.Count > 0) cboStatus.SelectedIndex = 0;
             dgvStaff.ClearSelection();
@@ -260,7 +259,7 @@ namespace my_own_project.VIEW
                 string status = row.Cells["IsActive"].Value?.ToString();
                 if (cboStatus.Items.Contains(status)) cboStatus.Text = status;
 
-                txtPassword.Text = ""; // Ẩn password cũ, chỉ nhập khi cần đổi
+                // Đã xóa phần ẩn/hiện password cũ
             }
         }
 
@@ -268,14 +267,10 @@ namespace my_own_project.VIEW
         {
             NewAccountAddForm frmAdd = new NewAccountAddForm();
 
-            // 2. Mở Form lên dưới dạng Dialog (Popup)
-            // Lệnh ShowDialog() sẽ làm đóng băng màn hình StaffForm ở dưới, 
-            // bắt buộc người dùng phải thao tác xong trên form Thêm mới được quay lại.
+            // Mở Form lên dưới dạng Dialog (Popup)
             frmAdd.ShowDialog();
 
-            // 3. Refresh (Làm mới) lại bảng dữ liệu ngay lập tức
-            // Sau khi Form Thêm đóng lại (dù là thêm thành công hay bấm dấu X tắt đi), 
-            // code sẽ tiếp tục chạy xuống dòng này để tải lại danh sách vào DataGridView.
+            // Refresh (Làm mới) lại bảng dữ liệu ngay lập tức sau khi form thêm tắt
             LoadStaffData();
         }
 
@@ -291,14 +286,9 @@ namespace my_own_project.VIEW
             {
                 int isActive = (cboStatus.Text == "Đang hoạt động") ? 1 : 0;
 
-                string pwdUpdate = "";
-                if (!string.IsNullOrWhiteSpace(txtPassword.Text))
-                {
-                    pwdUpdate = $", PasswordHash = N'{txtPassword.Text}'";
-                }
-
+                // Cập nhật Database (Đã gỡ bỏ phần Update Password)
                 string query = $"UPDATE Users SET FullName = N'{txtFullName.Text}', Email = N'{txtEmail.Text}', Phone = N'{txtPhone.Text}', " +
-                               $"Role = N'{cboRole.Text}', IsActive = {isActive} {pwdUpdate} " +
+                               $"Role = N'{cboRole.Text}', IsActive = {isActive} " +
                                $"WHERE UserID = {txtUserID.Text}";
 
                 my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
