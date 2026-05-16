@@ -378,7 +378,7 @@ namespace my_own_project.VIEW
             c.Legends.Add(new Legend
             {
                 Docking = Docking.Bottom,
-                Font = new Font("Segoe UI", 8F),
+              //  Font = new Font("Segoe UI", 8F),
                 ForeColor = MUTED,
                 BackColor = WHITE
             });

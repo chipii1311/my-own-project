@@ -481,7 +481,7 @@ namespace my_own_project.VIEW
                 if (isDone)
                 {
                     var checkDB = my_own_project.BLL.MenuItemBLL.GetMenuItemByID(id);
-                    MessageBox.Show($"SỰ THẬT TỪ DATABASE:\nTên đang lưu: {checkDB.ItemName}\nGiá đang lưu: {checkDB.Price}", "Khám nghiệm tử thi");
+                   
 
                     MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadProductData();
