@@ -20,7 +20,7 @@ namespace my_own_project.VIEW
         public int LoggedInUserID { get; set; } = 0;
 
         private Guna2Button btnPOS, btnHistory, btnProduct, btnDashboard,
-            btnSettings, btnStaff, btnInventory, btnRecipe, btnPromotion, btnAccount, btnExit;
+            btnSettings, btnStaff, btnInventory, btnRecipe, btnPromotion, btnAccount;
 
         public NewMainForm()
         {
@@ -127,7 +127,6 @@ namespace my_own_project.VIEW
             btnRecipe = AddSidebarButton("🧪", 595);
             btnPromotion = AddSidebarButton("🎁", 655);
             btnAccount = AddSidebarButton("👤", 0);
-            btnExit = AddSidebarButton("🛑", 0);
 
             btnPOS.Click += (s, e) => OpenChildForm(new POSForm(this.LoggedInUserID, this.LoggedInUserName));
             btnHistory.Click += (s, e) => OpenChildForm(new HistoryForm());
@@ -139,7 +138,6 @@ namespace my_own_project.VIEW
             btnRecipe.Click += (s, e) => OpenChildForm(new RecipeManagementForm());
             btnPromotion.Click += (s, e) => OpenChildForm(new NewPromotionForm());
             btnAccount.Click += BtnAccount_Click;
-            btnExit.Click += (s, e) => Application.Exit();
 
             pnlSidebar.Controls.AddRange(new Control[]
             {
@@ -152,8 +150,7 @@ namespace my_own_project.VIEW
                 btnInventory,
                 btnRecipe,
                 btnPromotion,
-                btnAccount,
-                btnExit
+                btnAccount
             });
         }
 
@@ -181,10 +178,7 @@ namespace my_own_project.VIEW
 
         private void PositionBottomButtons()
         {
-            btnExit.Top = pnlSidebar.Height - btnExit.Height - 10;
-            btnExit.Left = 20;
-
-            btnAccount.Top = btnExit.Top - btnAccount.Height - 6;
+            btnAccount.Top = pnlSidebar.Height - btnAccount.Height - 10;
             btnAccount.Left = 20;
         }
 

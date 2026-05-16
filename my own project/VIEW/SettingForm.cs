@@ -1,4 +1,5 @@
 ﻿using Guna.UI2.WinForms;
+using my_own_project.DAL;
 using System;
 using System.Data;
 using System.Drawing;
@@ -9,127 +10,131 @@ namespace my_own_project.VIEW
 {
     public partial class SettingForm : Form
     {
-        // ════════════════════════════════════════════════════════
-        // DESIGN TOKENS
-        // ════════════════════════════════════════════════════════
+        // ===================== DESIGN TOKENS =====================
         private static readonly Color C_BG = Color.FromArgb(244, 245, 250);
         private static readonly Color C_WHITE = Color.White;
         private static readonly Color C_PURPLE = Color.FromArgb(88, 28, 230);
-        private static readonly Color C_PURPLE_S = Color.FromArgb(237, 233, 254);
+        private static readonly Color C_PURPLE_MID = Color.FromArgb(109, 60, 240);
+        private static readonly Color C_PURPLE_SOFT = Color.FromArgb(237, 233, 254);
         private static readonly Color C_GREEN = Color.FromArgb(22, 163, 74);
-        private static readonly Color C_GREEN_S = Color.FromArgb(220, 252, 231);
-        private static readonly Color C_BLUE = Color.FromArgb(37, 99, 235);
-        private static readonly Color C_BLUE_S = Color.FromArgb(219, 234, 254);
+        private static readonly Color C_GREEN_BG = Color.FromArgb(220, 252, 231);
         private static readonly Color C_RED = Color.FromArgb(220, 38, 38);
-        private static readonly Color C_RED_S = Color.FromArgb(254, 226, 226);
+        private static readonly Color C_RED_BG = Color.FromArgb(254, 226, 226);
+        private static readonly Color C_AMBER = Color.FromArgb(217, 119, 6);
+        private static readonly Color C_AMBER_BG = Color.FromArgb(254, 243, 199);
+        private static readonly Color C_BLUE = Color.FromArgb(37, 99, 235);
         private static readonly Color C_TEXT = Color.FromArgb(17, 24, 39);
         private static readonly Color C_MUTED = Color.FromArgb(107, 114, 128);
         private static readonly Color C_BORDER = Color.FromArgb(229, 231, 235);
-        private static readonly Color C_LABEL = Color.FromArgb(75, 85, 99);
+        private static readonly Color C_FIELD_BG = Color.FromArgb(249, 250, 251);
+        private static readonly Color C_LABEL = Color.FromArgb(55, 65, 81);
 
-        // ════════════════════════════════════════════════════════
-        // CONTROLS — Tables tab
-        // ════════════════════════════════════════════════════════
+        // ===================== CONTROLS — Tables =====================
         private DataGridView dgvTables;
         private Guna2TextBox txtTableNumber, txtTableCapacity, txtTableID;
         private Guna2ComboBox cboTableStatus;
-        private Label lblTableHint;
+        private Label lblTableHint, lblTableCount;
         private Guna2Button btnAddTable, btnSaveTable, btnDeleteTable, btnClearTable;
 
-        // ════════════════════════════════════════════════════════
-        // CONTROLS — Categories tab
-        // ════════════════════════════════════════════════════════
+        // ===================== CONTROLS — Categories =====================
         private DataGridView dgvCategories;
         private Guna2TextBox txtCategoryName, txtCategoryID;
         private Label lblCatHint;
         private Guna2Button btnAddCat, btnSaveCat, btnDeleteCat, btnClearCat;
 
-        // Tab state
+        // ===================== TAB STATE =====================
         private Panel pageTable, pageCat;
-        private Guna2Button _activeTab;
+        private Guna2Button _tabTables, _tabCats;
 
         public SettingForm()
         {
             InitializeComponent();
-            this.Controls.Clear();
-            this.BackColor = C_BG;
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
-
+            Controls.Clear();
+            BackColor = C_BG;
+            FormBorderStyle = FormBorderStyle.None;
+            Dock = DockStyle.Fill;
             BuildUI();
-            this.Load += (s, e) => { LoadTableData(); LoadCategoryData(); };
+            Load += (s, e) => { LoadTableData(); LoadCategoryData(); };
         }
 
-        // ════════════════════════════════════════════════════════
-        // UI BUILDER
-        // ════════════════════════════════════════════════════════
+        // ===================== BUILD UI =====================
         private void BuildUI()
         {
-            this.SuspendLayout();
+            SuspendLayout();
 
-            // ── HEADER ─────────────────────────────────────────
-            var pnlHeader = new Panel
+            Panel header = BuildHeader();
+            Panel tabBar = BuildTabBar();
+
+            pageTable = BuildPageTables();
+            pageCat = BuildPageCategories();
+
+            pageTable.Visible = true;
+            pageCat.Visible = false;
+
+            Controls.Add(pageTable);
+            Controls.Add(pageCat);
+            Controls.Add(tabBar);
+            Controls.Add(header);
+
+            ResumeLayout(false);
+        }
+
+        // ── Header ─────────────────────────────────────────────────────────
+        private Panel BuildHeader()
+        {
+            Panel h = new Panel
             {
                 Dock = DockStyle.Top,
                 Height = 64,
                 BackColor = C_WHITE
             };
-            pnlHeader.Paint += PaintBottomBorder;
+            h.Paint += PaintBottomBorder;
 
-            var lblTitle = new Label
+            
+
+            Label title = new Label
             {
                 Text = "Cài đặt hệ thống",
                 Font = new Font("Segoe UI", 15F, FontStyle.Bold),
                 ForeColor = C_TEXT,
                 AutoSize = true,
-                Location = new Point(24, 18)
+                Location = new Point(52, 21)
             };
-            pnlHeader.Controls.Add(lblTitle);
 
-            // ── TAB BAR ─────────────────────────────────────────
-            var pnlTabs = new Panel
+            h.Controls.AddRange(new Control[] {  title });
+            return h;
+        }
+
+        // ── Tab bar ─────────────────────────────────────────────────────────
+        private Panel BuildTabBar()
+        {
+            Panel bar = new Panel
             {
                 Dock = DockStyle.Top,
                 Height = 50,
                 BackColor = C_WHITE
             };
-            pnlTabs.Paint += PaintBottomBorder;
+            bar.Paint += PaintBottomBorder;
 
-            var btnTabTables = MakeTabBtn("🍽️   Quản lý bàn ăn", 24);
-            var btnTabCats = MakeTabBtn("📋   Danh mục món ăn", 190);
+            _tabTables = MakeTabBtn("🪑  Quản lý bàn ăn", 24);
+            _tabCats = MakeTabBtn("📋  Danh mục món ăn", 210);
 
-            btnTabTables.Click += (s, e) => SwitchTab(pageTable, btnTabTables,
-                                                       btnTabCats);
-            btnTabCats.Click += (s, e) => SwitchTab(pageCat, btnTabCats,
-                                                       btnTabTables);
-            pnlTabs.Controls.Add(btnTabTables);
-            pnlTabs.Controls.Add(btnTabCats);
-            _activeTab = btnTabTables;
-            SetTabActive(btnTabTables);
+            _tabTables.Click += (s, e) => SwitchTab(pageTable, _tabTables, _tabCats);
+            _tabCats.Click += (s, e) => SwitchTab(pageCat, _tabCats, _tabTables);
 
-            // ── PAGES ───────────────────────────────────────────
-            pageTable = BuildPageTables();
-            pageCat = BuildPageCategories();
-            pageTable.Visible = true;
-            pageCat.Visible = false;
+            SetTabActive(_tabTables, true);
+            SetTabActive(_tabCats, false);
 
-            // ── ASSEMBLE ─────────────────────────────────────────
-            // Fill first, then Tops
-            this.Controls.Add(pageTable);
-            this.Controls.Add(pageCat);
-            this.Controls.Add(pnlTabs);
-            this.Controls.Add(pnlHeader);
-
-            this.ResumeLayout(false);
+            bar.Controls.AddRange(new Control[] { _tabTables, _tabCats });
+            return bar;
         }
 
-        // ── TAB BUTTON ──────────────────────────────────────────
         private Guna2Button MakeTabBtn(string text, int x)
         {
             return new Guna2Button
             {
                 Text = text,
-                Size = new Size(160, 46),
+                Size = new Size(180, 46),
                 Location = new Point(x, 2),
                 BorderRadius = 0,
                 BorderThickness = 0,
@@ -140,18 +145,20 @@ namespace my_own_project.VIEW
             };
         }
 
-        private void SetTabActive(Guna2Button btn)
+        private void SetTabActive(Guna2Button btn, bool active)
         {
-            btn.ForeColor = C_PURPLE;
-            // Draw purple underline via Paint
-            btn.Paint += (s, e) =>
-            {
-                if (btn.ForeColor == C_PURPLE)
-                {
-                    using (var b = new SolidBrush(C_PURPLE))
-                        e.Graphics.FillRectangle(b, 0, btn.Height - 3, btn.Width, 3);
-                }
-            };
+            btn.ForeColor = active ? C_PURPLE : C_MUTED;
+            btn.Paint -= TabBtn_Paint; // remove previous handler
+            if (active) btn.Paint += TabBtn_Paint;
+            btn.Refresh();
+        }
+
+        private void TabBtn_Paint(object sender, PaintEventArgs e)
+        {
+            var btn = sender as Guna2Button;
+            if (btn == null) return;
+            using (SolidBrush b = new SolidBrush(C_PURPLE))
+                e.Graphics.FillRectangle(b, 0, btn.Height - 3, btn.Width, 3);
         }
 
         private void SwitchTab(Panel show, Guna2Button active, Guna2Button inactive)
@@ -159,93 +166,83 @@ namespace my_own_project.VIEW
             pageTable.Visible = (show == pageTable);
             pageCat.Visible = (show == pageCat);
             show.BringToFront();
-
-            active.ForeColor = C_PURPLE;
-            inactive.ForeColor = C_MUTED;
-            active.Refresh();
-            inactive.Refresh();
+            SetTabActive(active, true);
+            SetTabActive(inactive, false);
         }
 
-        // ════════════════════════════════════════════════════════
-        // PAGE: QUẢN LÝ BÀN
-        // ════════════════════════════════════════════════════════
+        // ===================== PAGE: QUẢN LÝ BÀN ĂN =====================
         private Panel BuildPageTables()
         {
-            var pnl = new Panel { Dock = DockStyle.Fill, BackColor = C_BG, Padding = new Padding(24, 20, 24, 24) };
+            Panel page = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = C_BG,
+                Padding = new Padding(24, 16, 24, 24)
+            };
 
-            // Main layout: left grid + right form
-            var tlp = new TableLayoutPanel
+            TableLayoutPanel tlp = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
                 RowCount = 1,
                 BackColor = Color.Transparent
             };
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 62F));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 38F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
             tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            pnl.Controls.Add(tlp);
 
-            // ── LEFT: Grid card ──
-            var cardLeft = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = C_WHITE,
-                Margin = new Padding(0, 0, 12, 0)
-            };
-            cardLeft.Region = RoundRegion(cardLeft, 12);
-            cardLeft.Resize += (s, e) => cardLeft.Region = RoundRegion(cardLeft, 12);
+            // ── Left card: table grid ──
+            Panel leftCard = CreateCard(new Padding(0, 0, 10, 0));
 
             // Card header
-            var cardHdr = new Panel { Dock = DockStyle.Top, Height = 52, BackColor = C_WHITE };
+            Panel cardHdr = new Panel { Dock = DockStyle.Top, Height = 52, BackColor = C_WHITE };
             cardHdr.Paint += PaintBottomBorderLight;
 
-            var lblGridTitle = new Label
+            Label lblTitle = new Label
             {
                 Text = "Danh sách bàn ăn",
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 ForeColor = C_TEXT,
                 AutoSize = true,
-                Location = new Point(18, 15)
+                Location = new Point(18, 16)
             };
-            var lblTableCount = new Label
+
+            lblTableCount = new Label
             {
-                Name = "lblTableCount",
                 Text = "",
                 Font = new Font("Segoe UI", 9F),
                 ForeColor = C_MUTED,
                 AutoSize = true,
-                Anchor = AnchorStyles.Right | AnchorStyles.Top,
-                Location = new Point(300, 18)
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
-            cardHdr.Controls.Add(lblGridTitle);
-            cardHdr.Controls.Add(lblTableCount);
-            cardHdr.Resize += (s, e) => lblTableCount.Location =
-                new Point(cardHdr.Width - lblTableCount.Width - 18, 18);
+
+            cardHdr.Controls.AddRange(new Control[] { lblTitle, lblTableCount });
+            cardHdr.Resize += (s, e) =>
+                lblTableCount.Location = new Point(cardHdr.Width - lblTableCount.Width - 18, 18);
 
             dgvTables = MakeGrid();
             dgvTables.CellClick += DgvTables_CellClick;
             dgvTables.CellFormatting += DgvTables_CellFormatting;
 
-            cardLeft.Controls.Add(dgvTables);
-            cardLeft.Controls.Add(cardHdr);
-            tlp.Controls.Add(cardLeft, 0, 0);
+            leftCard.Controls.Add(dgvTables);
+            leftCard.Controls.Add(cardHdr);
 
-            // ── RIGHT: Form card ──
-            var cardRight = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = C_WHITE,
-                Margin = new Padding(12, 0, 0, 0),
-                Padding = new Padding(24)
-            };
-            cardRight.Region = RoundRegion(cardRight, 12);
-            cardRight.Resize += (s, e) => cardRight.Region = RoundRegion(cardRight, 12);
+            // ── Right card: form ──
+            Panel rightCard = CreateCard(new Padding(10, 0, 0, 0));
+            rightCard.Padding = new Padding(26, 22, 26, 22);
 
-            int fw = 0; // field width — set via Resize
+            BuildTableForm(rightCard);
 
-            // Title
-            var lblFormTitle = new Label
+            tlp.Controls.Add(leftCard, 0, 0);
+            tlp.Controls.Add(rightCard, 1, 0);
+            page.Controls.Add(tlp);
+            return page;
+        }
+
+        private void BuildTableForm(Panel card)
+        {
+            // Title + separator
+            Label lblTitle = new Label
             {
                 Text = "Thông tin bàn",
                 Font = new Font("Segoe UI", 12F, FontStyle.Bold),
@@ -254,212 +251,215 @@ namespace my_own_project.VIEW
                 Height = 36
             };
 
-            var sep = new Panel { Dock = DockStyle.Top, Height = 2, BackColor = C_PURPLE, Margin = new Padding(0, 0, 0, 16) };
+            Panel sep = new Panel { Dock = DockStyle.Top, Height = 3, BackColor = C_PURPLE, Margin = new Padding(0, 0, 0, 6) };
 
-            // Hint label
             lblTableHint = new Label
             {
-                Text = "👆 Nhấp vào bàn để chọn",
+                Text = "✦  Nhấp vào bàn để chọn",
                 Font = new Font("Segoe UI", 9F, FontStyle.Italic),
                 ForeColor = C_MUTED,
                 Dock = DockStyle.Top,
-                Height = 28,
+                Height = 30,
                 BackColor = Color.Transparent
             };
 
-            // Số bàn
-            var lNum = MakeFieldLabel("Số bàn *");
-            txtTableNumber = MakeTextBox("Nhập số bàn  (VD: 6)");
+            // Hidden ID
             txtTableID = new Guna2TextBox { Visible = false };
 
-            // Sức chứa
-            var lCap = MakeFieldLabel("Sức chứa (người)");
-            txtTableCapacity = MakeTextBox("VD: 4");
+            // Fields
+            Label lNum = FieldLabel("Số bàn *");
+            txtTableNumber = FieldTextBox("Nhập số bàn  (VD: 6)");
 
-            // Trạng thái
-            var lStt = MakeFieldLabel("Trạng thái");
+            Label lCap = FieldLabel("Sức chứa (người)");
+            txtTableCapacity = FieldTextBox("VD: 4");
+
+            Label lStt = FieldLabel("Trạng thái");
+
             cboTableStatus = new Guna2ComboBox
             {
                 Dock = DockStyle.Top,
-                Height = 38,
+                Height = 40,
                 BorderRadius = 8,
                 Font = new Font("Segoe UI", 10F),
-                FillColor = C_WHITE,
-                Margin = new Padding(0, 0, 0, 16)
+                FillColor = C_FIELD_BG,
+                Margin = new Padding(0, 0, 0, 18)
             };
-            cboTableStatus.Items.AddRange(new object[] { "Trống", "Đang dùng", "Đã đặt" });
+            cboTableStatus.Items.AddRange(new object[] { "Trống", "Có khách", "Đặt trước" });
             cboTableStatus.SelectedIndex = 0;
 
-            // Buttons
-            var pnlBtns = new Panel { Dock = DockStyle.Top, Height = 100 };
+            // Buttons: 2 x 2 grid in a panel
+            Panel pnlBtns = new Panel { Dock = DockStyle.Top, Height = 100 };
 
-            btnAddTable = MakeBtn("➕  Thêm bàn mới", C_PURPLE, C_WHITE);
-            btnAddTable.Size = new Size(200, 40);
-            btnAddTable.Location = new Point(0, 0);
-            btnAddTable.Click += BtnAddTable_Click;
-
-            btnSaveTable = MakeBtn("💾  Lưu thay đổi", C_BLUE, C_WHITE);
-            btnSaveTable.Size = new Size(200, 40);
-            btnSaveTable.Location = new Point(0, 50);
-            btnSaveTable.Enabled = false;
-            btnSaveTable.Click += BtnEditTable_Click;
-
-            btnDeleteTable = MakeBtn("🗑️  Xóa bàn này", C_RED, C_WHITE);
-            btnDeleteTable.Size = new Size(130, 40);
-            btnDeleteTable.Location = new Point(210, 0);
+            btnAddTable = BtnPrimary("+ Thêm bàn mới", C_PURPLE);
+            btnDeleteTable = BtnPrimary("🗑  Xóa bàn này", Color.FromArgb(210, 210, 218));
+            btnDeleteTable.ForeColor = C_MUTED;
             btnDeleteTable.Enabled = false;
-            btnDeleteTable.Click += BtnDeleteTable_Click;
 
-            btnClearTable = MakeBtn("✕  Hủy", Color.FromArgb(229, 231, 235), C_MUTED);
-            btnClearTable.Size = new Size(80, 40);
-            btnClearTable.Location = new Point(350, 0);
+            btnSaveTable = BtnPrimary("💾  Lưu thay đổi", Color.FromArgb(210, 210, 218));
+            btnSaveTable.ForeColor = C_MUTED;
+            btnSaveTable.Enabled = false;
+
+            btnClearTable = BtnPrimary("✕  Hủy", Color.FromArgb(235, 235, 240));
+            btnClearTable.ForeColor = C_MUTED;
+
+            btnAddTable.Click += BtnAddTable_Click;
+            btnSaveTable.Click += BtnSaveTable_Click;
+            btnDeleteTable.Click += BtnDeleteTable_Click;
             btnClearTable.Click += (s, e) => ClearTableForm();
 
-            pnlBtns.Controls.AddRange(new Control[]
-            { btnAddTable, btnSaveTable, btnDeleteTable, btnClearTable });
+            pnlBtns.Controls.AddRange(new Control[] { btnAddTable, btnDeleteTable, btnSaveTable, btnClearTable });
 
-            // Assemble right panel (reverse order for DockStyle.Top)
-            foreach (var c in new Control[]
-            { pnlBtns, cboTableStatus, lStt, txtTableCapacity, lCap,
-              txtTableNumber, lNum, lblTableHint, sep, lblFormTitle, txtTableID })
-                cardRight.Controls.Add(c);
+            // Layout buttons on resize
+            pnlBtns.Resize += (s, e) => LayoutBtns2x2(pnlBtns,
+                btnAddTable, btnDeleteTable, btnSaveTable, btnClearTable);
 
-            // Resize: update fields width
-            cardRight.Resize += (s, e) =>
+            // Assemble — DockStyle.Top reads in reverse
+            foreach (Control c in new Control[]
+                { pnlBtns, cboTableStatus, lStt, txtTableCapacity, lCap,
+                  txtTableNumber, lNum, lblTableHint, sep, lblTitle, txtTableID })
+                card.Controls.Add(c);
+
+            card.Resize += (s, e) =>
             {
-                int w = cardRight.ClientSize.Width - 48;
-                foreach (var c in new Control[]
-                { txtTableNumber, txtTableCapacity })
-                {
-                    if (c is Guna2TextBox tb) tb.Width = w;
-                }
+                int w = card.ClientSize.Width - card.Padding.Horizontal;
+                txtTableNumber.Width = w;
+                txtTableCapacity.Width = w;
                 cboTableStatus.Width = w;
                 pnlBtns.Width = w;
-                btnAddTable.Width = (w - 10) / 2;
-                btnSaveTable.Width = (w - 10) / 2;
-                btnDeleteTable.Width = (w - 10) / 2;
-                btnClearTable.Location = new Point((w - 10) / 2 + 10, 50);
-                btnClearTable.Width = (w - 10) / 2;
+                LayoutBtns2x2(pnlBtns, btnAddTable, btnDeleteTable, btnSaveTable, btnClearTable);
             };
-
-            tlp.Controls.Add(cardRight, 1, 0);
-            return pnl;
         }
 
-        // ════════════════════════════════════════════════════════
-        // PAGE: DANH MỤC MÓN
-        // ════════════════════════════════════════════════════════
+        // ===================== PAGE: DANH MỤC MÓN ĂN =====================
         private Panel BuildPageCategories()
         {
-            var pnl = new Panel { Dock = DockStyle.Fill, BackColor = C_BG, Padding = new Padding(24, 20, 24, 24) };
+            Panel page = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = C_BG,
+                Padding = new Padding(24, 16, 24, 24)
+            };
 
-            var tlp = new TableLayoutPanel
+            TableLayoutPanel tlp = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 ColumnCount = 2,
                 RowCount = 1,
                 BackColor = Color.Transparent
             };
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 62F));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 38F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60F));
+            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40F));
             tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            pnl.Controls.Add(tlp);
 
-            // ── LEFT: Grid card ──
-            var cardLeft = new Panel { Dock = DockStyle.Fill, BackColor = C_WHITE, Margin = new Padding(0, 0, 12, 0) };
-            cardLeft.Region = RoundRegion(cardLeft, 12);
-            cardLeft.Resize += (s, e) => cardLeft.Region = RoundRegion(cardLeft, 12);
+            // ── Left card: category grid ──
+            Panel leftCard = CreateCard(new Padding(0, 0, 10, 0));
 
-            var cardHdr = new Panel { Dock = DockStyle.Top, Height = 52, BackColor = C_WHITE };
+            Panel cardHdr = new Panel { Dock = DockStyle.Top, Height = 52, BackColor = C_WHITE };
             cardHdr.Paint += PaintBottomBorderLight;
-            var lblCatTitle = new Label { Text = "Danh sách danh mục", Font = new Font("Segoe UI", 11F, FontStyle.Bold), ForeColor = C_TEXT, AutoSize = true, Location = new Point(18, 15) };
+
+            Label lblCatTitle = new Label
+            {
+                Text = "Danh sách danh mục",
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = C_TEXT,
+                AutoSize = true,
+                Location = new Point(18, 16)
+            };
             cardHdr.Controls.Add(lblCatTitle);
 
             dgvCategories = MakeGrid();
             dgvCategories.CellClick += DgvCategories_CellClick;
 
-            cardLeft.Controls.Add(dgvCategories);
-            cardLeft.Controls.Add(cardHdr);
-            tlp.Controls.Add(cardLeft, 0, 0);
+            leftCard.Controls.Add(dgvCategories);
+            leftCard.Controls.Add(cardHdr);
 
-            // ── RIGHT: Form card ──
-            var cardRight = new Panel
+            // ── Right card: form ──
+            Panel rightCard = CreateCard(new Padding(10, 0, 0, 0));
+            rightCard.Padding = new Padding(26, 22, 26, 22);
+            BuildCategoryForm(rightCard);
+
+            tlp.Controls.Add(leftCard, 0, 0);
+            tlp.Controls.Add(rightCard, 1, 0);
+            page.Controls.Add(tlp);
+            return page;
+        }
+
+        private void BuildCategoryForm(Panel card)
+        {
+            Label lblTitle = new Label
             {
-                Dock = DockStyle.Fill,
-                BackColor = C_WHITE,
-                Margin = new Padding(12, 0, 0, 0),
-                Padding = new Padding(24)
+                Text = "Thông tin danh mục",
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                ForeColor = C_TEXT,
+                Dock = DockStyle.Top,
+                Height = 36
             };
-            cardRight.Region = RoundRegion(cardRight, 12);
-            cardRight.Resize += (s, e) => cardRight.Region = RoundRegion(cardRight, 12);
 
-            var lblFormTitle = new Label { Text = "Thông tin danh mục", Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = C_TEXT, Dock = DockStyle.Top, Height = 36 };
-            var sep = new Panel { Dock = DockStyle.Top, Height = 2, BackColor = C_PURPLE };
+            Panel sep = new Panel { Dock = DockStyle.Top, Height = 3, BackColor = C_PURPLE };
 
             lblCatHint = new Label
             {
-                Text = "👆 Nhấp vào danh mục để chọn",
+                Text = "✦  Nhấp vào danh mục để chọn",
                 Font = new Font("Segoe UI", 9F, FontStyle.Italic),
                 ForeColor = C_MUTED,
                 Dock = DockStyle.Top,
-                Height = 28,
+                Height = 30,
                 BackColor = Color.Transparent
             };
 
-            var lName = MakeFieldLabel("Tên danh mục *");
-            txtCategoryName = MakeTextBox("VD: Đồ uống, Món chính...");
             txtCategoryID = new Guna2TextBox { Visible = false };
 
-            var pnlBtns = new Panel { Dock = DockStyle.Top, Height = 100 };
+            Label lName = FieldLabel("Tên danh mục *");
+            txtCategoryName = FieldTextBox("VD: Đồ uống, Món chính...");
 
-            btnAddCat = MakeBtn("➕  Thêm danh mục", C_PURPLE, C_WHITE);
-            btnAddCat.Size = new Size(200, 40);
-            btnAddCat.Location = new Point(0, 0);
-            btnAddCat.Click += BtnAddCategory_Click;
+            Panel pnlBtns = new Panel { Dock = DockStyle.Top, Height = 100 };
 
-            btnSaveCat = MakeBtn("💾  Lưu thay đổi", C_BLUE, C_WHITE);
-            btnSaveCat.Size = new Size(200, 40);
-            btnSaveCat.Location = new Point(0, 50);
-            btnSaveCat.Enabled = false;
-            btnSaveCat.Click += BtnEditCategory_Click;
-
-            btnDeleteCat = MakeBtn("🗑️  Xóa", C_RED, C_WHITE);
-            btnDeleteCat.Size = new Size(130, 40);
-            btnDeleteCat.Location = new Point(210, 0);
+            btnAddCat = BtnPrimary("+ Thêm danh mục", C_PURPLE);
+            btnDeleteCat = BtnPrimary("🗑  Xóa", Color.FromArgb(210, 210, 218));
+            btnDeleteCat.ForeColor = C_MUTED;
             btnDeleteCat.Enabled = false;
-            btnDeleteCat.Click += BtnDeleteCategory_Click;
 
-            btnClearCat = MakeBtn("✕  Hủy", Color.FromArgb(229, 231, 235), C_MUTED);
-            btnClearCat.Size = new Size(80, 40);
-            btnClearCat.Location = new Point(350, 0);
+            btnSaveCat = BtnPrimary("💾  Lưu thay đổi", Color.FromArgb(210, 210, 218));
+            btnSaveCat.ForeColor = C_MUTED;
+            btnSaveCat.Enabled = false;
+
+            btnClearCat = BtnPrimary("✕  Hủy", Color.FromArgb(235, 235, 240));
+            btnClearCat.ForeColor = C_MUTED;
+
+            btnAddCat.Click += BtnAddCategory_Click;
+            btnSaveCat.Click += BtnEditCategory_Click;
+            btnDeleteCat.Click += BtnDeleteCategory_Click;
             btnClearCat.Click += (s, e) => ClearCatForm();
 
-            pnlBtns.Controls.AddRange(new Control[]
-            { btnAddCat, btnSaveCat, btnDeleteCat, btnClearCat });
+            pnlBtns.Controls.AddRange(new Control[] { btnAddCat, btnDeleteCat, btnSaveCat, btnClearCat });
+            pnlBtns.Resize += (s, e) => LayoutBtns2x2(pnlBtns, btnAddCat, btnDeleteCat, btnSaveCat, btnClearCat);
 
-            foreach (var c in new Control[]
-            { pnlBtns, txtCategoryName, lName, lblCatHint, sep, lblFormTitle, txtCategoryID })
-                cardRight.Controls.Add(c);
+            foreach (Control c in new Control[]
+                { pnlBtns, txtCategoryName, lName, lblCatHint, sep, lblTitle, txtCategoryID })
+                card.Controls.Add(c);
 
-            cardRight.Resize += (s, e) =>
+            card.Resize += (s, e) =>
             {
-                int w = cardRight.ClientSize.Width - 48;
+                int w = card.ClientSize.Width - card.Padding.Horizontal;
                 txtCategoryName.Width = w;
                 pnlBtns.Width = w;
-                btnAddCat.Width = (w - 10) / 2;
-                btnSaveCat.Width = (w - 10) / 2;
-                btnDeleteCat.Width = (w - 10) / 2;
-                btnClearCat.Location = new Point((w - 10) / 2 + 10, 50);
-                btnClearCat.Width = (w - 10) / 2;
+                LayoutBtns2x2(pnlBtns, btnAddCat, btnDeleteCat, btnSaveCat, btnClearCat);
             };
-
-            tlp.Controls.Add(cardRight, 1, 0);
-            return pnl;
         }
 
-        // ════════════════════════════════════════════════════════
-        // FACTORY HELPERS
-        // ════════════════════════════════════════════════════════
+        // ===================== FACTORY HELPERS =====================
+        private Panel CreateCard(Padding margin)
+        {
+            Panel card = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = C_WHITE,
+                Margin = margin
+            };
+            ApplyRoundCorners(card, 12);
+            return card;
+        }
+
         private DataGridView MakeGrid()
         {
             var dgv = new DataGridView
@@ -479,117 +479,133 @@ namespace my_own_project.VIEW
                 Cursor = Cursors.Hand,
                 EnableHeadersVisualStyles = false,
                 ColumnHeadersHeight = 44,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None
             };
-            dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = C_MUTED;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(12, 0, 0, 0);
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(14, 0, 0, 0);
 
-            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10.5F);
             dgv.DefaultCellStyle.ForeColor = C_TEXT;
-            dgv.DefaultCellStyle.SelectionBackColor = C_PURPLE_S;
+            dgv.DefaultCellStyle.SelectionBackColor = C_PURPLE_SOFT;
             dgv.DefaultCellStyle.SelectionForeColor = C_PURPLE;
             dgv.DefaultCellStyle.BackColor = C_WHITE;
-            dgv.DefaultCellStyle.Padding = new Padding(12, 0, 0, 0);
-            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 250, 251);
-            dgv.RowTemplate.Height = 46;
+            dgv.DefaultCellStyle.Padding = new Padding(14, 0, 0, 0);
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 250, 253);
+            dgv.RowTemplate.Height = 48;
+
             return dgv;
         }
 
-        private Label MakeFieldLabel(string text) => new Label
+        private Label FieldLabel(string text) => new Label
         {
             Text = text,
             Font = new Font("Segoe UI", 9F, FontStyle.Bold),
             ForeColor = C_LABEL,
             Dock = DockStyle.Top,
-            Height = 26,
+            Height = 28,
             BackColor = Color.Transparent
         };
 
-        private Guna2TextBox MakeTextBox(string placeholder) => new Guna2TextBox
+        private Guna2TextBox FieldTextBox(string placeholder) => new Guna2TextBox
         {
             PlaceholderText = placeholder,
             Dock = DockStyle.Top,
-            Height = 38,
+            Height = 40,
             BorderRadius = 8,
             Font = new Font("Segoe UI", 10F),
-            FillColor = Color.FromArgb(249, 250, 251),
-            
+            FillColor = C_FIELD_BG,
+            BorderColor = C_BORDER,
             Margin = new Padding(0, 0, 0, 16)
         };
 
-        private Guna2Button MakeBtn(string text, Color fill, Color fore) => new Guna2Button
+        private Guna2Button BtnPrimary(string text, Color fillColor) => new Guna2Button
         {
             Text = text,
-            Height = 40,
-            BorderRadius = 8,
+            Height = 42,
+            BorderRadius = 9,
             BorderThickness = 0,
-            FillColor = fill,
-            ForeColor = fore,
+            FillColor = fillColor,
+            ForeColor = Color.White,
             Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
             Cursor = Cursors.Hand
         };
 
-        // ════════════════════════════════════════════════════════
-        // PAINT HELPERS
-        // ════════════════════════════════════════════════════════
+        /// <summary>Lays out 4 buttons in a 2×2 grid within pnl.</summary>
+        private static void LayoutBtns2x2(Panel pnl, Guna2Button b1, Guna2Button b2, Guna2Button b3, Guna2Button b4)
+        {
+            int gap = 8;
+            int half = (pnl.Width - gap) / 2;
+            if (half < 20) return;
+
+            b1.Location = new Point(0, 0); b1.Size = new Size(half, 42);
+            b2.Location = new Point(half + gap, 0); b2.Size = new Size(half, 42);
+            b3.Location = new Point(0, 50); b3.Size = new Size(half, 42);
+            b4.Location = new Point(half + gap, 50); b4.Size = new Size(half, 42);
+        }
+
+        // ===================== ROUND CORNERS =====================
+        private static void ApplyRoundCorners(Panel panel, int radius)
+        {
+            panel.Paint += (s, e) =>
+            {
+                var p = s as Panel;
+                if (p == null || p.Width <= 0 || p.Height <= 0) return;
+                var path = new GraphicsPath();
+                int w = p.Width - 1, h = p.Height - 1, d = radius * 2;
+                path.AddArc(0, 0, d, d, 180, 90);
+                path.AddArc(w - d, 0, d, d, 270, 90);
+                path.AddArc(w - d, h - d, d, d, 0, 90);
+                path.AddArc(0, h - d, d, d, 90, 90);
+                path.CloseFigure();
+                p.Region = new Region(path);
+            };
+        }
+
+        // ===================== PAINT HELPERS =====================
         private void PaintBottomBorder(object s, PaintEventArgs e)
         {
             var p = s as Panel;
-            using (var pen = new System.Drawing.Pen(C_BORDER, 1))
+            using (Pen pen = new Pen(C_BORDER, 1))
                 e.Graphics.DrawLine(pen, 0, p.Height - 1, p.Width, p.Height - 1);
         }
+
         private void PaintBottomBorderLight(object s, PaintEventArgs e)
         {
             var p = s as Panel;
-            using (var pen = new System.Drawing.Pen(Color.FromArgb(243, 244, 246), 1))
+            using (Pen pen = new Pen(Color.FromArgb(243, 244, 246), 1))
                 e.Graphics.DrawLine(pen, 0, p.Height - 1, p.Width, p.Height - 1);
         }
 
-        private System.Drawing.Region RoundRegion(Control c, int r)
-        {
-            var path = new GraphicsPath();
-            int w = c.Width, h = c.Height;
-            if (w <= 0 || h <= 0) return null;
-            path.AddArc(0, 0, r * 2, r * 2, 180, 90);
-            path.AddArc(w - r * 2, 0, r * 2, r * 2, 270, 90);
-            path.AddArc(w - r * 2, h - r * 2, r * 2, r * 2, 0, 90);
-            path.AddArc(0, h - r * 2, r * 2, r * 2, 90, 90);
-            path.CloseAllFigures();
-            return new System.Drawing.Region(path);
-        }
-
-        // ════════════════════════════════════════════════════════
-        // LOAD DATA
-        // ════════════════════════════════════════════════════════
+        // ===================== LOAD DATA =====================
         private void LoadTableData()
         {
             try
             {
-                string q = @"SELECT TableID AS [Mã],
-                                    TableNumber AS [Số bàn],
-                                    Capacity    AS [Sức chứa],
-                                    Status      AS [Trạng thái]
-                             FROM DiningTable
-                             ORDER BY TableNumber";
-                DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(q);
+                string q = @"
+                    SELECT TableID     AS [TableID],
+                           TableNumber AS [Số bàn],
+                           Capacity    AS [Sức chứa],
+                           Status      AS [Trạng thái]
+                    FROM   DiningTable
+                    ORDER  BY TableNumber";
+
+                DataTable dt = DataHelper.ExecuteQuery(q);
                 dgvTables.DataSource = dt;
 
-                // Ẩn cột ID
-                if (dgvTables.Columns.Contains("Mã"))
-                    dgvTables.Columns["Mã"].Visible = false;
+                if (dgvTables.Columns.Contains("TableID"))
+                    dgvTables.Columns["TableID"].Visible = false;
 
-                // Update count label
-                var lbl = pageTable.Controls.Find("lblTableCount", true);
-                if (lbl.Length > 0) lbl[0].Text = $"{dt.Rows.Count} bàn";
+                if (lblTableCount != null)
+                    lblTableCount.Text = dt.Rows.Count + " bàn";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi tải bàn: " + ex.Message,
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError("Lỗi tải danh sách bàn: " + ex.Message);
             }
         }
 
@@ -597,65 +613,75 @@ namespace my_own_project.VIEW
         {
             try
             {
-                string q = @"SELECT CategoryID   AS [Mã],
-                                    CategoryName AS [Tên danh mục]
-                             FROM Category
-                             WHERE IsActive = 1
-                             ORDER BY CategoryID";
-                DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(q);
+                string q = @"
+                    SELECT CategoryID   AS [CategoryID],
+                           CategoryName AS [Tên danh mục]
+                    FROM   Category
+                    WHERE  IsActive = 1
+                    ORDER  BY CategoryID";
+
+                DataTable dt = DataHelper.ExecuteQuery(q);
                 dgvCategories.DataSource = dt;
 
-                if (dgvCategories.Columns.Contains("Mã"))
-                    dgvCategories.Columns["Mã"].Visible = false;
+                if (dgvCategories.Columns.Contains("CategoryID"))
+                    dgvCategories.Columns["CategoryID"].Visible = false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi tải danh mục: " + ex.Message,
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError("Lỗi tải danh mục: " + ex.Message);
             }
         }
 
-        // ════════════════════════════════════════════════════════
-        // CELL FORMATTING — màu trạng thái bàn
-        // ════════════════════════════════════════════════════════
-        private void DgvTables_CellFormatting(object sender,
-            DataGridViewCellFormattingEventArgs e)
+        // ===================== CELL FORMATTING =====================
+        private void DgvTables_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
             if (dgvTables.Columns[e.ColumnIndex].Name != "Trạng thái") return;
 
             string v = e.Value?.ToString() ?? "";
             e.CellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+
             switch (v)
             {
                 case "Trống":
                     e.CellStyle.ForeColor = C_GREEN;
+                    e.CellStyle.BackColor = C_GREEN_BG;
+                    e.CellStyle.SelectionForeColor = C_GREEN;
                     break;
-                case "Đang dùng":
-                    e.CellStyle.ForeColor = C_RED;
+                case "Có khách":
+                    e.CellStyle.ForeColor = C_PURPLE_MID;
+                    e.CellStyle.BackColor = C_PURPLE_SOFT;
+                    e.CellStyle.SelectionForeColor = C_PURPLE_MID;
                     break;
-                case "Đã đặt":
-                    e.CellStyle.ForeColor = Color.FromArgb(217, 119, 6); // amber
+                case "Đặt trước":
+                    e.CellStyle.ForeColor = C_AMBER;
+                    e.CellStyle.BackColor = C_AMBER_BG;
+                    e.CellStyle.SelectionForeColor = C_AMBER;
                     break;
             }
         }
 
-        // ════════════════════════════════════════════════════════
-        // EVENTS — TABLES
-        // ════════════════════════════════════════════════════════
+        // ===================== EVENTS — TABLES =====================
         private void DgvTables_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
+
             var row = dgvTables.Rows[e.RowIndex];
-            txtTableID.Text = row.Cells["Mã"].Value?.ToString() ?? "";
+            txtTableID.Text = row.Cells["TableID"].Value?.ToString() ?? "";
             txtTableNumber.Text = row.Cells["Số bàn"].Value?.ToString() ?? "";
             txtTableCapacity.Text = dgvTables.Columns.Contains("Sức chứa")
-                ? row.Cells["Sức chứa"].Value?.ToString() ?? "" : "";
+                                    ? row.Cells["Sức chứa"].Value?.ToString() ?? "" : "";
             cboTableStatus.Text = row.Cells["Trạng thái"].Value?.ToString() ?? "Trống";
 
-            lblTableHint.Text = "✏️  Đang chỉnh sửa bàn đã chọn";
+            lblTableHint.Text = "✏  Đang chỉnh sửa bàn " + txtTableNumber.Text;
             lblTableHint.ForeColor = C_PURPLE;
+
+            btnSaveTable.FillColor = C_BLUE;
+            btnSaveTable.ForeColor = Color.White;
             btnSaveTable.Enabled = true;
+
+            btnDeleteTable.FillColor = C_RED;
+            btnDeleteTable.ForeColor = Color.White;
             btnDeleteTable.Enabled = true;
         }
 
@@ -663,6 +689,7 @@ namespace my_own_project.VIEW
         {
             if (string.IsNullOrWhiteSpace(txtTableNumber.Text))
             { ShowWarn("Vui lòng nhập số bàn!"); return; }
+
             if (!int.TryParse(txtTableNumber.Text, out int num))
             { ShowWarn("Số bàn chỉ được nhập số (VD: 1, 2, 3...)"); return; }
 
@@ -674,18 +701,19 @@ namespace my_own_project.VIEW
             {
                 string q = $@"INSERT INTO DiningTable (TableNumber, Capacity, Status)
                               VALUES ({num}, {cap}, N'{cboTableStatus.Text}')";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✅  Thêm bàn thành công!");
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔  Thêm bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
             }
             catch (Exception ex) { ShowError("Lỗi thêm bàn: " + ex.Message); }
         }
 
-        private void BtnEditTable_Click(object sender, EventArgs e)
+        private void BtnSaveTable_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtTableID.Text))
             { ShowWarn("Vui lòng chọn bàn cần sửa!"); return; }
+
             if (!int.TryParse(txtTableNumber.Text, out int num))
             { ShowWarn("Số bàn chỉ được nhập số!"); return; }
 
@@ -700,8 +728,8 @@ namespace my_own_project.VIEW
                                   Capacity    = {cap},
                                   Status      = N'{cboTableStatus.Text}'
                               WHERE TableID = {txtTableID.Text}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✅  Cập nhật bàn thành công!");
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔  Cập nhật bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
             }
@@ -713,46 +741,59 @@ namespace my_own_project.VIEW
             if (string.IsNullOrWhiteSpace(txtTableID.Text))
             { ShowWarn("Vui lòng chọn bàn cần xóa!"); return; }
 
-            if (MessageBox.Show($"Xóa bàn {txtTableNumber.Text}?  Hành động không thể hoàn tác.",
-                "Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show(
+                    $"Xóa bàn số {txtTableNumber.Text}? Hành động không thể hoàn tác.",
+                    "Xác nhận xóa",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try
             {
-                string q = $"DELETE FROM DiningTable WHERE TableID = {txtTableID.Text}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✅  Đã xóa bàn!");
+                DataHelper.ExecuteNonQuery($"DELETE FROM DiningTable WHERE TableID = {txtTableID.Text}");
+                ShowInfo("✔  Xóa bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
             }
-            catch (Exception ex) { ShowError("Lỗi xóa: " + ex.Message); }
+            catch (Exception ex) { ShowError("Lỗi xóa bàn: " + ex.Message); }
         }
 
         private void ClearTableForm()
         {
             txtTableID.Text = "";
-            txtTableNumber.Text = "";
-            txtTableCapacity.Text = "";
+            txtTableNumber.Clear();
+            txtTableCapacity.Clear();
             cboTableStatus.SelectedIndex = 0;
-            lblTableHint.Text = "👆 Nhấp vào bàn để chọn";
+
+            lblTableHint.Text = "✦  Nhấp vào bàn để chọn";
             lblTableHint.ForeColor = C_MUTED;
+
+            btnSaveTable.FillColor = Color.FromArgb(210, 210, 218);
+            btnSaveTable.ForeColor = C_MUTED;
             btnSaveTable.Enabled = false;
+
+            btnDeleteTable.FillColor = Color.FromArgb(210, 210, 218);
+            btnDeleteTable.ForeColor = C_MUTED;
             btnDeleteTable.Enabled = false;
         }
 
-        // ════════════════════════════════════════════════════════
-        // EVENTS — CATEGORIES
-        // ════════════════════════════════════════════════════════
+        // ===================== EVENTS — CATEGORIES =====================
         private void DgvCategories_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
+
             var row = dgvCategories.Rows[e.RowIndex];
-            txtCategoryID.Text = row.Cells["Mã"].Value?.ToString() ?? "";
+            txtCategoryID.Text = row.Cells["CategoryID"].Value?.ToString() ?? "";
             txtCategoryName.Text = row.Cells["Tên danh mục"].Value?.ToString() ?? "";
 
-            lblCatHint.Text = "✏️  Đang chỉnh sửa danh mục đã chọn";
+            lblCatHint.Text = "✏  Đang chỉnh sửa: " + txtCategoryName.Text;
             lblCatHint.ForeColor = C_PURPLE;
+
+            btnSaveCat.FillColor = C_BLUE;
+            btnSaveCat.ForeColor = Color.White;
             btnSaveCat.Enabled = true;
+
+            btnDeleteCat.FillColor = C_RED;
+            btnDeleteCat.ForeColor = Color.White;
             btnDeleteCat.Enabled = true;
         }
 
@@ -764,12 +805,12 @@ namespace my_own_project.VIEW
             try
             {
                 string q = $"INSERT INTO Category (CategoryName, IsActive) VALUES (N'{txtCategoryName.Text.Trim()}', 1)";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✅  Thêm danh mục thành công!");
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔  Thêm danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
             }
-            catch (Exception ex) { ShowError("Lỗi thêm: " + ex.Message); }
+            catch (Exception ex) { ShowError("Lỗi thêm danh mục: " + ex.Message); }
         }
 
         private void BtnEditCategory_Click(object sender, EventArgs e)
@@ -780,8 +821,8 @@ namespace my_own_project.VIEW
             try
             {
                 string q = $"UPDATE Category SET CategoryName = N'{txtCategoryName.Text.Trim()}' WHERE CategoryID = {txtCategoryID.Text}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✅  Cập nhật thành công!");
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔  Cập nhật thành công!");
                 ClearCatForm();
                 LoadCategoryData();
             }
@@ -793,34 +834,40 @@ namespace my_own_project.VIEW
             if (string.IsNullOrWhiteSpace(txtCategoryID.Text))
             { ShowWarn("Vui lòng chọn danh mục cần xóa!"); return; }
 
-            if (MessageBox.Show($"Ẩn danh mục \"{txtCategoryName.Text}\"?",
-                "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show(
+                    $"Ẩn danh mục \"{txtCategoryName.Text}\"?",
+                    "Xác nhận",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try
             {
-                string q = $"UPDATE Category SET IsActive = 0 WHERE CategoryID = {txtCategoryID.Text}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✅  Đã xóa danh mục!");
+                DataHelper.ExecuteNonQuery($"UPDATE Category SET IsActive = 0 WHERE CategoryID = {txtCategoryID.Text}");
+                ShowInfo("✔  Xóa danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
             }
-            catch (Exception ex) { ShowError("Lỗi xóa: " + ex.Message); }
+            catch (Exception ex) { ShowError("Lỗi xóa danh mục: " + ex.Message); }
         }
 
         private void ClearCatForm()
         {
             txtCategoryID.Text = "";
-            txtCategoryName.Text = "";
-            lblCatHint.Text = "👆 Nhấp vào danh mục để chọn";
+            txtCategoryName.Clear();
+
+            lblCatHint.Text = "✦  Nhấp vào danh mục để chọn";
             lblCatHint.ForeColor = C_MUTED;
+
+            btnSaveCat.FillColor = Color.FromArgb(210, 210, 218);
+            btnSaveCat.ForeColor = C_MUTED;
             btnSaveCat.Enabled = false;
+
+            btnDeleteCat.FillColor = Color.FromArgb(210, 210, 218);
+            btnDeleteCat.ForeColor = C_MUTED;
             btnDeleteCat.Enabled = false;
         }
 
-        // ════════════════════════════════════════════════════════
-        // MESSAGE HELPERS
-        // ════════════════════════════════════════════════════════
+        // ===================== MESSAGE HELPERS =====================
         private void ShowInfo(string msg)
             => MessageBox.Show(msg, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         private void ShowWarn(string msg)
