@@ -33,6 +33,9 @@ namespace my_own_project.VIEW
         private Guna2ComboBox cboStatus, cboApplyType;
         private Label lblHint;
         private Guna2Button btnAdd, btnUpdate, btnDelete;
+        private Panel pnlItemPicker;      // ẩn/hiện khi chọn "Giảm theo món"
+        private CheckedListBox clbItems;  // multi-select món ăn
+        private FlowLayoutPanel flpForm;
 
         public NewPromotionForm()
         {
@@ -103,7 +106,7 @@ namespace my_own_project.VIEW
             pnlFormHeader.Controls.AddRange(new Control[] { lblHint, sep, lblFormTitle });
 
             // ── KHU VỰC NHẬP LIỆU ──
-            var flpForm = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true, Padding = new Padding(0, 10, 0, 0) };
+            flpForm = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true, Padding = new Padding(0, 10, 0, 0) };
             cardRight.Controls.Add(flpForm);
             cardRight.Controls.Add(pnlFormHeader);
 
@@ -113,8 +116,45 @@ namespace my_own_project.VIEW
             txtPromoName = MakeTextBox("VD: Lễ hội bia giảm giá...");
 
             var lType = MakeFieldLabel("Hình thức áp dụng");
-            cboApplyType = MakeComboBox(new object[] { "Giảm trên tổng hóa đơn" });
-            cboApplyType.Enabled = false;
+            cboApplyType = MakeComboBox(new object[] { "Giảm trên tổng hóa đơn", "Giảm theo món ăn" });
+            cboApplyType.Enabled = true;
+            cboApplyType.SelectedIndexChanged += (s, e) =>
+            {
+                bool show = cboApplyType.SelectedIndex == 1;
+                pnlItemPicker.Height = show ? 184 : 0;
+                flpForm.PerformLayout();
+            };
+
+            // Panel chọn món (ẩn mặc định)
+            pnlItemPicker = new Panel { Width = 350, Height = 0, BackColor = Color.Transparent, Margin = new Padding(0, 0, 0, 8) };
+            pnlItemPicker.Controls.Add(new Label
+            {
+                Text = "Chọn món áp dụng *",
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = C_LABEL,
+                Location = new Point(0, 0),
+                AutoSize = true
+            });
+            clbItems = new CheckedListBox
+            {
+                Location = new Point(0, 22),
+                Size = new Size(350, 130),
+                BorderStyle = BorderStyle.FixedSingle,
+                Font = new Font("Segoe UI", 10F),
+                BackColor = Color.FromArgb(249, 250, 251),
+                ForeColor = C_TEXT,
+                CheckOnClick = true,
+                IntegralHeight = false
+            };
+            pnlItemPicker.Controls.Add(clbItems);
+            pnlItemPicker.Controls.Add(new Label
+            {
+                Text = "ℹ  Tích chọn một hoặc nhiều món muốn áp dụng.",
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
+                ForeColor = C_MUTED,
+                Location = new Point(0, 158),
+                Size = new Size(350, 20)
+            });
 
             var lDisc = MakeFieldLabel("Phần trăm giảm (%) *");
             txtDiscount = MakeTextBox("VD: 10, 20...");
@@ -156,7 +196,32 @@ namespace my_own_project.VIEW
             tlpBtns.Controls.Add(btnUpdate, 0, 0);
             tlpBtns.Controls.Add(btnDelete, 1, 0);
 
-            flpForm.Controls.AddRange(new Control[] { txtPromoID, lName, txtPromoName, lType, cboApplyType, lDisc, txtDiscount, pnlDates, lStatus, cboStatus, tlpBtns });
+            flpForm.Controls.AddRange(new Control[] { txtPromoID, lName, txtPromoName, lType, cboApplyType, pnlItemPicker, lDisc, txtDiscount, pnlDates, lStatus, cboStatus, tlpBtns });
+
+            // Load món ăn vào CheckedListBox
+            try
+            {
+                string query = @"
+        SELECT 
+            MenuItemID,
+            ItemName
+        FROM MenuItem
+        WHERE ISNULL(ItemStatus, 1) = 1
+        ORDER BY ItemName";
+
+                DataTable dtMenu = my_own_project.DAL.DataHelper.ExecuteQuery(query);
+
+                clbItems.DataSource = null;
+                clbItems.Items.Clear();
+
+                clbItems.DisplayMember = "ItemName";
+                clbItems.ValueMember = "MenuItemID";
+                clbItems.DataSource = dtMenu;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải danh sách món ăn: " + ex.Message);
+            }
 
             // Responsive
             cardRight.Resize += (s, e) =>
@@ -164,6 +229,8 @@ namespace my_own_project.VIEW
                 int w = flpForm.ClientSize.Width - 10;
                 txtPromoName.Width = w;
                 cboApplyType.Width = w;
+                pnlItemPicker.Width = w;
+                clbItems.Width = w;
                 txtDiscount.Width = w;
                 pnlDates.Width = w;
                 cboStatus.Width = w;
@@ -241,10 +308,39 @@ namespace my_own_project.VIEW
 
             cboStatus.Text = row.Cells["Trạng thái"].Value?.ToString() ?? "Active";
 
+            // Load ApplyType từ DB
+            try
+            {
+                int promoID = int.Parse(txtPromoID.Text);
+                DataTable dtPromo = my_own_project.DAL.DataHelper.ExecuteQuery(
+                    $"SELECT ApplyType FROM Promotion WHERE PromotionID = {promoID}");
+
+                int applyType = dtPromo.Rows.Count > 0 ? Convert.ToInt32(dtPromo.Rows[0]["ApplyType"]) : 0;
+                cboApplyType.SelectedIndex = applyType;
+
+                // Bỏ tích tất cả trước
+                for (int i = 0; i < clbItems.Items.Count; i++)
+                    clbItems.SetItemChecked(i, false);
+
+                // Nếu theo món → tích các món đã lưu
+                if (applyType == 1)
+                {
+                    DataTable dtd = my_own_project.DAL.DataHelper.ExecuteQuery(
+                        $"SELECT MenuItemID FROM PromotionDetail WHERE PromotionID = {promoID}");
+                    var ids = new System.Collections.Generic.HashSet<int>();
+                    foreach (DataRow dr in dtd.Rows) ids.Add(Convert.ToInt32(dr["MenuItemID"]));
+
+                    for (int i = 0; i < clbItems.Items.Count; i++)
+                    {
+                        DataRowView drv = (DataRowView)clbItems.Items[i];
+                        clbItems.SetItemChecked(i, ids.Contains(Convert.ToInt32(drv["MenuItemID"])));
+                    }
+                }
+            }
+            catch { /* silent */ }
+
             lblHint.Text = "✏️ Đang chỉnh sửa: " + txtPromoName.Text;
             lblHint.ForeColor = C_PURPLE;
-
-            // Mở khóa các nút khi có dữ liệu được chọn
             btnUpdate.Enabled = true;
             btnDelete.Enabled = true;
         }
@@ -255,28 +351,53 @@ namespace my_own_project.VIEW
             if (string.IsNullOrWhiteSpace(txtPromoID.Text)) return;
 
             if (string.IsNullOrWhiteSpace(txtPromoName.Text) || string.IsNullOrWhiteSpace(txtDiscount.Text))
-            {
-                MessageBox.Show("Vui lòng nhập đầy đủ Tên chương trình và Phần trăm giảm!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Vui lòng nhập đầy đủ Tên chương trình và Phần trăm giảm!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+
             if (!decimal.TryParse(txtDiscount.Text, out decimal discount))
+            { MessageBox.Show("Phần trăm giảm phải là con số!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+
+            int applyType = cboApplyType.SelectedIndex;
+
+            // Validate chọn món
+            var selectedIDs = new System.Collections.Generic.List<int>();
+            if (applyType == 1)
             {
-                MessageBox.Show("Phần trăm giảm phải là con số!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                foreach (DataRowView drv in clbItems.CheckedItems)
+                    selectedIDs.Add(Convert.ToInt32(drv["MenuItemID"]));
+                if (selectedIDs.Count == 0)
+                { MessageBox.Show("Vui lòng chọn ít nhất một món ăn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             }
 
             try
             {
                 string start = dtpStartDate.Value.ToString("yyyy-MM-dd");
                 string end = dtpEndDate.Value.ToString("yyyy-MM-dd");
+                string name = txtPromoName.Text.Trim().Replace("'", "''");
+                int promoID = int.Parse(txtPromoID.Text);
 
-                string query = $@"UPDATE Promotion 
-                                  SET PromotionName = N'{txtPromoName.Text.Trim()}', 
-                                      DiscountPercent = {discount}, StartDate = '{start}', EndDate = '{end}', Status = N'{cboStatus.Text}' 
-                                  WHERE PromotionID = {txtPromoID.Text}";
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                // UPDATE Promotion
+                my_own_project.DAL.DataHelper.ExecuteNonQuery($@"
+                    UPDATE Promotion SET
+                        PromotionName   = N'{name}',
+                        DiscountPercent = {discount},
+                        StartDate       = '{start}',
+                        EndDate         = '{end}',
+                        Status          = N'{cboStatus.Text}',
+                        ApplyType       = {applyType}
+                    WHERE PromotionID = {promoID}");
+
+                // Xóa PromotionDetail cũ rồi ghi lại
+                my_own_project.DAL.DataHelper.ExecuteNonQuery(
+                    $"DELETE FROM PromotionDetail WHERE PromotionID = {promoID}");
+
+                if (applyType == 1)
+                {
+                    foreach (int mid in selectedIDs)
+                        my_own_project.DAL.DataHelper.ExecuteNonQuery(
+                            $"INSERT INTO PromotionDetail (PromotionID, MenuItemID) VALUES ({promoID}, {mid})");
+                }
+
                 MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 ClearForm();
                 LoadPromotionData();
             }
