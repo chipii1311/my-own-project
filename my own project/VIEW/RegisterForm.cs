@@ -1,14 +1,6 @@
 ﻿using my_own_project.BLL;
 using my_own_project.DTO;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.Remoting.Lifetime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace my_own_project.VIEW
@@ -18,87 +10,60 @@ namespace my_own_project.VIEW
         public RegisterForm()
         {
             InitializeComponent();
+            BuildUI(); // Hàm dựng giao diện
         }
 
-        private void btnCreate_Click(object sender, EventArgs e)
+        private void BtnCreate_Click(object sender, EventArgs e)
         {
             try
             {
-                // 1. Lấy dữ liệu từ giao diện
-                string fullName = txtFullName.Text.Trim();
-                string email = txtEmail.Text.Trim();
-                string phone = txtPhone.Text.Trim();
-                string password = txtPassword.Text;
-                string confirmPassword = txtConfirmPassword.Text;
-
-                // 2. Kiểm tra sơ bộ trên UI (Tránh gọi xuống BLL nếu thiếu dữ liệu cơ bản)
-                if (string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                // 1. Kiểm tra sơ bộ trên UI
+                if (string.IsNullOrEmpty(txtFullName.Text) || string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtPassword.Text))
                 {
-                    // Giả sử bạn đang dùng Guna2MessageDialog (diaError) giống form Login
-                    diaSth.Show("Please fill in all required information!", "Incomplete information");
+                    MessageBox.Show("Vui lòng điền đầy đủ thông tin!", "Thiếu thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                if (password != confirmPassword)
+                if (txtPassword.Text != txtConfirmPassword.Text)
                 {
-                    diaSth.Show("Password entry does not match!", "Verification error");
+                    MessageBox.Show("Mật khẩu xác nhận không khớp!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // 3. Đóng gói dữ liệu vào UserDTO
-                // Lưu ý: Đưa luôn raw password vào thuộc tính PasswordHash vì UserBLL.AddUser của bạn đã có hàm tự động băm (hash) nó rồi.
+                // 2. Gom dữ liệu vào DTO
                 UserDTO newUser = new UserDTO
                 {
-                    FullName = fullName,
-                    Email = email,
-                    Phone = phone,
-                    PasswordHash = password,
-                    Role = "User", // Phân quyền mặc định cho tài khoản đăng ký mới
+                    FullName = txtFullName.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Phone = txtPhone.Text.Trim(),
+                    PasswordHash = txtPassword.Text.Trim(),
+                    Role = "Nhân viên", // Mặc định là nhân viên
                     IsActive = true
                 };
 
-                // 4. Gọi BLL để lưu vào DB
+                // 3. Gọi BLL để lưu vào DB
                 int newUserId = UserBLL.AddUser(newUser);
 
                 if (newUserId > 0)
                 {
-                    diaSth.Show("Account created successfully! Please log in.", "Success");
+                    MessageBox.Show("Đăng ký tài khoản thành công! Vui lòng đăng nhập.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // 5. Quay lại trang Login
-                    // Tìm form Login đang bị ẩn và hiển thị nó lên
+                    // 4. Quay lại trang Login
                     var loginForm = Application.OpenForms["LoginForm"];
-                    if (loginForm != null)
-                    {
-                        loginForm.Show();
-                    }
-
-                    // Đóng form đăng ký này lại
+                    if (loginForm != null) loginForm.Show();
                     this.Close();
                 }
             }
             catch (Exception ex)
             {
-                diaSth.Show(ex.Message, "Registration error");
+                MessageBox.Show(ex.Message, "Lỗi đăng ký", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void btnBack_Click(object sender, EventArgs e)
+        private void BtnBack_Click(object sender, EventArgs e)
         {
-            // Xoá Data còn trống trong txt
-            txtFullName.Clear();
-            txtEmail.Clear();
-            txtPhone.Clear();
-            txtPassword.Clear();
-            txtConfirmPassword.Clear();
-
-            // Tìm form Login đang bị ẩn và hiển thị nó lên
             var loginForm = Application.OpenForms["LoginForm"];
-            if (loginForm != null)
-            {
-                loginForm.Show();
-            }
-
-            // Tắt form đăng ký
+            if (loginForm != null) loginForm.Show();
             this.Close();
         }
     }

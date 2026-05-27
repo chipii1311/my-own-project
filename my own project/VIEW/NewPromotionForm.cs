@@ -3,487 +3,185 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+// using my_own_project.DAL;
 
 namespace my_own_project.VIEW
 {
     public partial class NewPromotionForm : Form
     {
-        // ════════════════════════════════════════════════════════
-        // DESIGN TOKENS (Màu sắc chuẩn phong cách Modern)
-        // ════════════════════════════════════════════════════════
-        private static readonly Color C_BG = Color.FromArgb(245, 246, 250);
-        private static readonly Color C_WHITE = Color.White;
-        private static readonly Color C_PURPLE = Color.FromArgb(88, 28, 230);
-        private static readonly Color C_PURPLE_LIGHT = Color.FromArgb(240, 235, 255);
-        private static readonly Color C_GREEN = Color.FromArgb(16, 185, 129);
-        private static readonly Color C_BLUE = Color.FromArgb(59, 130, 246);
-        private static readonly Color C_RED = Color.FromArgb(239, 68, 68);
-        private static readonly Color C_RED_LIGHT = Color.FromArgb(254, 226, 226);
-        private static readonly Color C_TEXT = Color.FromArgb(31, 41, 55);
-        private static readonly Color C_MUTED = Color.FromArgb(107, 114, 128);
-        private static readonly Color C_BORDER = Color.FromArgb(229, 231, 235);
-        private static readonly Color C_LABEL = Color.FromArgb(75, 85, 99);
-
-        // ════════════════════════════════════════════════════════
-        // CONTROLS
-        // ════════════════════════════════════════════════════════
-        private Guna2DataGridView dgvPromotions;
-        private Guna2TextBox txtPromoID, txtPromoName, txtDiscount;
-        private Guna2DateTimePicker dtpStartDate, dtpEndDate;
-        private Guna2ComboBox cboStatus, cboApplyType;
-        private Label lblHint;
-        private Guna2Button btnAdd, btnUpdate, btnDelete;
-        private Panel pnlItemPicker;      // ẩn/hiện khi chọn "Giảm theo món"
-        private CheckedListBox clbItems;  // multi-select món ăn
-        private FlowLayoutPanel flpForm;
+        private int currentSelectedID = -1;
 
         public NewPromotionForm()
         {
             InitializeComponent();
-            this.Controls.Clear();
-            this.BackColor = C_BG;
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.Dock = DockStyle.Fill;
 
-            BuildModernUI();
+            // Gọi hàm dựng giao diện từ file Designer
+            BuildUI();
 
-            this.Load += (s, e) => LoadPromotionData();
+            this.Load += NewPromotionForm_Load;
         }
 
-        // ════════════════════════════════════════════════════════
-        // 1. UI BUILDER
-        // ════════════════════════════════════════════════════════
-        private void BuildModernUI()
+        private void NewPromotionForm_Load(object sender, EventArgs e)
         {
-            this.SuspendLayout();
-
-            // ── HEADER ─────────────────────────────────────────
-            var pnlHeader = new Guna2Panel { Dock = DockStyle.Top, Height = 70, FillColor = C_WHITE, CustomBorderThickness = new Padding(0, 0, 0, 1), CustomBorderColor = C_BORDER };
-            var lblTitle = new Label { Text = "🎁 QUẢN LÝ KHUYẾN MÃI", Font = new Font("Segoe UI", 16F, FontStyle.Bold), ForeColor = C_PURPLE, AutoSize = true, Location = new Point(24, 20) };
-            pnlHeader.Controls.Add(lblTitle);
-
-            // ── MAIN LAYOUT ────────────────────────
-            var pnlBody = new Panel { Dock = DockStyle.Fill, Padding = new Padding(24, 24, 24, 24) };
-
-            var tlp = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, BackColor = Color.Transparent };
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 63F));
-            tlp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 37F));
-            tlp.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            pnlBody.Controls.Add(tlp);
-
-            // ── LEFT: GRID CARD (BẢNG DANH SÁCH & NÚT THÊM MỚI) ──
-            var cardLeft = new Guna2Panel { Dock = DockStyle.Fill, FillColor = C_WHITE, BorderRadius = 12, Margin = new Padding(0, 0, 15, 0), Padding = new Padding(5) };
-            var cardHdrL = new Guna2Panel { Dock = DockStyle.Top, Height = 60, CustomBorderThickness = new Padding(0, 0, 0, 1), CustomBorderColor = C_BORDER };
-
-            var lblGridTitle = new Label { Text = "Danh sách chương trình", Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = C_TEXT, AutoSize = true, Location = new Point(15, 18) };
-
-            // NÚT THÊM MỚI GỌI POPUP
-            btnAdd = MakeBtn("➕ THÊM MỚI", C_GREEN, C_WHITE);
-            btnAdd.Dock = DockStyle.None;
-            btnAdd.Size = new Size(130, 38);
-            btnAdd.Location = new Point(500, 11);
-            btnAdd.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
-            btnAdd.Click += BtnAdd_Click; // Gắn sự kiện gọi form Add
-
-            cardHdrL.Controls.AddRange(new Control[] { lblGridTitle, btnAdd });
-            cardHdrL.Resize += (s, e) => { btnAdd.Location = new Point(cardHdrL.Width - btnAdd.Width - 15, 11); };
-
-            dgvPromotions = MakeModernGrid();
-            dgvPromotions.CellClick += DgvPromotions_CellClick;
-
-            cardLeft.Controls.Add(dgvPromotions);
-            cardLeft.Controls.Add(cardHdrL);
-            tlp.Controls.Add(cardLeft, 0, 0);
-
-            // ── RIGHT: FORM CARD (CHỈ VIEW & UPDATE) ──────────────────────
-            var cardRight = new Guna2Panel { Dock = DockStyle.Fill, FillColor = C_WHITE, BorderRadius = 12, Padding = new Padding(25, 25, 25, 25) };
-
-            var pnlFormHeader = new Panel { Dock = DockStyle.Top, Height = 75 };
-            var lblFormTitle = new Label { Text = "CHI TIẾT & CHỈNH SỬA", Font = new Font("Segoe UI", 13F, FontStyle.Bold), ForeColor = C_TEXT, AutoSize = true, Location = new Point(0, 0) };
-            var sep = new Panel { Height = 3, BackColor = C_PURPLE, Width = 50, Location = new Point(0, 28) };
-            lblHint = new Label { Text = "👆 Nhấp vào danh sách để xem/chỉnh sửa", Font = new Font("Segoe UI", 9.5F, FontStyle.Italic), ForeColor = C_MUTED, AutoSize = true, Location = new Point(0, 42) };
-
-            pnlFormHeader.Controls.AddRange(new Control[] { lblHint, sep, lblFormTitle });
-
-            // ── KHU VỰC NHẬP LIỆU ──
-            flpForm = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true, Padding = new Padding(0, 10, 0, 0) };
-            cardRight.Controls.Add(flpForm);
-            cardRight.Controls.Add(pnlFormHeader);
-
-            txtPromoID = new Guna2TextBox { Visible = false };
-
-            var lName = MakeFieldLabel("Tên chương trình *");
-            txtPromoName = MakeTextBox("VD: Lễ hội bia giảm giá...");
-
-            var lType = MakeFieldLabel("Hình thức áp dụng");
-            cboApplyType = MakeComboBox(new object[] { "Giảm trên tổng hóa đơn", "Giảm theo món ăn" });
-            cboApplyType.Enabled = true;
-            cboApplyType.SelectedIndexChanged += (s, e) =>
-            {
-                bool show = cboApplyType.SelectedIndex == 1;
-                pnlItemPicker.Height = show ? 184 : 0;
-                flpForm.PerformLayout();
-            };
-
-            // Panel chọn món (ẩn mặc định)
-            pnlItemPicker = new Panel { Width = 350, Height = 0, BackColor = Color.Transparent, Margin = new Padding(0, 0, 0, 8) };
-            pnlItemPicker.Controls.Add(new Label
-            {
-                Text = "Chọn món áp dụng *",
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                ForeColor = C_LABEL,
-                Location = new Point(0, 0),
-                AutoSize = true
-            });
-            clbItems = new CheckedListBox
-            {
-                Location = new Point(0, 22),
-                Size = new Size(350, 130),
-                BorderStyle = BorderStyle.FixedSingle,
-                Font = new Font("Segoe UI", 10F),
-                BackColor = Color.FromArgb(249, 250, 251),
-                ForeColor = C_TEXT,
-                CheckOnClick = true,
-                IntegralHeight = false
-            };
-            pnlItemPicker.Controls.Add(clbItems);
-            pnlItemPicker.Controls.Add(new Label
-            {
-                Text = "ℹ  Tích chọn một hoặc nhiều món muốn áp dụng.",
-                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
-                ForeColor = C_MUTED,
-                Location = new Point(0, 158),
-                Size = new Size(350, 20)
-            });
-
-            var lDisc = MakeFieldLabel("Phần trăm giảm (%) *");
-            txtDiscount = MakeTextBox("VD: 10, 20...");
-
-            // ── GỘP 2 NGÀY VÀO 1 HÀNG ──
-            var pnlDates = new TableLayoutPanel { Width = 350, Height = 65, ColumnCount = 2, RowCount = 2, Margin = new Padding(0, 0, 0, 15) };
-            pnlDates.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            pnlDates.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-            var lStart = MakeFieldLabel("Từ ngày");
-            dtpStartDate = MakeDatePicker();
-            dtpStartDate.Margin = new Padding(0, 0, 5, 0);
-
-            var lEnd = MakeFieldLabel("Đến ngày");
-            dtpEndDate = MakeDatePicker();
-            dtpEndDate.Margin = new Padding(5, 0, 0, 0);
-
-            pnlDates.Controls.Add(lStart, 0, 0);
-            pnlDates.Controls.Add(lEnd, 1, 0);
-            pnlDates.Controls.Add(dtpStartDate, 0, 1);
-            pnlDates.Controls.Add(dtpEndDate, 1, 1);
-
-            var lStatus = MakeFieldLabel("Trạng thái");
-            cboStatus = MakeComboBox(new object[] { "Active", "Inactive" });
-
-            // ── NÚT BẤM DƯỚI CÙNG (CHỈ CÓ LƯU VÀ XÓA) ─────────
-            var tlpBtns = new TableLayoutPanel { Width = 350, Height = 45, ColumnCount = 2, RowCount = 1, Margin = new Padding(0, 10, 0, 0) };
-            tlpBtns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tlpBtns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-
-            btnUpdate = MakeBtn("💾 LƯU CHỈNH SỬA", C_BLUE, C_WHITE);
-            btnUpdate.Margin = new Padding(0, 0, 5, 0);
-            btnUpdate.Click += BtnUpdate_Click;
-
-            btnDelete = MakeBtn("🛑 KẾT THÚC SỚM", C_RED_LIGHT, C_RED);
-            btnDelete.Margin = new Padding(5, 0, 0, 0);
-            btnDelete.Click += BtnDelete_Click;
-
-            tlpBtns.Controls.Add(btnUpdate, 0, 0);
-            tlpBtns.Controls.Add(btnDelete, 1, 0);
-
-            flpForm.Controls.AddRange(new Control[] { txtPromoID, lName, txtPromoName, lType, cboApplyType, pnlItemPicker, lDisc, txtDiscount, pnlDates, lStatus, cboStatus, tlpBtns });
-
-            // Load món ăn vào CheckedListBox
-            try
-            {
-                string query = @"
-        SELECT 
-            MenuItemID,
-            ItemName
-        FROM MenuItem
-        WHERE ISNULL(ItemStatus, 1) = 1
-        ORDER BY ItemName";
-
-                DataTable dtMenu = my_own_project.DAL.DataHelper.ExecuteQuery(query);
-
-                clbItems.DataSource = null;
-                clbItems.Items.Clear();
-
-                clbItems.DisplayMember = "ItemName";
-                clbItems.ValueMember = "MenuItemID";
-                clbItems.DataSource = dtMenu;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi tải danh sách món ăn: " + ex.Message);
-            }
-
-            // Responsive
-            cardRight.Resize += (s, e) =>
-            {
-                int w = flpForm.ClientSize.Width - 10;
-                txtPromoName.Width = w;
-                cboApplyType.Width = w;
-                pnlItemPicker.Width = w;
-                clbItems.Width = w;
-                txtDiscount.Width = w;
-                pnlDates.Width = w;
-                cboStatus.Width = w;
-                tlpBtns.Width = w;
-            };
-
-            tlp.Controls.Add(cardRight, 1, 0);
-            this.Controls.Add(pnlBody);
-            this.Controls.Add(pnlHeader);
-            this.ResumeLayout(false);
-
-            ClearForm();
+            LoadPromotions();
         }
 
-        // ════════════════════════════════════════════════════════
-        // 2. LOGIC DATABASE & EVENTS
-        // ════════════════════════════════════════════════════════
-        private void LoadPromotionData()
+        // ========================================================
+        // 1. DATA BINDING (TẢI DỮ LIỆU)
+        // ========================================================
+        private void LoadPromotions(string keyword = "", string status = "Tất cả")
         {
             try
             {
-                string query = @"SELECT 
-                                    PromotionID AS [Mã], 
-                                    PromotionName AS [Tên chương trình], 
-                                    DiscountPercent AS [% Giảm], 
-                                    FORMAT(StartDate, 'dd/MM/yyyy') AS [Từ ngày], 
-                                    FORMAT(EndDate, 'dd/MM/yyyy') AS [Đến ngày], 
-                                    Status AS [Trạng thái] 
-                                 FROM Promotion ORDER BY PromotionID DESC";
+                // Lấy dữ liệu từ DB (SQL Server)
+                string query = @"SELECT PromotionID AS [Mã KM], 
+                                        PromotionName AS [Tên chương trình], 
+                                        DiscountPercent AS [Giảm (%)], 
+                                        StartDate AS [Ngày BĐ], 
+                                        EndDate AS [Ngày KT], 
+                                        Status AS [Trạng thái],
+                                        CASE WHEN ApplyType = 0 THEN N'Tổng hóa đơn' ELSE N'Theo món ăn' END AS [Áp dụng]
+                                 FROM Promotion WHERE 1=1";
+
+                if (!string.IsNullOrEmpty(keyword))
+                    query += $" AND PromotionName LIKE N'%{keyword}%'";
+
+                if (status != "Tất cả")
+                    query += $" AND Status = N'{status}'";
+
+                query += " ORDER BY PromotionID DESC";
 
                 DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(query);
                 dgvPromotions.DataSource = dt;
 
-                if (dgvPromotions.Columns.Contains("Mã")) dgvPromotions.Columns["Mã"].Visible = false;
-                dgvPromotions.Columns["Tên chương trình"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                // Ẩn cột ID
+                if (dgvPromotions.Columns.Contains("Mã KM"))
+                    dgvPromotions.Columns["Mã KM"].Visible = false;
 
-                dgvPromotions.Columns["% Giảm"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dgvPromotions.Columns["% Giảm"].Width = 80;
-                dgvPromotions.Columns["% Giảm"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-
-                dgvPromotions.Columns["Từ ngày"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dgvPromotions.Columns["Từ ngày"].Width = 100;
-                dgvPromotions.Columns["Đến ngày"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dgvPromotions.Columns["Đến ngày"].Width = 100;
-                dgvPromotions.Columns["Trạng thái"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                dgvPromotions.Columns["Trạng thái"].Width = 90;
+                // Định dạng ngày tháng
+                if (dgvPromotions.Columns.Contains("Ngày BĐ"))
+                    dgvPromotions.Columns["Ngày BĐ"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                if (dgvPromotions.Columns.Contains("Ngày KT"))
+                    dgvPromotions.Columns["Ngày KT"].DefaultCellStyle.Format = "dd/MM/yyyy";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi tải dữ liệu Khuyến mãi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // MOCK DATA: Dự phòng nếu chưa có CSDL hoặc lỗi kết nối để kiểm tra UI
+                DataTable dt = new DataTable();
+                dt.Columns.Add("Mã KM", typeof(int));
+                dt.Columns.Add("Tên chương trình", typeof(string));
+                dt.Columns.Add("Giảm (%)", typeof(int));
+                dt.Columns.Add("Ngày BĐ", typeof(string));
+                dt.Columns.Add("Ngày KT", typeof(string));
+                dt.Columns.Add("Trạng thái", typeof(string));
+                dt.Columns.Add("Áp dụng", typeof(string));
+
+                dt.Rows.Add(1, "Siêu sale cuối tuần", 20, "01/10/2026", "31/10/2026", "Active", "Tổng hóa đơn");
+                dt.Rows.Add(2, "Khuyến mãi món mới", 15, "15/10/2026", "17/10/2026", "Active", "Theo món ăn");
+                dt.Rows.Add(3, "Tri ân khách hàng cũ", 10, "01/01/2026", "31/12/2026", "Inactive", "Tổng hóa đơn");
+                dgvPromotions.DataSource = dt;
+
+                if (dgvPromotions.Columns.Contains("Mã KM")) dgvPromotions.Columns["Mã KM"].Visible = false;
             }
         }
 
-        // MỞ FORM THÊM MỚI (POPUP)
-        private void BtnAdd_Click(object sender, EventArgs e)
+        // ========================================================
+        // 2. SỰ KIỆN TÌM KIẾM & LỌC
+        // ========================================================
+        public void TxtSearch_TextChanged(object sender, EventArgs e) => LoadPromotions(txtSearch.Text, cboFilterStatus.Text);
+        public void CboFilterStatus_SelectedIndexChanged(object sender, EventArgs e) => LoadPromotions(txtSearch.Text, cboFilterStatus.Text);
+
+        // ========================================================
+        // 3. SỰ KIỆN NÚT BẤM (THÊM / SỬA / XÓA)
+        // ========================================================
+        public void BtnAdd_Click(object sender, EventArgs e)
         {
-            // Gọi form thêm mới, nếu thêm thành công (OK) thì load lại dữ liệu
-            if (new NewPromotionAddForm(-1).ShowDialog() == DialogResult.OK)
-            {
-                LoadPromotionData();
-            }
+            // Truyền -1 để nhận biết đây là lệnh Thêm Mới
+            NewPromotionAddForm frm = new NewPromotionAddForm(-1);
+            if (frm.ShowDialog() == DialogResult.OK)
+                LoadPromotions(txtSearch.Text, cboFilterStatus.Text);
         }
 
-        private void DgvPromotions_CellClick(object sender, DataGridViewCellEventArgs e)
+        public void BtnEdit_Click(object sender, EventArgs e)
         {
-            if (e.RowIndex < 0) return;
-            var row = dgvPromotions.Rows[e.RowIndex];
-
-            txtPromoID.Text = row.Cells["Mã"].Value?.ToString();
-            txtPromoName.Text = row.Cells["Tên chương trình"].Value?.ToString();
-            txtDiscount.Text = row.Cells["% Giảm"].Value?.ToString();
-
-            if (DateTime.TryParseExact(row.Cells["Từ ngày"].Value?.ToString(), "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime start)) dtpStartDate.Value = start;
-            if (DateTime.TryParseExact(row.Cells["Đến ngày"].Value?.ToString(), "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime end)) dtpEndDate.Value = end;
-
-            cboStatus.Text = row.Cells["Trạng thái"].Value?.ToString() ?? "Active";
-
-            // Load ApplyType từ DB
-            try
+            if (currentSelectedID == -1)
             {
-                int promoID = int.Parse(txtPromoID.Text);
-                DataTable dtPromo = my_own_project.DAL.DataHelper.ExecuteQuery(
-                    $"SELECT ApplyType FROM Promotion WHERE PromotionID = {promoID}");
-
-                int applyType = dtPromo.Rows.Count > 0 ? Convert.ToInt32(dtPromo.Rows[0]["ApplyType"]) : 0;
-                cboApplyType.SelectedIndex = applyType;
-
-                // Bỏ tích tất cả trước
-                for (int i = 0; i < clbItems.Items.Count; i++)
-                    clbItems.SetItemChecked(i, false);
-
-                // Nếu theo món → tích các món đã lưu
-                if (applyType == 1)
-                {
-                    DataTable dtd = my_own_project.DAL.DataHelper.ExecuteQuery(
-                        $"SELECT MenuItemID FROM PromotionDetail WHERE PromotionID = {promoID}");
-                    var ids = new System.Collections.Generic.HashSet<int>();
-                    foreach (DataRow dr in dtd.Rows) ids.Add(Convert.ToInt32(dr["MenuItemID"]));
-
-                    for (int i = 0; i < clbItems.Items.Count; i++)
-                    {
-                        DataRowView drv = (DataRowView)clbItems.Items[i];
-                        clbItems.SetItemChecked(i, ids.Contains(Convert.ToInt32(drv["MenuItemID"])));
-                    }
-                }
+                MessageBox.Show("Vui lòng chọn một chương trình khuyến mãi để sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch { /* silent */ }
-
-            lblHint.Text = "✏️ Đang chỉnh sửa: " + txtPromoName.Text;
-            lblHint.ForeColor = C_PURPLE;
-            btnUpdate.Enabled = true;
-            btnDelete.Enabled = true;
+            // Truyền ID sang form Add để nó load dữ liệu cũ lên
+            NewPromotionAddForm frm = new NewPromotionAddForm(currentSelectedID);
+            if (frm.ShowDialog() == DialogResult.OK)
+                LoadPromotions(txtSearch.Text, cboFilterStatus.Text);
         }
 
-        // CHỈ LÀM NHIỆM VỤ UPDATE (VÌ THÊM MỚI ĐÃ CÓ FORM RIÊNG)
-        private void BtnUpdate_Click(object sender, EventArgs e)
+        public void BtnDelete_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtPromoID.Text)) return;
-
-            if (string.IsNullOrWhiteSpace(txtPromoName.Text) || string.IsNullOrWhiteSpace(txtDiscount.Text))
-            { MessageBox.Show("Vui lòng nhập đầy đủ Tên chương trình và Phần trăm giảm!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-
-            if (!decimal.TryParse(txtDiscount.Text, out decimal discount))
-            { MessageBox.Show("Phần trăm giảm phải là con số!", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
-
-            int applyType = cboApplyType.SelectedIndex;
-
-            // Validate chọn món
-            var selectedIDs = new System.Collections.Generic.List<int>();
-            if (applyType == 1)
+            if (currentSelectedID == -1)
             {
-                foreach (DataRowView drv in clbItems.CheckedItems)
-                    selectedIDs.Add(Convert.ToInt32(drv["MenuItemID"]));
-                if (selectedIDs.Count == 0)
-                { MessageBox.Show("Vui lòng chọn ít nhất một món ăn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                MessageBox.Show("Vui lòng chọn một chương trình khuyến mãi để xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
-            try
-            {
-                string start = dtpStartDate.Value.ToString("yyyy-MM-dd");
-                string end = dtpEndDate.Value.ToString("yyyy-MM-dd");
-                string name = txtPromoName.Text.Trim().Replace("'", "''");
-                int promoID = int.Parse(txtPromoID.Text);
-
-                // UPDATE Promotion
-                my_own_project.DAL.DataHelper.ExecuteNonQuery($@"
-                    UPDATE Promotion SET
-                        PromotionName   = N'{name}',
-                        DiscountPercent = {discount},
-                        StartDate       = '{start}',
-                        EndDate         = '{end}',
-                        Status          = N'{cboStatus.Text}',
-                        ApplyType       = {applyType}
-                    WHERE PromotionID = {promoID}");
-
-                // Xóa PromotionDetail cũ rồi ghi lại
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(
-                    $"DELETE FROM PromotionDetail WHERE PromotionID = {promoID}");
-
-                if (applyType == 1)
-                {
-                    foreach (int mid in selectedIDs)
-                        my_own_project.DAL.DataHelper.ExecuteNonQuery(
-                            $"INSERT INTO PromotionDetail (PromotionID, MenuItemID) VALUES ({promoID}, {mid})");
-                }
-
-                MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                ClearForm();
-                LoadPromotionData();
-            }
-            catch (Exception ex) { MessageBox.Show("Lỗi lưu dữ liệu: " + ex.Message); }
-        }
-
-        private void BtnDelete_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtPromoID.Text)) return;
-
-            if (MessageBox.Show("Khóa (Kết thúc) mã khuyến mãi này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            if (MessageBox.Show("Bạn có chắc chắn muốn xóa khuyến mãi này? Thao tác này không thể hoàn tác.", "Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
-                    string query = $"UPDATE Promotion SET Status = 'Inactive' WHERE PromotionID = {txtPromoID.Text}";
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
-                    ClearForm();
-                    LoadPromotionData();
+                    // Xóa chi tiết món ăn (Khóa ngoại) trước rồi mới xóa Khuyến mãi
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM PromotionDetail WHERE PromotionID = {currentSelectedID}");
+                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM Promotion WHERE PromotionID = {currentSelectedID}");
+
+                    MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    currentSelectedID = -1;
+                    LoadPromotions(txtSearch.Text, cboFilterStatus.Text);
                 }
-                catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi xóa dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
-        private void ClearForm()
+        // ========================================================
+        // 4. SỰ KIỆN CLICK GRID & ĐỊNH DẠNG MÀU SẮC
+        // ========================================================
+        private void DgvPromotions_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            txtPromoID.Text = "";
-            txtPromoName.Text = "";
-            txtDiscount.Text = "";
-            dtpStartDate.Value = DateTime.Now;
-            dtpEndDate.Value = DateTime.Now.AddMonths(1);
-            cboStatus.SelectedIndex = 0;
-
-            lblHint.Text = "👆 Nhấp vào danh sách để xem/chỉnh sửa";
-            lblHint.ForeColor = C_MUTED;
-
-            // Khóa nút khi chưa chọn dữ liệu
-            btnUpdate.Enabled = false;
-            btnDelete.Enabled = false;
-
-            dgvPromotions.ClearSelection();
-        }
-
-        // ════════════════════════════════════════════════════════
-        // 3. FACTORY HELPERS
-        // ════════════════════════════════════════════════════════
-        private Guna2DataGridView MakeModernGrid()
-        {
-            var dgv = new Guna2DataGridView
+            if (e.RowIndex >= 0)
             {
-                Dock = DockStyle.Fill,
-                ReadOnly = true,
-                AllowUserToAddRows = false,
-                AllowUserToResizeRows = false,
-                BackgroundColor = C_WHITE,
-                BorderStyle = BorderStyle.None,
-                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
-                GridColor = Color.FromArgb(240, 240, 240),
-                RowHeadersVisible = false,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false,
-                Cursor = Cursors.Hand,
-                EnableHeadersVisualStyles = false,
-                ColumnHeadersHeight = 50,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-            };
-
-            dgv.ThemeStyle.HeaderStyle.BackColor = Color.FromArgb(249, 250, 251);
-            dgv.ThemeStyle.HeaderStyle.ForeColor = C_MUTED;
-            dgv.ThemeStyle.HeaderStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            dgv.ThemeStyle.RowsStyle.BackColor = C_WHITE;
-            dgv.ThemeStyle.RowsStyle.ForeColor = C_TEXT;
-            dgv.ThemeStyle.RowsStyle.SelectionBackColor = C_PURPLE_LIGHT;
-            dgv.ThemeStyle.RowsStyle.SelectionForeColor = C_PURPLE;
-            dgv.ThemeStyle.AlternatingRowsStyle.BackColor = Color.FromArgb(252, 252, 253);
-
-            dgv.RowTemplate.Height = 50;
-            dgv.DefaultCellStyle.Padding = new Padding(5, 0, 0, 0);
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(5, 0, 0, 0);
-
-            return dgv;
+                currentSelectedID = Convert.ToInt32(dgvPromotions.Rows[e.RowIndex].Cells["Mã KM"].Value);
+            }
         }
 
-        private Label MakeFieldLabel(string text) => new Label { Text = text, Font = new Font("Segoe UI", 9.5F, FontStyle.Bold), ForeColor = C_LABEL, Dock = DockStyle.Top, Height = 25, BackColor = Color.Transparent };
-        private Guna2TextBox MakeTextBox(string placeholder) => new Guna2TextBox { PlaceholderText = placeholder, Dock = DockStyle.Top, Height = 42, BorderRadius = 6, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(249, 250, 251), Margin = new Padding(0, 0, 0, 20) };
-        private Guna2ComboBox MakeComboBox(object[] items) { var cbo = new Guna2ComboBox { Dock = DockStyle.Top, Height = 42, BorderRadius = 6, Font = new Font("Segoe UI", 11F), FillColor = Color.FromArgb(249, 250, 251), Margin = new Padding(0, 0, 0, 20) }; cbo.Items.AddRange(items); cbo.SelectedIndex = 0; return cbo; }
-        private Guna2DateTimePicker MakeDatePicker() => new Guna2DateTimePicker { Dock = DockStyle.Fill, BorderRadius = 6, Font = new Font("Segoe UI", 10F), FillColor = Color.FromArgb(249, 250, 251), Format = DateTimePickerFormat.Short };
-        private Guna2Button MakeBtn(string text, Color fill, Color fore) => new Guna2Button { Text = text, Dock = DockStyle.Fill, BorderRadius = 6, FillColor = fill, ForeColor = fore, Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
+        private void DgvPromotions_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            string colName = dgvPromotions.Columns[e.ColumnIndex].Name;
+
+            // Đổi màu Trạng thái
+            if (colName == "Trạng thái" && e.Value != null)
+            {
+                string status = e.Value.ToString();
+                e.CellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+                if (status == "Active")
+                {
+                    e.CellStyle.ForeColor = Color.FromArgb(16, 185, 129); // Xanh lá
+                    e.CellStyle.SelectionForeColor = Color.FromArgb(16, 185, 129);
+                }
+                else
+                {
+                    e.CellStyle.ForeColor = Color.FromArgb(239, 68, 68); // Đỏ
+                    e.CellStyle.SelectionForeColor = Color.FromArgb(239, 68, 68);
+                }
+            }
+
+            // Định dạng thêm dấu % cho cột giảm giá
+            if (colName == "Giảm (%)" && e.Value != null)
+            {
+                e.Value = e.Value.ToString() + "%";
+                e.CellStyle.ForeColor = Color.FromArgb(88, 28, 230); // Tím đậm
+                e.CellStyle.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            }
+        }
     }
 }

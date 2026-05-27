@@ -12,32 +12,17 @@ namespace my_own_project.VIEW
     public partial class PaymentForm : Form
     {
         // ========================================================
-        // KHAI BÁO BIẾN TOÀN CỤC
+        // KHAI BÁO BIẾN DỮ LIỆU
         // ========================================================
         private int currentOrderID;
         private int tableID;
-
-        // Thẻ bài nhân viên (nhận từ POSForm)
         private int currentStaffID;
         private string currentStaffName;
 
         // Biến phục vụ tính toán tiền nong
-        private decimal subTotal = 0;       // Tiền nguyên giá
-        private decimal discountAmount = 0; // Tiền được giảm
-        private decimal finalAmount = 0;    // Tiền chốt khách trả
-
-        // Các control giao diện
-        private Guna2ComboBox cboPromotion;
-        private Guna2ComboBox cboPaymentMethod; // Biến phương thức thanh toán
-        private Label lblSubTotal;
-        private Label lblDiscount;
-        private Label lblTotalAmount;
-
-        private Guna2Button btnPrint;
-        private Guna2Button btnConfirm;
-        private Guna2Button btnCancel;
-        private Guna2ShadowForm shadowForm;
-        private Guna2BorderlessForm borderlessForm;
+        private decimal subTotal = 0;
+        private decimal discountAmount = 0;
+        private decimal finalAmount = 0;
 
         // Đồ nghề in ấn
         private PrintDocument printDoc;
@@ -46,12 +31,14 @@ namespace my_own_project.VIEW
         public PaymentForm(int orderID, int tableID = -1, int staffID = 0, string staffName = "Admin")
         {
             InitializeComponent();
-            this.Controls.Clear();
 
             this.currentOrderID = orderID;
             this.tableID = tableID;
             this.currentStaffID = staffID;
             this.currentStaffName = staffName;
+
+            // Gọi hàm dựng giao diện (từ file Designer)
+            BuildUI();
 
             // Khởi tạo máy in khổ 80mm
             printDoc = new PrintDocument();
@@ -64,90 +51,12 @@ namespace my_own_project.VIEW
             printPreview.Size = new Size(450, 650);
             printPreview.PrintPreviewControl.Zoom = 1.0;
 
-            BuildPaymentUI(); // Vẽ giao diện
-
             this.Load += PaymentForm_Load;
         }
 
         // ========================================================
-        #region 1. KHU VỰC VẼ GIAO DIỆN (UI BUILDER)
+        // 1. KHU VỰC DATA BINDING & TÍNH TOÁN
         // ========================================================
-
-        private void BuildPaymentUI()
-        {
-            // Tăng chiều cao lên 560 để có chỗ cho ComboBox Phương thức TT
-            this.Size = new Size(480, 560);
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.BackColor = Color.White;
-
-            shadowForm = new Guna2ShadowForm(this);
-            shadowForm.ShadowColor = Color.Black;
-
-            // --- HEADER MÀU TÍM ---
-            Guna2Panel pnlHeader = new Guna2Panel { Dock = DockStyle.Top, Height = 60, FillColor = Color.FromArgb(88, 28, 230) };
-            pnlHeader.Controls.Add(new Label { Text = "XÁC NHẬN THANH TOÁN", Font = new Font("Segoe UI", 15F, FontStyle.Bold), ForeColor = Color.White, Location = new Point(20, 15), AutoSize = true, BackColor = Color.Transparent });
-            this.Controls.Add(pnlHeader);
-
-            int currentY = 80;
-
-            // --- KHU VỰC KHUYẾN MÃI ---
-            this.Controls.Add(new Label { Text = "Chương trình khuyến mãi áp dụng:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(25, currentY), AutoSize = true });
-            currentY += 25;
-
-            cboPromotion = new Guna2ComboBox { Location = new Point(25, currentY), Size = new Size(430, 36), BorderRadius = 5, Font = new Font("Segoe UI", 10F) };
-            this.Controls.Add(cboPromotion);
-            currentY += 55;
-
-            // --- KHU VỰC PHƯƠNG THỨC THANH TOÁN ---
-            this.Controls.Add(new Label { Text = "Phương thức thanh toán:", Font = new Font("Segoe UI", 10F, FontStyle.Bold), ForeColor = Color.Gray, Location = new Point(25, currentY), AutoSize = true });
-            currentY += 25;
-
-            cboPaymentMethod = new Guna2ComboBox { Location = new Point(25, currentY), Size = new Size(430, 36), BorderRadius = 5, Font = new Font("Segoe UI", 10F) };
-            cboPaymentMethod.Items.AddRange(new object[] { "Tiền mặt", "Chuyển khoản" });
-            cboPaymentMethod.SelectedIndex = 0; // Mặc định là Tiền mặt
-            this.Controls.Add(cboPaymentMethod);
-            currentY += 55;
-
-            // --- KHU VỰC TÍNH TIỀN ---
-            lblSubTotal = new Label { Text = "Tạm tính: 0 đ", Font = new Font("Segoe UI", 12F), ForeColor = Color.Black, Location = new Point(25, currentY), AutoSize = true };
-            this.Controls.Add(lblSubTotal);
-            currentY += 30;
-
-            lblDiscount = new Label { Text = "Giảm giá: 0 đ", Font = new Font("Segoe UI", 12F, FontStyle.Bold), ForeColor = Color.FromArgb(16, 185, 129), Location = new Point(25, currentY), AutoSize = true };
-            this.Controls.Add(lblDiscount);
-            currentY += 40;
-
-            this.Controls.Add(new Label { Text = "Khách cần trả:", Font = new Font("Segoe UI", 12F), ForeColor = Color.Gray, Location = new Point(25, currentY), AutoSize = true });
-            currentY += 25;
-
-            lblTotalAmount = new Label { Text = "0 đ", Font = new Font("Segoe UI", 28F, FontStyle.Bold), ForeColor = Color.FromArgb(255, 71, 87), Location = new Point(20, currentY), AutoSize = true };
-            this.Controls.Add(lblTotalAmount);
-            currentY += 70;
-
-            // --- 3 NÚT BẤM ---
-            btnCancel = new Guna2Button { Text = "Hủy bỏ", Size = new Size(100, 55), Location = new Point(25, currentY), BorderRadius = 8, FillColor = Color.FromArgb(235, 235, 235), ForeColor = Color.Black, Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnCancel.Click += BtnCancel_Click;
-            this.Controls.Add(btnCancel);
-
-            btnPrint = new Guna2Button { Text = "In Hóa Đơn", Size = new Size(130, 55), Location = new Point(135, currentY), BorderRadius = 8, FillColor = Color.FromArgb(46, 204, 113), ForeColor = Color.White, Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnPrint.Click += BtnPrint_Click;
-            this.Controls.Add(btnPrint);
-
-            btnConfirm = new Guna2Button { Text = "Xác nhận Thu tiền", Size = new Size(180, 55), Location = new Point(275, currentY), BorderRadius = 8, FillColor = Color.FromArgb(88, 28, 230), ForeColor = Color.White, Font = new Font("Segoe UI", 11F, FontStyle.Bold), Cursor = Cursors.Hand };
-            btnConfirm.Click += BtnConfirm_Click;
-            this.Controls.Add(btnConfirm);
-
-            // Viền bo góc
-            borderlessForm = new Guna2BorderlessForm { ContainerControl = this, BorderRadius = 15 };
-        }
-
-        #endregion
-
-        // ========================================================
-        #region 2. KHU VỰC CHỨC NĂNG & LOGIC
-        // ========================================================
-
         private void PaymentForm_Load(object sender, EventArgs e)
         {
             LoadSubTotalAmount();
@@ -214,17 +123,14 @@ namespace my_own_project.VIEW
             lblTotalAmount.Text = finalAmount.ToString("N0") + " đ";
         }
 
-        #endregion
-
         // ========================================================
-        #region 3. KHU VỰC SỰ KIỆN NÚT BẤM (EVENTS)
+        // 2. KHU VỰC SỰ KIỆN NÚT BẤM
         // ========================================================
+        public void BtnCancel_Click(object sender, EventArgs e) => this.Close();
 
-        private void BtnCancel_Click(object sender, EventArgs e) => this.Close();
+        public void BtnPrint_Click(object sender, EventArgs e) => printPreview.ShowDialog();
 
-        private void BtnPrint_Click(object sender, EventArgs e) => printPreview.ShowDialog();
-
-        private void BtnConfirm_Click(object sender, EventArgs e)
+        public void BtnConfirm_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Xác nhận khách đã thanh toán đủ tiền và dọn bàn?", "Chốt đơn", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
@@ -233,7 +139,7 @@ namespace my_own_project.VIEW
                     int selectedPromoID = Convert.ToInt32(cboPromotion.SelectedValue);
                     string promoSQL = (selectedPromoID == -1) ? "NULL" : selectedPromoID.ToString();
 
-                    // 1. Cập nhật Hóa đơn (Vẫn dùng SQL tạm, nếu bạn có OrderBLL thì nên chuyển luôn)
+                    // 1. Cập nhật Hóa đơn 
                     string updateOrderSQL = $@"UPDATE Orders 
                                        SET Status = 'Completed', 
                                            TotalAmount = {finalAmount}, 
@@ -242,21 +148,14 @@ namespace my_own_project.VIEW
                                        WHERE OrderID = {currentOrderID}";
                     my_own_project.DAL.DataHelper.ExecuteNonQuery(updateOrderSQL);
 
-                    // =========================================================
-                    // 🌟 CHỖ NÀY LÀ QUAN TRỌNG NHẤT: BẮT BUỘC PHẢI GỌI XUỐNG BLL
-                    // Tuyệt đối không dùng lệnh INSERT INTO Payment ở đây nữa!
-                    // =========================================================
+                    // 2. Lưu lịch sử giao dịch thanh toán
                     PaymentDTO newPayment = new PaymentDTO
                     {
                         OrderID = currentOrderID,
                         Method = cboPaymentMethod.Text,
                         Amount = finalAmount
-                        // TransactionID và Status cứ để trống, BLL sẽ tự lo!
                     };
-
-                    // Gọi đúng tên hàm CreatePayment của bạn trong BLL
                     my_own_project.BLL.PaymentBLL.CreatePayment(newPayment);
-                    // =========================================================
 
                     // 3. Giải phóng bàn
                     if (tableID > 0)
@@ -271,12 +170,14 @@ namespace my_own_project.VIEW
                 }
                 catch (Exception ex)
                 {
-                    // Nếu BLL báo lỗi (ví dụ Amount <= 0), nó sẽ văng ra cái MessageBox này
                     MessageBox.Show("Có lỗi xảy ra: " + ex.Message, "Lỗi Thanh Toán", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-        // --- IN HÓA ĐƠN ---
+
+        // ========================================================
+        // 3. KHU VỰC IN HÓA ĐƠN GDI+
+        // ========================================================
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -310,7 +211,6 @@ namespace my_own_project.VIEW
             g.DrawString("Ngày : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 20;
 
-            // In tên Thu ngân
             g.DrawString("Thu ngân: " + currentStaffName, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 25;
 
@@ -343,7 +243,6 @@ namespace my_own_project.VIEW
             g.DrawString(line, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 25;
 
-            // IN TỔNG TIỀN + KHUYẾN MÃI
             g.DrawString("Tạm tính:", fontBold, Brushes.Black, leftMargin, yPos);
             g.DrawString(subTotal.ToString("N0") + " đ", fontBold, Brushes.Black, rightMargin, yPos, rightAlign);
             yPos += 25;
@@ -359,14 +258,11 @@ namespace my_own_project.VIEW
             g.DrawString(finalAmount.ToString("N0") + " đ", fontHeader, Brushes.Black, rightMargin, yPos, rightAlign);
             yPos += 30;
 
-            // 🌟 CHÈN THÊM DÒNG IN PHƯƠNG THỨC THANH TOÁN Ở ĐÂY
             g.DrawString("Hình thức TT:", fontItem, Brushes.Black, leftMargin, yPos);
             g.DrawString(cboPaymentMethod.Text, fontItem, Brushes.Black, rightMargin, yPos, rightAlign);
-            yPos += 45; // Đẩy dòng "Cảm ơn" xuống dưới thêm một chút
+            yPos += 45;
 
             g.DrawString("Cảm ơn & Hẹn gặp lại!", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
         }
-
-        #endregion
     }
 }

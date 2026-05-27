@@ -296,6 +296,9 @@
     <EmbeddedResource Include="UCTable.resx">
       <DependentUpon>UCTable.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="VIEW\AccountForm.resx">
+      <DependentUpon>AccountForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="VIEW\ExportStockForm.resx">
       <DependentUpon>ExportStockForm.cs</DependentUpon>
     </EmbeddedResource>

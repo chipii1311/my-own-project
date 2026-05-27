@@ -11,32 +11,6 @@ namespace my_own_project.VIEW
 {
     public partial class HistoryForm : Form
     {
-        // ===================== DESIGN TOKENS =====================
-        private static readonly Color C_BG = Color.FromArgb(244, 245, 250);
-        private static readonly Color C_WHITE = Color.White;
-        private static readonly Color C_PURPLE = Color.FromArgb(88, 28, 230);
-        private static readonly Color C_PURPLE_MID = Color.FromArgb(109, 60, 240);
-        private static readonly Color C_PURPLE_SOFT = Color.FromArgb(237, 233, 254);
-        private static readonly Color C_GREEN = Color.FromArgb(22, 163, 74);
-        private static readonly Color C_GREEN_SOFT = Color.FromArgb(220, 252, 231);
-        private static readonly Color C_BLUE = Color.FromArgb(37, 99, 235);
-        private static readonly Color C_BLUE_SOFT = Color.FromArgb(219, 234, 254);
-        private static readonly Color C_AMBER = Color.FromArgb(217, 119, 6);
-        private static readonly Color C_AMBER_SOFT = Color.FromArgb(254, 243, 199);
-        private static readonly Color C_RED = Color.FromArgb(220, 38, 38);
-        private static readonly Color C_RED_SOFT = Color.FromArgb(254, 226, 226);
-        private static readonly Color C_TEXT = Color.FromArgb(17, 24, 39);
-        private static readonly Color C_MUTED = Color.FromArgb(107, 114, 128);
-        private static readonly Color C_BORDER = Color.FromArgb(229, 231, 235);
-
-        // ===================== CONTROLS =====================
-        private Guna2DateTimePicker dtpFrom, dtpTo;
-        private Guna2Button btnFilter, btnExport;
-        private Guna2Button btnToday, btn7Days, btn30Days, btnThisMonth;
-        private Label lblTotalRevenue, lblTotalOrders, lblAvgOrder;
-        private Label lblLastUpdated, lblRowCount, lblHint;
-        private DataGridView dgvHistory;
-
         // Print
         private PrintDocument printDoc;
         private PrintPreviewDialog printPreview;
@@ -48,16 +22,15 @@ namespace my_own_project.VIEW
         public HistoryForm()
         {
             InitializeComponent();
-            Controls.Clear();
-            BackColor = C_BG;
-            FormBorderStyle = FormBorderStyle.None;
-            Dock = DockStyle.Fill;
 
+            // Gọi hàm xây dựng giao diện từ file Designer
             BuildUI();
 
+            // Khởi tạo máy in
             printDoc = new PrintDocument();
             printDoc.DefaultPageSettings.PaperSize = new PaperSize("Thermal80mm", 315, 600);
             printDoc.PrintPage += PrintDoc_PrintPage;
+
             printPreview = new PrintPreviewDialog
             {
                 Document = printDoc,
@@ -66,213 +39,17 @@ namespace my_own_project.VIEW
             };
             printPreview.PrintPreviewControl.Zoom = 1.0;
 
-            Load += (s, e) => LoadData();
+            this.Load += (s, e) => LoadData();
         }
 
-        // ===================== BUILD UI =====================
-        private void BuildUI()
-        {
-            SuspendLayout();
-
-            Panel header = BuildHeader();
-            Panel filterBar = BuildFilterBar();
-            Panel statCards = BuildStatCards();
-            Panel gridHeader = BuildGridHeader();
-
-            // DataGridView
-            dgvHistory = new DataGridView
-            {
-                Dock = DockStyle.Fill,
-                AllowUserToAddRows = false,
-                ReadOnly = true,
-                BackgroundColor = C_WHITE,
-                BorderStyle = BorderStyle.None,
-                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
-                GridColor = Color.FromArgb(243, 244, 246),
-                RowHeadersVisible = false,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
-                Cursor = Cursors.Hand,
-                EnableHeadersVisualStyles = false,
-                ColumnHeadersHeight = 44,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
-                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None
-            };
-
-            // Header style
-            dgvHistory.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(248, 249, 252);
-            dgvHistory.ColumnHeadersDefaultCellStyle.ForeColor = C_MUTED;
-            dgvHistory.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
-            dgvHistory.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dgvHistory.ColumnHeadersDefaultCellStyle.Padding = new Padding(14, 0, 0, 0);
-
-            // Row style
-            dgvHistory.DefaultCellStyle.BackColor = C_WHITE;
-            dgvHistory.DefaultCellStyle.ForeColor = C_TEXT;
-            dgvHistory.DefaultCellStyle.Font = new Font("Segoe UI", 10.5F);
-            dgvHistory.DefaultCellStyle.SelectionBackColor = C_PURPLE_SOFT;
-            dgvHistory.DefaultCellStyle.SelectionForeColor = C_TEXT;
-            dgvHistory.DefaultCellStyle.Padding = new Padding(14, 0, 0, 0);
-            dgvHistory.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 250, 253);
-            dgvHistory.RowTemplate.Height = 48;
-
-            dgvHistory.CellDoubleClick += DgvHistory_CellDoubleClick;
-            dgvHistory.CellFormatting += DgvHistory_CellFormatting;
-
-            // Assemble (Fill first, then Top panels)
-            Controls.Add(dgvHistory);
-            Controls.Add(gridHeader);
-            Controls.Add(statCards);
-            Controls.Add(filterBar);
-            Controls.Add(header);
-
-            ResumeLayout(false);
-        }
-
-        // ── Header ─────────────────────────────────────────────────────────
-        private Panel BuildHeader()
-        {
-            Panel h = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 68,
-                BackColor = C_WHITE
-            };
-            h.Paint += PaintBottomBorder;
-
-            // Accent strip on the left
-            Panel accent = new Panel
-            {
-                Size = new Size(4, 68),
-                Location = new Point(0, 0),
-                BackColor = C_PURPLE
-            };
-
-            
-            Label title = new Label
-            {
-                Text = "Lịch sử doanh thu",
-                Font = new Font("Segoe UI", 15F, FontStyle.Bold),
-                ForeColor = C_TEXT,
-                AutoSize = true,
-                Location = new Point(52, 14)
-            };
-
-            lblLastUpdated = new Label
-            {
-                Text = "",
-                Font = new Font("Segoe UI", 8.5F),
-                ForeColor = C_MUTED,
-                AutoSize = true,
-                Location = new Point(53, 44)
-            };
-
-            h.Controls.AddRange(new Control[] { accent, title, lblLastUpdated });
-            return h;
-        }
-
-        // ── Filter bar ──────────────────────────────────────────────────────
-        private Panel BuildFilterBar()
-        {
-            Panel bar = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 62,
-                BackColor = C_WHITE,
-                Padding = new Padding(16, 12, 16, 0)
-            };
-            bar.Paint += PaintBottomBorder;
-
-            // Quick-range pill buttons
-            btnToday = QuickBtn("Hôm nay", 16, true);
-            btn7Days = QuickBtn("7 ngày", 106, false);
-            btn30Days = QuickBtn("30 ngày", 196, false);
-            btnThisMonth = QuickBtn("Tháng này", 286, false);
-
-            btnToday.Click += (s, e) => { dtpFrom.Value = DateTime.Today; dtpTo.Value = DateTime.Today; SetQuickActive(btnToday); LoadData(); };
-            btn7Days.Click += (s, e) => { dtpFrom.Value = DateTime.Today.AddDays(-6); dtpTo.Value = DateTime.Today; SetQuickActive(btn7Days); LoadData(); };
-            btn30Days.Click += (s, e) => { dtpFrom.Value = DateTime.Today.AddDays(-29); dtpTo.Value = DateTime.Today; SetQuickActive(btn30Days); LoadData(); };
-            btnThisMonth.Click += (s, e) => { dtpFrom.Value = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); dtpTo.Value = DateTime.Today; SetQuickActive(btnThisMonth); LoadData(); };
-
-            // Separator label
-            Label lblFrom = new Label { Text = "Từ:", Font = new Font("Segoe UI", 9.5F), ForeColor = C_MUTED, AutoSize = true, Location = new Point(392, 21) };
-
-            dtpFrom = new Guna2DateTimePicker
-            {
-                Size = new Size(126, 36),
-                Location = new Point(416, 12),
-                BorderRadius = 8,
-                Format = DateTimePickerFormat.Short,
-                Value = DateTime.Today.AddDays(-29),
-                BorderColor = C_BORDER,
-                FillColor = C_WHITE
-            };
-
-            Label lblTo = new Label { Text = "đến:", Font = new Font("Segoe UI", 9.5F), ForeColor = C_MUTED, AutoSize = true, Location = new Point(548, 21) };
-
-            dtpTo = new Guna2DateTimePicker
-            {
-                Size = new Size(126, 36),
-                Location = new Point(578, 12),
-                BorderRadius = 8,
-                Format = DateTimePickerFormat.Short,
-                Value = DateTime.Today,
-                BorderColor = C_BORDER,
-                FillColor = C_WHITE
-            };
-
-            btnFilter = new Guna2Button
-            {
-                Text = "🔍 Lọc",
-                Size = new Size(88, 36),
-                Location = new Point(710, 12),
-                BorderRadius = 8,
-                BorderThickness = 0,
-                FillColor = C_PURPLE,
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnFilter.Click += (s, e) => { SetQuickActive(null); LoadData(); };
-
-            btnExport = new Guna2Button
-            {
-                Text = "⬇ Xuất CSV",
-                Size = new Size(110, 36),
-                Location = new Point(806, 12),
-                BorderRadius = 8,
-                BorderThickness = 0,
-                FillColor = C_GREEN_SOFT,
-                ForeColor = C_GREEN,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btnExport.Click += BtnExport_Click;
-
-            bar.Controls.AddRange(new Control[]
-            {
-                btnToday, btn7Days, btn30Days, btnThisMonth,
-                lblFrom, dtpFrom, lblTo, dtpTo, btnFilter, btnExport
-            });
-
-            return bar;
-        }
-
-        private Guna2Button QuickBtn(string text, int x, bool active)
-        {
-            return new Guna2Button
-            {
-                Text = text,
-                Size = new Size(84, 36),
-                Location = new Point(x, 12),
-                BorderRadius = 18,
-                BorderThickness = 0,
-                FillColor = active ? C_PURPLE : C_PURPLE_SOFT,
-                ForeColor = active ? Color.White : C_PURPLE,
-                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-        }
+        // ════════════════════════════════════════════════════════
+        // SỰ KIỆN NÚT LỌC TIME
+        // ════════════════════════════════════════════════════════
+        public void BtnToday_Click(object sender, EventArgs e) { dtpFrom.Value = DateTime.Today; dtpTo.Value = DateTime.Today; SetQuickActive(btnToday); LoadData(); }
+        public void Btn7Days_Click(object sender, EventArgs e) { dtpFrom.Value = DateTime.Today.AddDays(-6); dtpTo.Value = DateTime.Today; SetQuickActive(btn7Days); LoadData(); }
+        public void Btn30Days_Click(object sender, EventArgs e) { dtpFrom.Value = DateTime.Today.AddDays(-29); dtpTo.Value = DateTime.Today; SetQuickActive(btn30Days); LoadData(); }
+        public void BtnThisMonth_Click(object sender, EventArgs e) { dtpFrom.Value = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); dtpTo.Value = DateTime.Today; SetQuickActive(btnThisMonth); LoadData(); }
+        public void BtnFilter_Click(object sender, EventArgs e) { SetQuickActive(null); LoadData(); }
 
         private void SetQuickActive(Guna2Button active)
         {
@@ -284,129 +61,8 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ── Stat cards ───────────────────────────────────────────────────────
-        private Panel BuildStatCards()
-        {
-            Panel row = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 100,
-                BackColor = C_BG,
-                Padding = new Padding(16, 12, 16, 0)
-            };
-
-            Panel c1 = StatCard("TỔNG DOANH THU", "💰", C_GREEN, C_GREEN_SOFT, out lblTotalRevenue);
-            Panel c2 = StatCard("SỐ ĐƠN HÀNG", "🧾", C_PURPLE, C_PURPLE_SOFT, out lblTotalOrders);
-            Panel c3 = StatCard("GIÁ TRỊ TB/ĐƠN", "📈", C_BLUE, C_BLUE_SOFT, out lblAvgOrder);
-
-            c1.Location = new Point(16, 12);
-            c2.Location = new Point(246, 12);
-            c3.Location = new Point(476, 12);
-
-            row.Controls.AddRange(new Control[] { c1, c2, c3 });
-            return row;
-        }
-
-        private Panel StatCard(string title, string icon, Color accent, Color softBg, out Label lblVal)
-        {
-            Panel card = new Panel
-            {
-                Size = new Size(220, 76),
-                BackColor = C_WHITE
-            };
-
-            // Rounded corners via Paint
-            card.Paint += (s, e) =>
-            {
-                var p = s as Panel;
-                using (var path = new System.Drawing.Drawing2D.GraphicsPath())
-                {
-                    int r = 12, w = p.Width - 1, h = p.Height - 1;
-                    path.AddArc(0, 0, r * 2, r * 2, 180, 90);
-                    path.AddArc(w - r * 2, 0, r * 2, r * 2, 270, 90);
-                    path.AddArc(w - r * 2, h - r * 2, r * 2, r * 2, 0, 90);
-                    path.AddArc(0, h - r * 2, r * 2, r * 2, 90, 90);
-                    path.CloseFigure();
-                    p.Region = new Region(path);
-                }
-            };
-
-            // Left accent bar
-            Panel bar = new Panel { Size = new Size(4, 76), Location = new Point(0, 0), BackColor = accent };
-
-            Label lTitle = new Label
-            {
-                Text = icon + "  " + title,
-                Font = new Font("Segoe UI", 8F, FontStyle.Bold),
-                ForeColor = C_MUTED,
-                Location = new Point(16, 10),
-                AutoSize = true
-            };
-
-            lblVal = new Label
-            {
-                Text = "—",
-                Font = new Font("Segoe UI", 17F, FontStyle.Bold),
-                ForeColor = accent,
-                Location = new Point(16, 32),
-                AutoSize = true
-            };
-
-            card.Controls.AddRange(new Control[] { bar, lTitle, lblVal });
-            return card;
-        }
-
-        // ── Grid header bar ─────────────────────────────────────────────────
-        private Panel BuildGridHeader()
-        {
-            Panel bar = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 46,
-                BackColor = C_WHITE,
-                Padding = new Padding(20, 0, 20, 0)
-            };
-            bar.Paint += PaintBottomBorder;
-
-            Label lblTitle = new Label
-            {
-                Text = "Danh sách hóa đơn",
-                Font = new Font("Segoe UI", 10.5F, FontStyle.Bold),
-                ForeColor = C_TEXT,
-                AutoSize = true,
-                Location = new Point(20, 14)
-            };
-
-            lblRowCount = new Label
-            {
-                Text = "",
-                Font = new Font("Segoe UI", 9F),
-                ForeColor = C_PURPLE,
-                AutoSize = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Right
-            };
-
-            lblHint = new Label
-            {
-                Text = "✦  Nhấp đúp vào hóa đơn để in lại",
-                Font = new Font("Segoe UI", 8.5F, FontStyle.Italic),
-                ForeColor = C_MUTED,
-                AutoSize = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Right
-            };
-
-            bar.Controls.AddRange(new Control[] { lblTitle, lblRowCount, lblHint });
-            bar.Resize += (s, e) =>
-            {
-                lblHint.Location = new Point(bar.Width - lblHint.Width - 20, 16);
-                lblRowCount.Location = new Point(lblHint.Left - lblRowCount.Width - 24, 16);
-            };
-
-            return bar;
-        }
-
         // ════════════════════════════════════════════════════════
-        // LOAD DATA (ĐÃ FIX LỖI TÀNG HÌNH & TÍNH SAI DOANH THU)
+        // LOAD DATA
         // ════════════════════════════════════════════════════════
         private void LoadData()
         {
@@ -415,7 +71,6 @@ namespace my_own_project.VIEW
                 string fromDate = dtpFrom.Value.ToString("yyyyMMdd");
                 string toDate = dtpTo.Value.ToString("yyyyMMdd");
 
-                // Lấy trực tiếp o.TotalAmount (Đã trừ khuyến mãi) thay vì SUM()
                 string query = $@"
                     SELECT 
                         o.OrderID                                        AS [Mã HĐ],
@@ -452,7 +107,6 @@ namespace my_own_project.VIEW
                 lblTotalOrders.Text = count + " đơn";
                 lblAvgOrder.Text = count > 0 ? (totalRev / count).ToString("N0") + " đ" : "—";
 
-                // Row count + timestamp
                 if (lblRowCount != null) lblRowCount.Text = count + " hóa đơn";
                 if (lblLastUpdated != null)
                     lblLastUpdated.Text = $"Cập nhật lúc {DateTime.Now:HH:mm:ss}  ·  "
@@ -465,10 +119,9 @@ namespace my_own_project.VIEW
         }
 
         // ════════════════════════════════════════════════════════
-        // CELL FORMATTING — màu trạng thái + loại đơn
+        // CELL FORMATTING
         // ════════════════════════════════════════════════════════
-        private void DgvHistory_CellFormatting(object sender,
-            DataGridViewCellFormattingEventArgs e)
+        private void DgvHistory_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
 
@@ -509,7 +162,7 @@ namespace my_own_project.VIEW
         }
 
         // ===================== EXPORT CSV =====================
-        private void BtnExport_Click(object sender, EventArgs e)
+        public void BtnExport_Click(object sender, EventArgs e)
         {
             if (dgvHistory.Rows.Count == 0)
             {
@@ -525,7 +178,6 @@ namespace my_own_project.VIEW
 
                 var sb = new System.Text.StringBuilder();
 
-                // Header row
                 for (int i = 0; i < dgvHistory.Columns.Count; i++)
                 {
                     sb.Append(dgvHistory.Columns[i].HeaderText);
@@ -533,7 +185,6 @@ namespace my_own_project.VIEW
                 }
                 sb.AppendLine();
 
-                // Data rows
                 foreach (DataGridViewRow row in dgvHistory.Rows)
                 {
                     for (int i = 0; i < dgvHistory.Columns.Count; i++)
@@ -556,13 +207,9 @@ namespace my_own_project.VIEW
             if (e.RowIndex < 0) return;
             try
             {
-                selectedOrderID = Convert.ToInt32(
-                    dgvHistory.Rows[e.RowIndex].Cells["Mã HĐ"].Value);
-                selectedTotal = Convert.ToDecimal(
-                    dgvHistory.Rows[e.RowIndex].Cells["Tổng tiền"].Value);
-                selectedDate = Convert.ToDateTime(
-                    dgvHistory.Rows[e.RowIndex].Cells["Ngày giờ"].Value)
-                    .ToString("dd/MM/yyyy HH:mm");
+                selectedOrderID = Convert.ToInt32(dgvHistory.Rows[e.RowIndex].Cells["Mã HĐ"].Value);
+                selectedTotal = Convert.ToDecimal(dgvHistory.Rows[e.RowIndex].Cells["Tổng tiền"].Value);
+                selectedDate = Convert.ToDateTime(dgvHistory.Rows[e.RowIndex].Cells["Ngày giờ"].Value).ToString("dd/MM/yyyy HH:mm");
 
                 printPreview.ShowDialog();
             }
@@ -573,7 +220,7 @@ namespace my_own_project.VIEW
         }
 
         // ════════════════════════════════════════════════════════
-        // PRINT PAGE (ĐÃ FIX: THÊM DÒNG KHUYẾN MÃI NẾU CÓ)
+        // PRINT PAGE
         // ════════════════════════════════════════════════════════
         private void PrintDoc_PrintPage(object sender, PrintPageEventArgs e)
         {
@@ -627,24 +274,15 @@ namespace my_own_project.VIEW
                 g.DrawString("-" + discount.ToString("N0") + " đ", fBold, Brushes.Black, rx, y, right); y += 25;
             }
 
-            // 🌟 IN RA TỔNG TIỀN VÀ PHƯƠNG THỨC THANH TOÁN
             g.DrawString("TỔNG CỘNG:", fHeader, Brushes.Black, lx, y);
             g.DrawString(selectedTotal.ToString("N0") + " đ", fHeader, Brushes.Black, rx, y, right);
-            y += 30; // Kéo khoảng cách gần lại một chút
+            y += 30;
 
             g.DrawString("Hình thức TT:", fItem, Brushes.Black, lx, y);
             g.DrawString(selectedPaymentMethod, fItem, Brushes.Black, rx, y, right);
             y += 45;
 
             g.DrawString("*** BẢN SAO (REPRINT) ***", fSub, Brushes.Black, new PointF(cx, y), center);
-        }
-
-        // ===================== PAINT HELPER =====================
-        private void PaintBottomBorder(object s, PaintEventArgs e)
-        {
-            var p = s as Panel;
-            using (Pen pen = new Pen(C_BORDER, 1))
-                e.Graphics.DrawLine(pen, 0, p.Height - 1, p.Width, p.Height - 1);
         }
     }
 }
