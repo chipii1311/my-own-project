@@ -24,11 +24,7 @@ namespace my_own_project.DesignForms
             this.currentStaffName = staffName;
 
             InitializeComponent();
-
-            // Gọi hàm dựng giao diện từ file Designer
             BuildUI();
-
-            // Tải dữ liệu ban đầu
             LoadDiningTables();
             LoadMenuItems();
         }
