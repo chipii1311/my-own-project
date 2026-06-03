@@ -48,7 +48,7 @@ namespace my_own_project.VIEW
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(480, 660);
+            this.ClientSize = new System.Drawing.Size(700, 850);
             this.Text = "NewPromotionAddForm";
         }
 
@@ -82,13 +82,33 @@ namespace my_own_project.VIEW
                 using (var p = new Pen(Color.White, 1.8f))
                 {
                     e.Graphics.DrawRectangle(p, 8, 10, 16, 16);
-                    e.Graphics.DrawLine(p, 8, 10, 18, 4); e.Graphics.DrawLine(p, 24, 10, 18, 4);
-                    e.Graphics.DrawLine(p, 28, 18, 33, 18); e.Graphics.DrawLine(p, 30, 15, 33, 18); e.Graphics.DrawLine(p, 30, 21, 33, 18);
+                    e.Graphics.DrawLine(p, 8, 10, 18, 4);
+                    e.Graphics.DrawLine(p, 24, 10, 18, 4);
+                    e.Graphics.DrawLine(p, 28, 18, 33, 18);
+                    e.Graphics.DrawLine(p, 30, 15, 33, 18);
+                    e.Graphics.DrawLine(p, 30, 21, 33, 18);
                 }
             };
 
-            lblTitle = new Label { Text = "THÊM KHUYẾN MÃI MỚI", Font = new Font("Segoe UI", 13F, FontStyle.Bold), ForeColor = C_WHITE, BackColor = Color.Transparent, AutoSize = true, Location = new Point(66, 14) };
-            var lblSub = new Label { Text = "Tạo chương trình khuyến mãi cho nhà hàng", Font = new Font("Segoe UI", 8.5F), ForeColor = Color.FromArgb(210, 255, 255, 255), BackColor = Color.Transparent, AutoSize = true, Location = new Point(68, 40) };
+            lblTitle = new Label
+            {
+                Text = "THÊM KHUYẾN MÃI MỚI",
+                Font = new Font("Segoe UI", 13F, FontStyle.Bold),
+                ForeColor = C_WHITE,
+                BackColor = Color.Transparent,
+                AutoSize = true,
+                Location = new Point(66, 14)
+            };
+
+            var lblSub = new Label
+            {
+                Text = "Tạo chương trình khuyến mãi cho nhà hàng",
+                Font = new Font("Segoe UI", 8.5F),
+                ForeColor = Color.FromArgb(210, 255, 255, 255),
+                BackColor = Color.Transparent,
+                AutoSize = true,
+                Location = new Point(68, 40)
+            };
 
             dragControl = new Guna2DragControl { TargetControl = pnlHeader };
             pnlHeader.Controls.AddRange(new Control[] { pnlIcon, lblTitle, lblSub });
@@ -97,20 +117,50 @@ namespace my_own_project.VIEW
             var pnlFooter = new Panel { Dock = DockStyle.Bottom, Height = 72, BackColor = C_WHITE };
             pnlFooter.Paint += (s, e) => e.Graphics.DrawLine(new Pen(C_BORDER), 0, 0, Width, 0);
 
-            btnCancel = new Guna2Button { Text = "Hủy bỏ", Size = new Size(110, 42), Location = new Point(230, 15), BorderRadius = 10, FillColor = Color.FromArgb(240, 239, 252), ForeColor = C_MUTED, BorderColor = C_BORDER, BorderThickness = 1, Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnCancel = new Guna2Button
+            {
+                Text = "Hủy bỏ",
+                Size = new Size(110, 42),
+                Location = new Point(430, 15),
+                BorderRadius = 10,
+                FillColor = Color.FromArgb(240, 239, 252),
+                ForeColor = C_MUTED,
+                BorderColor = C_BORDER,
+                BorderThickness = 1,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
             btnCancel.HoverState.FillColor = Color.FromArgb(228, 226, 248);
             btnCancel.Click += (s, e) => Close();
 
-            btnSave = new Guna2Button { Text = "  💾  TẠO MỚI", Size = new Size(148, 42), Location = new Point(352, 15), BorderRadius = 10, FillColor = C_GREEN, ForeColor = C_WHITE, Font = new Font("Segoe UI", 10F, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnSave = new Guna2Button
+            {
+                Text = "  💾  TẠO MỚI",
+                Size = new Size(148, 42),
+                Location = new Point(552, 15),
+                BorderRadius = 10,
+                FillColor = C_GREEN,
+                ForeColor = C_WHITE,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
             btnSave.HoverState.FillColor = C_GREEN_D;
-            btnSave.Click += BtnSave_Click; // Gọi hàm bên file .cs
+            btnSave.Click += BtnSave_Click;
 
             pnlFooter.Controls.AddRange(new Control[] { btnCancel, btnSave });
 
             // ── 3. Body (Lưới FlowLayoutPanel cuộn tự động) ──
-            flpForm = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true, Padding = new Padding(24, 16, 24, 8), BackColor = C_BG };
+            flpForm = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                AutoScroll = true,
+                Padding = new Padding(24, 16, 24, 8),
+                BackColor = C_BG
+            };
 
-            int fw = 432; // Chiều rộng các ô input
+            int fw = 652; // Chiều rộng các ô input (tăng từ 502)
 
             // Tên chương trình
             flpForm.Controls.Add(MakeLabel("Tên chương trình *"));
@@ -122,14 +172,40 @@ namespace my_own_project.VIEW
             cboApplyType = MakeCombo(fw);
             cboApplyType.Items.AddRange(new object[] { "Giảm trên tổng hóa đơn", "Giảm theo món ăn" });
             cboApplyType.SelectedIndex = 0;
-            cboApplyType.SelectedIndexChanged += CboApplyType_Changed; // Gọi hàm bên file .cs
+            cboApplyType.SelectedIndexChanged += CboApplyType_Changed;
             flpForm.Controls.Add(cboApplyType);
 
             // Panel chọn món (ẩn/hiện tự động)
             pnlItemPicker = new Panel { Width = fw, Height = 0, BackColor = Color.Transparent, Margin = new Padding(0) };
-            var lblPicker = new Label { Text = "Chọn món áp dụng *", Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = C_LABEL, Location = new Point(0, 0), AutoSize = true };
-            clbItems = new CheckedListBox { Location = new Point(0, 22), Size = new Size(fw, 130), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Segoe UI", 10F), BackColor = C_WHITE, ForeColor = C_TEXT, CheckOnClick = true, IntegralHeight = false };
-            var lblHint = new Label { Text = "ℹ  Tích chọn một hoặc nhiều món ăn muốn áp dụng.", Font = new Font("Segoe UI", 8F, FontStyle.Italic), ForeColor = C_MUTED, Location = new Point(0, 158), Size = new Size(fw, 20) };
+            var lblPicker = new Label
+            {
+                Text = "Chọn món áp dụng *",
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = C_LABEL,
+                Location = new Point(0, 0),
+                AutoSize = true
+            };
+
+            clbItems = new CheckedListBox
+            {
+                Location = new Point(0, 22),
+                Size = new Size(fw, 220),
+                BorderStyle = BorderStyle.FixedSingle,
+                Font = new Font("Segoe UI", 10F),
+                BackColor = C_WHITE,
+                ForeColor = C_TEXT,
+                CheckOnClick = true,
+                IntegralHeight = false
+            };
+
+            var lblHint = new Label
+            {
+                Text = "ℹ  Tích chọn một hoặc nhiều món ăn muốn áp dụng.",
+                Font = new Font("Segoe UI", 8F, FontStyle.Italic),
+                ForeColor = C_MUTED,
+                Location = new Point(0, 248),
+                Size = new Size(fw, 20)
+            };
 
             pnlItemPicker.Controls.AddRange(new Control[] { lblPicker, clbItems, lblHint });
             flpForm.Controls.Add(pnlItemPicker);
@@ -142,8 +218,22 @@ namespace my_own_project.VIEW
             // Ngày bắt đầu / kết thúc (Nằm song song 50/50)
             var pnlDates = new Panel { Width = fw, Height = 68, BackColor = Color.Transparent, Margin = new Padding(0, 0, 0, 10) };
             int hw = (fw - 12) / 2;
-            var lblS = new Label { Text = "Từ ngày *", Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = C_LABEL, Location = new Point(0, 0), AutoSize = true };
-            var lblE = new Label { Text = "Đến ngày *", Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = C_LABEL, Location = new Point(hw + 12, 0), AutoSize = true };
+            var lblS = new Label
+            {
+                Text = "Từ ngày *",
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = C_LABEL,
+                Location = new Point(0, 0),
+                AutoSize = true
+            };
+            var lblE = new Label
+            {
+                Text = "Đến ngày *",
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = C_LABEL,
+                Location = new Point(hw + 12, 0),
+                AutoSize = true
+            };
 
             dtpStart = MakeDatePicker(hw); dtpStart.Location = new Point(0, 22);
             dtpEnd = MakeDatePicker(hw); dtpEnd.Location = new Point(hw + 12, 22);

@@ -365,3 +365,4 @@ FodyWeavers.xsd
 #sql connect
 App.config
 /my own project/VIEW
+/my own project/VIEW/NewPromotionAddForm.Designer.cs

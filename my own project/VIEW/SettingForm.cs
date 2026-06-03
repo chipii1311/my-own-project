@@ -2,108 +2,342 @@
 using my_own_project.DAL;
 using System;
 using System.Data;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace my_own_project.VIEW
 {
     public partial class SettingForm : Form
     {
-        public static readonly Color C_BG = Color.FromArgb(244, 245, 250);
-        public static readonly Color C_WHITE = Color.White;
-        public static readonly Color C_PURPLE = Color.FromArgb(88, 28, 230);
-        public static readonly Color C_RED = Color.FromArgb(220, 38, 38);
+        private int _selectedTableID = -1;
+        private int _selectedCategoryID = -1;
+
         public SettingForm()
         {
             InitializeComponent();
-            BuildUI();
-            LoadCategoryData();
+            this.Load += (s, e) => { LoadTableData(); LoadCategoryData(); };
         }
 
-        // ========================================================
-        // 1. LOAD DATA
-        // ========================================================
+        // ===================== LOAD DATA =====================
+        private void LoadTableData()
+        {
+            try
+            {
+                string q = @"
+                    SELECT TableID     AS [TableID],
+                           TableNumber AS [Số bàn],
+                           Capacity    AS [Sức chứa],
+                           Status      AS [Trạng thái]
+                    FROM   DiningTable
+                    ORDER  BY TableNumber";
+
+                DataTable dt = DataHelper.ExecuteQuery(q);
+                dgvTables.DataSource = dt;
+
+                if (dgvTables.Columns.Contains("TableID"))
+                    dgvTables.Columns["TableID"].Visible = false;
+
+                if (lblTableCount != null)
+                    lblTableCount.Text = $"{dt.Rows.Count} bàn ăn";
+            }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi tải danh sách bàn: " + ex.Message);
+            }
+        }
+
         private void LoadCategoryData()
         {
             try
             {
-                DataTable dt = DataHelper.ExecuteQuery("SELECT CategoryID, CategoryName FROM Category WHERE IsActive = 1");
+                string q = @"
+                    SELECT CategoryID   AS [CategoryID],
+                           CategoryName AS [Tên danh mục]
+                    FROM   Category
+                    WHERE  IsActive = 1
+                    ORDER  BY CategoryID";
+
+                DataTable dt = DataHelper.ExecuteQuery(q);
                 dgvCategories.DataSource = dt;
+
                 if (dgvCategories.Columns.Contains("CategoryID"))
                     dgvCategories.Columns["CategoryID"].Visible = false;
             }
-            catch (Exception ex) { ShowError("Lỗi tải danh mục: " + ex.Message); }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi tải danh mục: " + ex.Message);
+            }
         }
 
-        // ========================================================
-        // 2. LOGIC CRUD
-        // ========================================================
-        private void BtnSaveCat_Click(object sender, EventArgs e)
+        // ===================== CELL FORMATTING =====================
+        private void DgvTables_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            string name = txtCategoryName.Text.Trim();
-            if (string.IsNullOrEmpty(name)) { ShowWarn("Vui lòng nhập tên danh mục!"); return; }
+            if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
+            if (dgvTables.Columns[e.ColumnIndex].Name != "Trạng thái") return;
+
+            string v = e.Value?.ToString() ?? "";
+            e.CellStyle.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+
+            switch (v)
+            {
+                case "Trống":
+                    e.CellStyle.ForeColor = System.Drawing.Color.FromArgb(22, 163, 74);
+                    e.CellStyle.BackColor = System.Drawing.Color.FromArgb(220, 252, 231);
+                    break;
+                case "Có khách":
+                    e.CellStyle.ForeColor = System.Drawing.Color.FromArgb(109, 60, 240);
+                    e.CellStyle.BackColor = System.Drawing.Color.FromArgb(237, 233, 254);
+                    break;
+                case "Đặt trước":
+                    e.CellStyle.ForeColor = System.Drawing.Color.FromArgb(217, 119, 6);
+                    e.CellStyle.BackColor = System.Drawing.Color.FromArgb(254, 243, 199);
+                    break;
+            }
+        }
+
+        // ===================== EVENTS — TABLES =====================
+        private void DgvTables_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            var row = dgvTables.Rows[e.RowIndex];
+            _selectedTableID = Convert.ToInt32(row.Cells["TableID"].Value);
+            txtTableNumber.Text = row.Cells["Số bàn"].Value?.ToString() ?? "";
+            txtTableCapacity.Text = row.Cells["Sức chứa"].Value?.ToString() ?? "";
+            cboTableStatus.Text = row.Cells["Trạng thái"].Value?.ToString() ?? "Trống";
+
+            lblTableHint.Text = $"✏️ Đang chỉnh sửa bàn số {txtTableNumber.Text}";
+            lblTableHint.ForeColor = System.Drawing.Color.FromArgb(88, 28, 230);
+
+            btnSaveTable.Enabled = true;
+            btnDeleteTable.Enabled = true;
+        }
+
+        private void BtnAddTable_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtTableNumber.Text))
+            {
+                ShowWarn("Vui lòng nhập số bàn!");
+                return;
+            }
+
+            if (!int.TryParse(txtTableNumber.Text, out int num))
+            {
+                ShowWarn("Số bàn chỉ được nhập số (VD: 1, 2, 3...)");
+                return;
+            }
+
+            int cap = 4;
+            if (!string.IsNullOrWhiteSpace(txtTableCapacity.Text))
+                int.TryParse(txtTableCapacity.Text, out cap);
 
             try
             {
-                if (string.IsNullOrEmpty(txtCategoryID.Text))
-                {
-                    DataHelper.ExecuteNonQuery($"INSERT INTO Category (CategoryName, IsActive) VALUES (N'{name}', 1)");
-                    ShowInfo("✔ Thêm mới thành công!");
-                }
-                else
-                {
-                    DataHelper.ExecuteNonQuery($"UPDATE Category SET CategoryName = N'{name}' WHERE CategoryID = {txtCategoryID.Text}");
-                    ShowInfo("✔ Cập nhật thành công!");
-                }
-                ClearCatForm();
-                LoadCategoryData();
+                string q = $@"INSERT INTO DiningTable (TableNumber, Capacity, Status)
+                              VALUES ({num}, {cap}, N'{cboTableStatus.Text}')";
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔️ Thêm bàn thành công!");
+                ClearTableForm();
+                LoadTableData();
             }
-            catch (Exception ex) { ShowError("Lỗi lưu: " + ex.Message); }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi thêm bàn: " + ex.Message);
+            }
         }
 
-        private void BtnDeleteCat_Click(object sender, EventArgs e)
+        private void BtnSaveTable_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Bạn có muốn xóa danh mục này?", "Xác nhận", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
+            if (_selectedTableID == -1)
+            {
+                ShowWarn("Vui lòng chọn bàn cần sửa!");
+                return;
+            }
+
+            if (!int.TryParse(txtTableNumber.Text, out int num))
+            {
+                ShowWarn("Số bàn chỉ được nhập số!");
+                return;
+            }
+
+            int cap = 4;
+            if (!string.IsNullOrWhiteSpace(txtTableCapacity.Text))
+                int.TryParse(txtTableCapacity.Text, out cap);
+
             try
             {
-                DataHelper.ExecuteNonQuery($"UPDATE Category SET IsActive = 0 WHERE CategoryID = {txtCategoryID.Text}");
-                ShowInfo("✔ Đã xóa thành công!");
-                ClearCatForm();
-                LoadCategoryData();
+                string q = $@"UPDATE DiningTable
+                              SET TableNumber = {num},
+                                  Capacity    = {cap},
+                                  Status      = N'{cboTableStatus.Text}'
+                              WHERE TableID = {_selectedTableID}";
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔️ Cập nhật bàn thành công!");
+                ClearTableForm();
+                LoadTableData();
             }
-            catch (Exception ex) { ShowError("Lỗi xóa: " + ex.Message); }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi cập nhật: " + ex.Message);
+            }
         }
 
-        // ========================================================
-        // 3. UI HELPERS
-        // ========================================================
+        private void BtnDeleteTable_Click(object sender, EventArgs e)
+        {
+            if (_selectedTableID == -1)
+            {
+                ShowWarn("Vui lòng chọn bàn cần xóa!");
+                return;
+            }
+
+            if (MessageBox.Show(
+                    $"Xóa bàn số {txtTableNumber.Text}? Hành động không thể hoàn tác.",
+                    "Xác nhận xóa",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            try
+            {
+                DataHelper.ExecuteNonQuery($"DELETE FROM DiningTable WHERE TableID = {_selectedTableID}");
+                ShowInfo("✔️ Xóa bàn thành công!");
+                ClearTableForm();
+                LoadTableData();
+            }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi xóa bàn: " + ex.Message);
+            }
+        }
+
+        private void ClearTableForm()
+        {
+            _selectedTableID = -1;
+            txtTableNumber.Clear();
+            txtTableCapacity.Clear();
+            cboTableStatus.SelectedIndex = 0;
+
+            lblTableHint.Text = "✦️ Nhấp vào bàn ở danh sách để chỉnh sửa";
+            lblTableHint.ForeColor = System.Drawing.Color.FromArgb(107, 114, 128);
+
+            btnSaveTable.Enabled = false;
+            btnDeleteTable.Enabled = false;
+            dgvTables.ClearSelection();
+        }
+
+        // ===================== EVENTS — CATEGORIES =====================
         private void DgvCategories_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = dgvCategories.Rows[e.RowIndex];
-                txtCategoryID.Text = row.Cells["CategoryID"].Value.ToString();
-                txtCategoryName.Text = row.Cells["CategoryName"].Value.ToString();
+            if (e.RowIndex < 0) return;
 
-                btnSaveCat.Enabled = true;
-                btnDeleteCat.Enabled = true;
-                btnSaveCat.FillColor = C_PURPLE;
-                btnDeleteCat.FillColor = C_RED;
+            var row = dgvCategories.Rows[e.RowIndex];
+            _selectedCategoryID = Convert.ToInt32(row.Cells["CategoryID"].Value);
+            txtCategoryName.Text = row.Cells["Tên danh mục"].Value?.ToString() ?? "";
+
+            lblCatHint.Text = $"✏️ Đang chỉnh sửa: {txtCategoryName.Text}";
+            lblCatHint.ForeColor = System.Drawing.Color.FromArgb(88, 28, 230);
+
+            btnSaveCat.Enabled = true;
+            btnDeleteCat.Enabled = true;
+        }
+
+        private void BtnAddCategory_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtCategoryName.Text))
+            {
+                ShowWarn("Vui lòng nhập tên danh mục!");
+                return;
+            }
+
+            try
+            {
+                string q = $"INSERT INTO Category (CategoryName, IsActive) VALUES (N'{EscapeSQL(txtCategoryName.Text.Trim())}', 1)";
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔️ Thêm danh mục thành công!");
+                ClearCatForm();
+                LoadCategoryData();
+            }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi thêm danh mục: " + ex.Message);
+            }
+        }
+
+        private void BtnEditCategory_Click(object sender, EventArgs e)
+        {
+            if (_selectedCategoryID == -1)
+            {
+                ShowWarn("Vui lòng chọn danh mục cần sửa!");
+                return;
+            }
+
+            try
+            {
+                string q = $"UPDATE Category SET CategoryName = N'{EscapeSQL(txtCategoryName.Text.Trim())}' WHERE CategoryID = {_selectedCategoryID}";
+                DataHelper.ExecuteNonQuery(q);
+                ShowInfo("✔️ Cập nhật thành công!");
+                ClearCatForm();
+                LoadCategoryData();
+            }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi cập nhật: " + ex.Message);
+            }
+        }
+
+        private void BtnDeleteCategory_Click(object sender, EventArgs e)
+        {
+            if (_selectedCategoryID == -1)
+            {
+                ShowWarn("Vui lòng chọn danh mục cần xóa!");
+                return;
+            }
+
+            if (MessageBox.Show(
+                    $"Ẩn danh mục \"{txtCategoryName.Text}\"?",
+                    "Xác nhận",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            try
+            {
+                DataHelper.ExecuteNonQuery($"UPDATE Category SET IsActive = 0 WHERE CategoryID = {_selectedCategoryID}");
+                ShowInfo("✔️ Xóa danh mục thành công!");
+                ClearCatForm();
+                LoadCategoryData();
+            }
+            catch (Exception ex)
+            {
+                ShowError("Lỗi xóa danh mục: " + ex.Message);
             }
         }
 
         private void ClearCatForm()
         {
-            txtCategoryID.Text = "";
+            _selectedCategoryID = -1;
             txtCategoryName.Clear();
+
+            lblCatHint.Text = "✦️ Nhấp vào danh mục ở danh sách để chỉnh sửa";
+            lblCatHint.ForeColor = System.Drawing.Color.FromArgb(107, 114, 128);
+
             btnSaveCat.Enabled = false;
             btnDeleteCat.Enabled = false;
-            btnSaveCat.FillColor = Color.FromArgb(210, 210, 218);
-            btnDeleteCat.FillColor = Color.FromArgb(210, 210, 218);
+            dgvCategories.ClearSelection();
         }
 
-        private void ShowInfo(string msg) => MessageBox.Show(msg, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        private void ShowWarn(string msg) => MessageBox.Show(msg, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        private void ShowError(string msg) => MessageBox.Show(msg, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        // ===================== HELPER FUNCTIONS =====================
+        private string EscapeSQL(string input)
+        {
+            return input.Replace("'", "''");
+        }
+
+        private void ShowInfo(string msg)
+            => MessageBox.Show(msg, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        private void ShowWarn(string msg)
+            => MessageBox.Show(msg, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+        private void ShowError(string msg)
+            => MessageBox.Show(msg, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

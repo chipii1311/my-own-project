@@ -17,7 +17,7 @@ namespace my_own_project.VIEW
             _promoID = promoID;
 
             // Khởi tạo các thông số Form cơ bản
-            this.Size = new Size(480, 660);
+            this.Size = new Size(800, 850);
             this.StartPosition = FormStartPosition.CenterParent;
             this.FormBorderStyle = FormBorderStyle.None;
             this.BackColor = Color.White;
@@ -47,7 +47,7 @@ namespace my_own_project.VIEW
         public void CboApplyType_Changed(object sender, EventArgs e)
         {
             bool showPicker = cboApplyType.SelectedIndex == 1; // 1 = Giảm theo món ăn
-            pnlItemPicker.Height = showPicker ? 184 : 0;       // expand / collapse
+            pnlItemPicker.Height = showPicker ? 280 : 0;       // expand / collapse
             flpForm.PerformLayout();
         }
 
@@ -58,16 +58,24 @@ namespace my_own_project.VIEW
                 string query = @"SELECT MenuItemID, ItemName FROM MenuItem ORDER BY ItemName";
                 DataTable dt = my_own_project.DAL.DataHelper.ExecuteQuery(query);
 
-                clbItems.DataSource = null;
                 clbItems.Items.Clear();
 
-                clbItems.DisplayMember = "ItemName";
-                clbItems.ValueMember = "MenuItemID";
-                clbItems.DataSource = dt;
+                // Thêm từng item với đối tượng MenuItem_Item thay vì DataRowView
+                foreach (DataRow row in dt.Rows)
+                {
+                    int menuItemID = Convert.ToInt32(row["MenuItemID"]);
+                    string itemName = row["ItemName"].ToString();
+
+                    clbItems.Items.Add(new MenuItem_Item
+                    {
+                        ID = menuItemID,
+                        Name = itemName
+                    }, false);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Lỗi tải danh sách món: " + ex.Message);
             }
         }
 
@@ -100,13 +108,15 @@ namespace my_own_project.VIEW
 
                     for (int i = 0; i < clbItems.Items.Count; i++)
                     {
-                        DataRowView drv = (DataRowView)clbItems.Items[i];
-                        int id = Convert.ToInt32(drv["MenuItemID"]);
-                        clbItems.SetItemChecked(i, selectedIDs.Contains(id));
+                        MenuItem_Item item = (MenuItem_Item)clbItems.Items[i];
+                        clbItems.SetItemChecked(i, selectedIDs.Contains(item.ID));
                     }
                 }
             }
-            catch (Exception ex) { MessageBox.Show("Lỗi tải dữ liệu: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải dữ liệu: " + ex.Message);
+            }
         }
 
         // ========================================================
@@ -116,13 +126,22 @@ namespace my_own_project.VIEW
         {
             // Validate (Xác thực dữ liệu)
             if (string.IsNullOrWhiteSpace(txtPromoName.Text))
-            { MessageBox.Show("Vui lòng nhập Tên chương trình!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+            {
+                MessageBox.Show("Vui lòng nhập Tên chương trình!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             if (!decimal.TryParse(txtDiscount.Text.Trim(), out decimal discount) || discount <= 0 || discount > 100)
-            { MessageBox.Show("Phần trăm giảm phải là số từ 1–100!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            {
+                MessageBox.Show("Phần trăm giảm phải là số từ 1–100!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (dtpStart.Value >= dtpEnd.Value)
-            { MessageBox.Show("Ngày kết thúc phải sau ngày bắt đầu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+            {
+                MessageBox.Show("Ngày kết thúc phải sau ngày bắt đầu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             int applyType = cboApplyType.SelectedIndex; // 0 hoặc 1
 
@@ -130,11 +149,14 @@ namespace my_own_project.VIEW
             List<int> selectedMenuItemIDs = new List<int>();
             if (applyType == 1)
             {
-                foreach (DataRowView drv in clbItems.CheckedItems)
-                    selectedMenuItemIDs.Add(Convert.ToInt32(drv["MenuItemID"]));
+                foreach (MenuItem_Item item in clbItems.CheckedItems)
+                    selectedMenuItemIDs.Add(item.ID);
 
                 if (selectedMenuItemIDs.Count == 0)
-                { MessageBox.Show("Vui lòng chọn ít nhất một món ăn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                {
+                    MessageBox.Show("Vui lòng chọn ít nhất một món ăn!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
             }
 
             // Thực thi DB
@@ -184,7 +206,24 @@ namespace my_own_project.VIEW
                 DialogResult = DialogResult.OK;
                 Close();
             }
-            catch (Exception ex) { MessageBox.Show("Lỗi lưu dữ liệu: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi lưu dữ liệu: " + ex.Message);
+            }
+        }
+    }
+
+    // ========================================================
+    // CLASS HỖ TRỢ: Để hiển thị tên món thay vì DataRowView
+    // ========================================================
+    public class MenuItem_Item
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+
+        public override string ToString()
+        {
+            return Name; // Hiển thị tên món trong CheckedListBox
         }
     }
 }
