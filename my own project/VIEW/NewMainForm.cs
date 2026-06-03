@@ -12,6 +12,7 @@ namespace my_own_project.VIEW
         public string UserRole { get; set; } = "Quản lý";
         public string LoggedInUserName { get; set; } = "";
         public int LoggedInUserID { get; set; } = 0;
+        
 
         public NewMainForm()
         {

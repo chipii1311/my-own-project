@@ -152,6 +152,35 @@ namespace my_own_project.DAL
                 throw;
             }
         }
+        /// <summary>
+        /// Thực thi câu lệnh SQL thuần (Text) trả về giá trị scalar (đếm số lượng, lấy 1 cột dữ liệu)
+        /// </summary>
+        public static object ExecuteScalar(string query)
+        {
+            try
+            {
+                using (SqlConnection conn = GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.CommandTimeout = 30;
+                        conn.Open();
+                        return cmd.ExecuteScalar();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL Error in ExecuteScalar: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in ExecuteScalar: {ex.Message}");
+                throw;
+            }
+        }
 
         public static int ExecuteNonQuery(string query)
         {

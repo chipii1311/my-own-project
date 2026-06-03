@@ -38,6 +38,7 @@ namespace my_own_project.VIEW
             this.currentStaffName = staffName;
 
             // Gọi hàm dựng giao diện (từ file Designer)
+            // Lưu ý: Đảm bảo bạn có hàm BuildUI() trong file Designer hoặc định nghĩa ở đâu đó
             BuildUI();
 
             // Khởi tạo máy in khổ 80mm
@@ -75,7 +76,10 @@ namespace my_own_project.VIEW
                     subTotal += Convert.ToDecimal(row["SubTotal"]);
                 }
             }
-            catch (Exception ex) { MessageBox.Show("Lỗi tải thông tin hóa đơn: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải thông tin hóa đơn: " + ex.Message);
+            }
         }
 
         private void LoadActivePromotions()
@@ -102,7 +106,10 @@ namespace my_own_project.VIEW
 
                 cboPromotion.SelectedIndexChanged += (s, e) => CalculateFinalAmount();
             }
-            catch (Exception ex) { MessageBox.Show("Lỗi tải mã khuyến mãi: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải mã khuyến mãi: " + ex.Message);
+            }
         }
 
         private void CalculateFinalAmount()
@@ -139,12 +146,28 @@ namespace my_own_project.VIEW
                     int selectedPromoID = Convert.ToInt32(cboPromotion.SelectedValue);
                     string promoSQL = (selectedPromoID == -1) ? "NULL" : selectedPromoID.ToString();
 
-                    // 1. Cập nhật Hóa đơn 
+                    // FIX: Kiểm tra StaffID có thực sự tồn tại trong bảng Staff không
+                    // Bằng cách dùng hàm ExecuteScalar vừa được thêm vào DataHelper
+                    string staffIDSQL = "NULL";
+                    if (currentStaffID > 0)
+                    {
+                        string checkSQL = $"SELECT COUNT(1) FROM dbo.Staff WHERE StaffID = {currentStaffID}";
+                        object result = my_own_project.DAL.DataHelper.ExecuteScalar(checkSQL);
+                        bool staffExists = (result != null && Convert.ToInt32(result) > 0);
+
+                        if (staffExists)
+                        {
+                            staffIDSQL = currentStaffID.ToString();
+                        }
+                        // Nếu không tồn tại (admin), staffIDSQL vẫn giữ nguyên là "NULL" để tránh lỗi Foreign Key
+                    }
+
+                    // 1. Cập nhật Hóa đơn
                     string updateOrderSQL = $@"UPDATE Orders 
                                        SET Status = 'Completed', 
                                            TotalAmount = {finalAmount}, 
                                            PromotionID = {promoSQL},
-                                           StaffID = {currentStaffID} 
+                                           StaffID = {staffIDSQL} 
                                        WHERE OrderID = {currentOrderID}";
                     my_own_project.DAL.DataHelper.ExecuteNonQuery(updateOrderSQL);
 

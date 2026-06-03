@@ -3,6 +3,8 @@ using my_own_project.DTO;
 using my_own_project.VIEW; // Phải using cái này để gọi NewMainForm
 using System;
 using System.Windows.Forms;
+using my_own_project.COMMON;
+using System.Data.SqlClient;
 
 namespace my_own_project.DesignForms
 {
