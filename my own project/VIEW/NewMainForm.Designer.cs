@@ -18,6 +18,9 @@ namespace my_own_project.VIEW
         private Guna2Button btnPOS, btnHistory, btnProduct, btnDashboard,
             btnSettings, btnStaff, btnInventory, btnRecipe, btnPromotion, btnAccount;
 
+        // 👉 THÊM MỚI: Khai báo đối tượng ToolTip
+        private ToolTip sidebarToolTip;
+
         // Bảng màu
         private Color colorMainBG = Color.FromArgb(245, 246, 250);
         private Color colorPurple = Color.FromArgb(88, 28, 230);
@@ -57,6 +60,14 @@ namespace my_own_project.VIEW
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Maximized;
             this.BackColor = colorMainBG;
+
+            // 👉 THÊM MỚI: Khởi tạo và cấu hình ToolTip
+            sidebarToolTip = new ToolTip();
+            sidebarToolTip.InitialDelay = 800;  // Chờ 0.8 giây trước khi hiện (mượt hơn 1s)
+            sidebarToolTip.ReshowDelay = 100;   // Đổi sang nút khác hiện nhanh hơn
+            sidebarToolTip.AutoPopDelay = 5000; // Tự động ẩn sau 5 giây
+            sidebarToolTip.UseAnimation = true; // Bật hiệu ứng mờ dần cho đẹp
+            sidebarToolTip.UseFading = true;
 
             dragSidebar = new Guna2DragControl();
             dragTopBar = new Guna2DragControl();
@@ -137,17 +148,19 @@ namespace my_own_project.VIEW
             pnlSidebar.SendToBack();
             pnlBody.BringToFront();
 
-            // Khởi tạo các nút
-            btnPOS = AddSidebarButton("🛒", 120);
-            btnHistory = AddSidebarButton("🧾", 190);
-            btnProduct = AddSidebarButton("🍔", 260);
-            btnDashboard = AddSidebarButton("📊", 330);
-            btnSettings = AddSidebarButton("⚙️", 400);
-            btnStaff = AddSidebarButton("👥", 470);
-            btnInventory = AddSidebarButton("📦", 535);
-            btnRecipe = AddSidebarButton("🧪", 595);
-            btnPromotion = AddSidebarButton("🎁", 655);
-            btnAccount = AddSidebarButton("👤", 0);
+            // 👉 SỬA LẠI: Truyền thêm dòng chữ giải thích vào hàm AddSidebarButton
+            btnPOS = AddSidebarButton("🛒", "Bán hàng (POS)", 120);
+            btnHistory = AddSidebarButton("🧾", "Lịch sử hóa đơn", 190);
+            btnProduct = AddSidebarButton("🍔", "Quản lý thực đơn", 260);
+            btnDashboard = AddSidebarButton("📊", "Báo cáo thống kê", 330);
+            btnSettings = AddSidebarButton("⚙️", "Cài đặt hệ thống", 400);
+            btnStaff = AddSidebarButton("👥", "Quản lý nhân viên", 470);
+            btnInventory = AddSidebarButton("📦", "Quản lý kho", 535);
+            btnRecipe = AddSidebarButton("🧪", "Công thức món ăn", 595);
+            btnPromotion = AddSidebarButton("🎁", "Khuyến mãi", 655);
+
+            // Tài khoản bạn đang để Y = 0 (tùy vị trí bạn neo), tôi vẫn giữ nguyên tham số của bạn
+            btnAccount = AddSidebarButton("👤", "Thông tin tài khoản", 0);
 
             // Gán sự kiện cho các nút gọi sang các hàm bên file .cs
             btnPOS.Click += BtnPOS_Click;
@@ -169,9 +182,10 @@ namespace my_own_project.VIEW
             });
         }
 
-        private Guna2Button AddSidebarButton(string icon, int y)
+        // 👉 SỬA LẠI: Thêm tham số 'tooltipText' vào hàm
+        private Guna2Button AddSidebarButton(string icon, string tooltipText, int y)
         {
-            return new Guna2Button
+            Guna2Button btn = new Guna2Button
             {
                 Size = new Size(50, 50),
                 Location = new Point(20, y),
@@ -189,6 +203,11 @@ namespace my_own_project.VIEW
                     ForeColor = colorPurple
                 }
             };
+
+            // 👉 THÊM MỚI: Gắn dòng text vào ToolTip của cái nút này
+            sidebarToolTip.SetToolTip(btn, tooltipText);
+
+            return btn;
         }
     }
 }
