@@ -72,9 +72,10 @@ namespace my_own_project.DesignForms
                 if (cboTable != null)
                 {
                     cboTable.SelectedIndexChanged -= CboTable_SelectedIndexChanged;
-                    cboTable.DataSource = dt;
+                    
                     cboTable.DisplayMember = "TableDisplay";
                     cboTable.ValueMember = "TableID";
+                    cboTable.DataSource = dt;
                     if (currentSelectedValue != null && currentSelectedValue != DBNull.Value)
                         cboTable.SelectedValue = currentSelectedValue;
                     else
