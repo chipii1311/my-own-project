@@ -72,7 +72,14 @@ namespace my_own_project.DAL
         {
             try
             {
-                return DataHelper.ExecuteSPGetTable($"EXEC sp_Category_GetByID {categoryID}");
+                // Dùng SqlParameter để đảm bảo an toàn
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@CategoryID", categoryID)
+                };
+
+                // Gọi Stored Procedure đúng cách thông qua DataHelper
+                return DataHelper.ExecuteSPGetTable("sp_Category_GetByID", parameters);
             }
             catch (Exception ex)
             {
