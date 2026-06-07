@@ -60,8 +60,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                var p = Params(DateTime.Today, DateTime.Today.AddDays(1).AddSeconds(-1));
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetSummary", p);
+                var dt = DashboardBLL.GetSummary(DateTime.Today, DateTime.Today.AddDays(1).AddSeconds(-1));
 
                 decimal rev = 0; int ord = 0;
                 if (dt?.Rows.Count > 0)
@@ -116,8 +115,7 @@ namespace my_own_project.VIEW
             lblRevMsg.Text = "Đang tải..."; lblRevMsg.Visible = true;
             try
             {
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetRevenueByDate",
-                    Params(DateTime.Today.AddDays(-6), DateTime.Today.AddDays(1)));
+                var dt = DashboardBLL.GetRevenueChart(DateTime.Today.AddDays(-6), DateTime.Today.AddDays(1));
 
                 chartRev.Series["rev"].Points.Clear();
 
@@ -157,8 +155,7 @@ namespace my_own_project.VIEW
             lblCatMsg.Text = "Đang tải..."; lblCatMsg.Visible = true;
             try
             {
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetCategoryRevenueShare",
-                    Params(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1)));
+                var dt = DashboardBLL.GetCategoryRevenueShare(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1));
 
                 chartCat.Series["cat"].Points.Clear();
 
@@ -209,17 +206,7 @@ namespace my_own_project.VIEW
             flowTop5?.Controls.Clear();
             try
             {
-                DataTable dt;
-                try
-                {
-                    dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetTop5Products",
-                        Params(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1)));
-                }
-                catch
-                {
-                    dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetTopProducts",
-                        Params(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1)));
-                }
+                DataTable dt = DashboardBLL.GetTop5Products(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1));
 
                 if (dt == null || dt.Rows.Count == 0)
                 {
@@ -269,8 +256,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetRecentOrders",
-                    Params(DateTime.Today.AddDays(-15), DateTime.Today.AddDays(1)));
+                var dt = DashboardBLL.GetRecentOrders(DateTime.Today.AddDays(-15), DateTime.Today.AddDays(1));
                 if (dt == null) return;
 
                 foreach (var c in new[] { "Product", "Notes", "RestaurantID" })
