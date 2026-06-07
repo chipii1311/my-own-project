@@ -19,12 +19,10 @@ namespace my_own_project.VIEW
         private int currentStaffID;
         private string currentStaffName;
 
-        // Biến phục vụ tính toán tiền nong
         private decimal subTotal = 0;
         private decimal discountAmount = 0;
         private decimal finalAmount = 0;
 
-        // Đồ nghề in ấn
         private PrintDocument printDoc;
         private PrintPreviewDialog printPreview;
 
@@ -39,7 +37,6 @@ namespace my_own_project.VIEW
 
             BuildUI();
 
-            // Khởi tạo máy in khổ 80mm
             printDoc = new PrintDocument();
             printDoc.DefaultPageSettings.PaperSize = new PaperSize("Thermal80mm", 315, 600);
             printDoc.PrintPage += PrintDoc_PrintPage;
@@ -70,9 +67,7 @@ namespace my_own_project.VIEW
                 DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
                 subTotal = 0;
                 foreach (DataRow row in dtDetails.Rows)
-                {
                     subTotal += Convert.ToDecimal(row["SubTotal"]);
-                }
             }
             catch (Exception ex)
             {
@@ -84,35 +79,17 @@ namespace my_own_project.VIEW
         {
             try
             {
-                // [ĐÃ SỬA LỖI]: Thêm ApplyType và logic kiểm tra món ăn có trong đơn hàng không (EXISTS)
-                string query = $@"
-                    SELECT p.PromotionID, 
-                           p.PromotionName + ' (-' + CAST(CAST(p.DiscountPercent AS int) AS VARCHAR) + '%)' AS PromoDisplay, 
-                           p.DiscountPercent,
-                           p.ApplyType
-                    FROM Promotion p 
-                    WHERE p.Status = 'Active' 
-                      AND CAST(GETDATE() AS DATE) BETWEEN p.StartDate AND p.EndDate
-                      AND (
-                          p.ApplyType = 0 
-                          OR (p.ApplyType = 1 AND EXISTS (
-                              SELECT 1 
-                              FROM PromotionDetail pd 
-                              INNER JOIN OrderDetail od ON pd.MenuItemID = od.MenuItemID 
-                              WHERE pd.PromotionID = p.PromotionID AND od.OrderID = {currentOrderID}
-                          ))
-                      )";
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì viết SQL thuần trực tiếp
+                DataTable dtPromo = PromotionBLL.GetActivePromotionsForOrder(currentOrderID);
 
-                DataTable dtPromo = my_own_project.DAL.DataHelper.ExecuteQuery(query);
-
+                // Thêm dòng "Không áp dụng" ở đầu
                 DataRow dr = dtPromo.NewRow();
                 dr["PromotionID"] = -1;
                 dr["PromoDisplay"] = "-- Không áp dụng khuyến mãi --";
                 dr["DiscountPercent"] = 0;
-                dr["ApplyType"] = 0; // Khởi tạo mặc định để tránh lỗi Null
+                dr["ApplyType"] = 0;
                 dtPromo.Rows.InsertAt(dr, 0);
 
-                // Gỡ sự kiện cũ để tránh lỗi gọi hàm tính toán nhiều lần khi load data
                 cboPromotion.SelectedIndexChanged -= CboPromotion_SelectedIndexChanged;
 
                 cboPromotion.DataSource = dtPromo;
@@ -120,7 +97,6 @@ namespace my_own_project.VIEW
                 cboPromotion.ValueMember = "PromotionID";
                 cboPromotion.SelectedIndex = 0;
 
-                // Gắn lại sự kiện
                 cboPromotion.SelectedIndexChanged += CboPromotion_SelectedIndexChanged;
             }
             catch (Exception ex)
@@ -129,7 +105,6 @@ namespace my_own_project.VIEW
             }
         }
 
-        // Tách sự kiện ra hàm riêng cho sạch sẽ
         private void CboPromotion_SelectedIndexChanged(object sender, EventArgs e)
         {
             CalculateFinalAmount();
@@ -146,26 +121,9 @@ namespace my_own_project.VIEW
                 int applyType = Convert.ToInt32(drv["ApplyType"]);
                 int promoID = Convert.ToInt32(drv["PromotionID"]);
 
-                if (applyType == 0)
-                {
-                    // [GIẢM TOÀN BILL]: Lấy Tổng bill * phần trăm
-                    discountAmount = subTotal * (percent / 100m);
-                }
-                else if (applyType == 1)
-                {
-                    // [ĐÃ SỬA LỖI] [GIẢM THEO MÓN]: Chỉ lấy Tổng tiền của riêng các món ăn được khuyến mãi trong đơn
-                    string checkEligibleSQL = $@"
-                        SELECT ISNULL(SUM(od.SubTotal), 0)
-                        FROM OrderDetail od
-                        INNER JOIN PromotionDetail pd ON od.MenuItemID = pd.MenuItemID
-                        WHERE od.OrderID = {currentOrderID} AND pd.PromotionID = {promoID}";
-
-                    object result = my_own_project.DAL.DataHelper.ExecuteScalar(checkEligibleSQL);
-                    decimal eligibleAmount = (result != null && result != DBNull.Value) ? Convert.ToDecimal(result) : 0;
-
-                    // Tiền giảm giá chỉ tính trên tiền món ăn hợp lệ
-                    discountAmount = eligibleAmount * (percent / 100m);
-                }
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì DataHelper.ExecuteScalar() trực tiếp
+                discountAmount = PromotionBLL.CalculateDiscountForOrder(
+                    currentOrderID, promoID, applyType, subTotal, percent);
             }
 
             finalAmount = subTotal - discountAmount;
@@ -184,17 +142,21 @@ namespace my_own_project.VIEW
 
         public void BtnConfirm_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Xác nhận khách đã thanh toán đủ tiền và dọn bàn?", "Chốt đơn", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(
+                    "Xác nhận khách đã thanh toán đủ tiền và dọn bàn?",
+                    "Chốt đơn",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
                     int selectedPromoID = Convert.ToInt32(cboPromotion.SelectedValue);
                     int? promoID = (selectedPromoID == -1) ? (int?)null : selectedPromoID;
 
-                    // 1. Cập nhật trạng thái & tổng tiền đơn hàng qua BLL
+                    // 1. Hoàn tất đơn hàng qua BLL
                     OrderBLL.CompleteOrder(currentOrderID, finalAmount, promoID, currentStaffID);
 
-                    // 2. Lưu lịch sử thanh toán
+                    // 2. Lưu thanh toán qua BLL
                     PaymentDTO newPayment = new PaymentDTO
                     {
                         OrderID = currentOrderID,
@@ -203,18 +165,20 @@ namespace my_own_project.VIEW
                     };
                     PaymentBLL.CreatePayment(newPayment);
 
-                    // 3. Giải phóng bàn
+                    // 3. Giải phóng bàn qua BLL
                     if (tableID > 0)
                         DiningTableBLL.UpdateStatus(tableID, "Trống");
 
-                    MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Thanh toán thành công!", "Hoàn tất",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Có lỗi xảy ra: " + ex.Message, "Lỗi Thanh Toán", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Có lỗi xảy ra: " + ex.Message, "Lỗi Thanh Toán",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -254,7 +218,6 @@ namespace my_own_project.VIEW
             yPos += 20;
             g.DrawString("Ngày : " + DateTime.Now.ToString("dd/MM/yyyy HH:mm"), fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 20;
-
             g.DrawString("Thu ngân: " + currentStaffName, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 25;
 
@@ -269,6 +232,7 @@ namespace my_own_project.VIEW
             g.DrawString(line, fontItem, Brushes.Black, leftMargin, yPos);
             yPos += 20;
 
+            // Gọi qua BLL (đã đúng từ trước)
             DataTable dtDetails = OrderDetailBLL.GetOrderDetailsByOrderID(currentOrderID);
             foreach (DataRow row in dtDetails.Rows)
             {
@@ -306,7 +270,8 @@ namespace my_own_project.VIEW
             g.DrawString(cboPaymentMethod.Text, fontItem, Brushes.Black, rightMargin, yPos, rightAlign);
             yPos += 45;
 
-            g.DrawString("Cảm ơn & Hẹn gặp lại!", fontSub, Brushes.Black, new PointF(centerPoint, yPos), centerAlign);
+            g.DrawString("Cảm ơn & Hẹn gặp lại!", fontSub, Brushes.Black,
+                          new PointF(centerPoint, yPos), centerAlign);
         }
     }
 }

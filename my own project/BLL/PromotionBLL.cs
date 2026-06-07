@@ -159,5 +159,69 @@ namespace my_own_project.BLL
                 return 0;
             }
         }
+        public static DataTable GetActivePromotionsForOrder(int orderID)
+        {
+            try
+            {
+                if (orderID <= 0)
+                    throw new Exception("OrderID không hợp lệ!");
+
+                return PromotionDAL.GetActivePromotionsForOrder(orderID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PromotionBLL.GetActivePromotionsForOrder Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        /*
+         * Tính tiền giảm dựa trên loại khuyến mãi và đơn hàng.
+         *   applyType == 0 → giảm toàn bill   : discount = subTotal * percent / 100
+         *   applyType == 1 → giảm theo món    : chỉ tính trên món được khuyến mãi
+         */
+        public static decimal CalculateDiscountForOrder(int orderID, int promotionID, int applyType, decimal subTotal, decimal discountPercent)
+        {
+            try
+            {
+                if (orderID <= 0)
+                    throw new Exception("OrderID không hợp lệ!");
+
+                if (applyType == 0)
+                {
+                    // Giảm toàn bill
+                    return subTotal * (discountPercent / 100m);
+                }
+                else if (applyType == 1)
+                {
+                    // Giảm theo món — lấy tổng tiền các món hợp lệ từ DAL
+                    decimal eligibleAmount = PromotionDAL.GetEligibleAmountForPromotion(orderID, promotionID);
+                    return eligibleAmount * (discountPercent / 100m);
+                }
+
+                return 0m;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PromotionBLL.CalculateDiscountForOrder Error: {ex.Message}");
+                throw;
+            }
+        }
+        public static DataTable GetAllPromotionsFiltered(string keyword, string status)
+        {
+            return PromotionDAL.GetAllFiltered(keyword, status);
+        }
+        public static void DeletePromotionDetails(int promotionID)
+        {
+            PromotionDAL.DeletePromotionDetails(promotionID);
+        }
+        public static void AddPromotionDetail(PromotionDetailDTO detail)
+        {
+            PromotionDAL.InsertPromotionDetail(detail);
+        }
+        public static DataTable GetPromotionDetails(int promotionID)
+        {
+            return PromotionDAL.GetPromotionDetails(promotionID);
+        }
     }
 }

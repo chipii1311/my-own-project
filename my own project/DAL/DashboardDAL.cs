@@ -33,5 +33,11 @@ namespace my_own_project.DAL
 
         public static DataTable GetTopProducts(DateTime startDate, DateTime endDate)
             => GetDataWithDateRange("sp_Dashboard_GetTopProducts", startDate, endDate);
+        public static DataTable GetCategoryRevenueShare(DateTime start, DateTime end)
+        => GetDataWithDateRange("sp_Dashboard_GetCategoryRevenueShare", start, end);
+
+        public static DataTable GetTop5Products(DateTime start, DateTime end)
+            => GetDataWithDateRange("sp_Dashboard_GetTop5Products", start, end);
+
     }
 }

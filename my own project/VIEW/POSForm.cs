@@ -58,9 +58,11 @@ namespace my_own_project.DesignForms
             {
                 object currentSelectedValue = cboTable?.SelectedValue;
 
-                DataTable dt = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_DiningTable_GetAll");
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì DataHelper.ExecuteSPGetTable(...)
+                DataTable dt = DiningTableBLL.GetAllTables();
                 dt.Columns.Add("TableDisplay", typeof(string));
-                foreach (DataRow row in dt.Rows) row["TableDisplay"] = $"Bàn {row["TableNumber"]} - {row["Status"]}";
+                foreach (DataRow row in dt.Rows)
+                    row["TableDisplay"] = $"Bàn {row["TableNumber"]} - {row["Status"]}";
 
                 DataRow dr = dt.NewRow();
                 dr["TableID"] = DBNull.Value;
@@ -73,21 +75,31 @@ namespace my_own_project.DesignForms
                     cboTable.DataSource = dt;
                     cboTable.DisplayMember = "TableDisplay";
                     cboTable.ValueMember = "TableID";
-                    if (currentSelectedValue != null && currentSelectedValue != DBNull.Value) cboTable.SelectedValue = currentSelectedValue;
-                    else cboTable.SelectedIndex = 0;
+                    if (currentSelectedValue != null && currentSelectedValue != DBNull.Value)
+                        cboTable.SelectedValue = currentSelectedValue;
+                    else
+                        cboTable.SelectedIndex = 0;
                     cboTable.SelectedIndexChanged += CboTable_SelectedIndexChanged;
                 }
             }
             catch (Exception ex) { MessageBox.Show("Lỗi tải danh sách bàn: " + ex.Message); }
         }
-
         private void LoadCategories()
         {
             flpCategories.Controls.Clear();
             Guna2Button btnAll = CreateCatButton("All", 0);
             btnAll.Checked = true;
             flpCategories.Controls.Add(btnAll);
-            try { foreach (DataRow row in CategoryDAL.GetAll().Rows) flpCategories.Controls.Add(CreateCatButton(row["CategoryName"].ToString(), Convert.ToInt32(row["CategoryID"]))); } catch { }
+
+            try
+            {
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì CategoryDAL.GetAll()
+                foreach (DataRow row in CategoryBLL.GetAllCategories().Rows)
+                    flpCategories.Controls.Add(
+                        CreateCatButton(row["CategoryName"].ToString(),
+                                        Convert.ToInt32(row["CategoryID"])));
+            }
+            catch { }
         }
 
         private void LoadMenuItems()

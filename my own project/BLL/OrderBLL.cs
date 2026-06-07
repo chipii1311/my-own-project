@@ -39,6 +39,18 @@ namespace my_own_project.BLL
                 throw;
             }
         }
+        public static DataTable GetCompletedOrdersByDateRange(DateTime from, DateTime to)
+        {
+            try
+            {
+                return OrderDAL.GetCompletedByDateRange(from, to);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"OrderBLL.GetCompletedOrdersByDateRange Error: {ex.Message}");
+                throw;
+            }
+        }
 
         // ==================== READ ====================
         public static DataTable GetAllOrders()

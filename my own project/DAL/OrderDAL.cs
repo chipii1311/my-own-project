@@ -35,6 +35,15 @@ namespace my_own_project.DAL
                 throw;
             }
         }
+        public static DataTable GetCompletedByDateRange(DateTime from, DateTime to)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+        new SqlParameter("@FromDate", from.Date),
+        new SqlParameter("@ToDate",   to.Date)
+            };
+            return DataHelper.ExecuteSPGetTable("sp_Orders_GetCompletedByDateRange", parameters);
+        }
 
         // ==================== READ ====================
         public static DataTable GetAll()

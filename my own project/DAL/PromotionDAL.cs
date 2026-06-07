@@ -185,6 +185,64 @@ namespace my_own_project.DAL
         
            
         }
+        public static DataTable GetActivePromotionsForOrder(int orderID)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@OrderID", orderID)
+                };
+                return DataHelper.ExecuteSPGetTable("sp_Promotion_GetActiveForOrder", parameters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PromotionDAL.GetActivePromotionsForOrder Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        /*
+         * Tính tổng tiền các món đủ điều kiện áp dụng khuyến mãi theo món trong đơn hàng.
+         * Thay thế DataHelper.ExecuteScalar() trong PaymentForm.CalculateFinalAmount().
+         */
+        public static decimal GetEligibleAmountForPromotion(int orderID, int promotionID)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+            new SqlParameter("@OrderID",     orderID),
+            new SqlParameter("@PromotionID", promotionID)
+                };
+                object result = DataHelper.ExecuteSPScalar("sp_Promotion_GetEligibleAmount", parameters);
+                return (result != null && result != DBNull.Value) ? Convert.ToDecimal(result) : 0m;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PromotionDAL.GetEligibleAmountForPromotion Error: {ex.Message}");
+                throw;
+            }
+        }
+        public static DataTable GetAllFiltered(string keyword, string status)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+            new SqlParameter("@Keyword", string.IsNullOrEmpty(keyword) ? (object)DBNull.Value : keyword),
+            new SqlParameter("@Status",  status == "Tất cả"            ? (object)DBNull.Value : status)
+            };
+            return DataHelper.ExecuteSPGetTable("sp_Promotion_GetAllFiltered", parameters);
+        }
+        public static void DeletePromotionDetails(int promotionID)
+        {
+            SqlParameter[] parameters = new SqlParameter[]
+            {
+            new SqlParameter("@PromotionID", promotionID)
+            };
+            DataHelper.ExecuteSP("sp_PromotionDetail_DeleteByPromotion", parameters);
+        }
+
+
     }
 }
     

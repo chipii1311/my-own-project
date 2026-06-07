@@ -1,8 +1,11 @@
 ﻿using Guna.UI2.WinForms;
-using my_own_project.DAL;
+using my_own_project.BLL;
+using my_own_project.DTO;
 using System;
 using System.Data;
 using System.Windows.Forms;
+
+// [ĐÃ SỬA]: Bỏ using my_own_project.DAL — Form không được gọi trực tiếp xuống DAL
 
 namespace my_own_project.VIEW
 {
@@ -22,15 +25,9 @@ namespace my_own_project.VIEW
         {
             try
             {
-                string q = @"
-                    SELECT TableID     AS [TableID],
-                           TableNumber AS [Số bàn],
-                           Capacity    AS [Sức chứa],
-                           Status      AS [Trạng thái]
-                    FROM   DiningTable
-                    ORDER  BY TableNumber";
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì DataHelper.ExecuteQuery(rawSQL)
+                DataTable dt = DiningTableBLL.GetAllTables();
 
-                DataTable dt = DataHelper.ExecuteQuery(q);
                 dgvTables.DataSource = dt;
 
                 if (dgvTables.Columns.Contains("TableID"))
@@ -49,14 +46,9 @@ namespace my_own_project.VIEW
         {
             try
             {
-                string q = @"
-                    SELECT CategoryID   AS [CategoryID],
-                           CategoryName AS [Tên danh mục]
-                    FROM   Category
-                    WHERE  IsActive = 1
-                    ORDER  BY CategoryID";
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì DataHelper.ExecuteQuery(rawSQL)
+                DataTable dt = CategoryBLL.GetAllCategories();
 
-                DataTable dt = DataHelper.ExecuteQuery(q);
                 dgvCategories.DataSource = dt;
 
                 if (dgvCategories.Columns.Contains("CategoryID"))
@@ -72,7 +64,7 @@ namespace my_own_project.VIEW
         private void DgvTables_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex < 0) return;
-            if (dgvTables.Columns[e.ColumnIndex].Name != "Trạng thái") return;
+            if (dgvTables.Columns[e.ColumnIndex].Name != "Status") return;
 
             string v = e.Value?.ToString() ?? "";
             e.CellStyle.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
@@ -101,9 +93,9 @@ namespace my_own_project.VIEW
 
             var row = dgvTables.Rows[e.RowIndex];
             _selectedTableID = Convert.ToInt32(row.Cells["TableID"].Value);
-            txtTableNumber.Text = row.Cells["Số bàn"].Value?.ToString() ?? "";
-            txtTableCapacity.Text = row.Cells["Sức chứa"].Value?.ToString() ?? "";
-            cboTableStatus.Text = row.Cells["Trạng thái"].Value?.ToString() ?? "Trống";
+            txtTableNumber.Text = row.Cells["TableNumber"].Value?.ToString() ?? "";
+            txtTableCapacity.Text = row.Cells["Capacity"].Value?.ToString() ?? "";
+            cboTableStatus.Text = row.Cells["Status"].Value?.ToString() ?? "Trống";
 
             lblTableHint.Text = $"✏️ Đang chỉnh sửa bàn số {txtTableNumber.Text}";
             lblTableHint.ForeColor = System.Drawing.Color.FromArgb(88, 28, 230);
@@ -132,9 +124,16 @@ namespace my_own_project.VIEW
 
             try
             {
-                string q = $@"INSERT INTO DiningTable (TableNumber, Capacity, Status)
-                              VALUES ({num}, {cap}, N'{cboTableStatus.Text}')";
-                DataHelper.ExecuteNonQuery(q);
+                // [ĐÃ SỬA]: Tạo DTO và gọi BLL thay vì INSERT SQL thuần
+                var table = new DiningTableDTO
+                {
+                    TableNumber = num,
+                    Capacity = cap,
+                    Status = cboTableStatus.Text,
+                    Notes = ""
+                };
+
+                DiningTableBLL.AddTable(table);
                 ShowInfo("✔️ Thêm bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -165,12 +164,17 @@ namespace my_own_project.VIEW
 
             try
             {
-                string q = $@"UPDATE DiningTable
-                              SET TableNumber = {num},
-                                  Capacity    = {cap},
-                                  Status      = N'{cboTableStatus.Text}'
-                              WHERE TableID = {_selectedTableID}";
-                DataHelper.ExecuteNonQuery(q);
+                // [ĐÃ SỬA]: Tạo DTO và gọi BLL thay vì UPDATE SQL thuần
+                var table = new DiningTableDTO
+                {
+                    TableID = _selectedTableID,
+                    TableNumber = num,
+                    Capacity = cap,
+                    Status = cboTableStatus.Text,
+                    Notes = ""
+                };
+
+                DiningTableBLL.UpdateTable(table);
                 ShowInfo("✔️ Cập nhật bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -198,7 +202,8 @@ namespace my_own_project.VIEW
 
             try
             {
-                DataHelper.ExecuteNonQuery($"DELETE FROM DiningTable WHERE TableID = {_selectedTableID}");
+                // [ĐÃ SỬA]: Gọi BLL thay vì DataHelper.ExecuteNonQuery("DELETE FROM ...")
+                DiningTableBLL.DeleteTable(_selectedTableID);
                 ShowInfo("✔️ Xóa bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -231,7 +236,7 @@ namespace my_own_project.VIEW
 
             var row = dgvCategories.Rows[e.RowIndex];
             _selectedCategoryID = Convert.ToInt32(row.Cells["CategoryID"].Value);
-            txtCategoryName.Text = row.Cells["Tên danh mục"].Value?.ToString() ?? "";
+            txtCategoryName.Text = row.Cells["CategoryName"].Value?.ToString() ?? "";
 
             lblCatHint.Text = $"✏️ Đang chỉnh sửa: {txtCategoryName.Text}";
             lblCatHint.ForeColor = System.Drawing.Color.FromArgb(88, 28, 230);
@@ -250,8 +255,14 @@ namespace my_own_project.VIEW
 
             try
             {
-                string q = $"INSERT INTO Category (CategoryName, IsActive) VALUES (N'{EscapeSQL(txtCategoryName.Text.Trim())}', 1)";
-                DataHelper.ExecuteNonQuery(q);
+                // [ĐÃ SỬA]: Tạo DTO và gọi BLL thay vì INSERT SQL thuần
+                var category = new CategoryDTO
+                {
+                    CategoryName = txtCategoryName.Text.Trim(),
+                    IsActive = true
+                };
+
+                CategoryBLL.AddCategory(category);
                 ShowInfo("✔️ Thêm danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
@@ -272,8 +283,15 @@ namespace my_own_project.VIEW
 
             try
             {
-                string q = $"UPDATE Category SET CategoryName = N'{EscapeSQL(txtCategoryName.Text.Trim())}' WHERE CategoryID = {_selectedCategoryID}";
-                DataHelper.ExecuteNonQuery(q);
+                // [ĐÃ SỬA]: Tạo DTO và gọi BLL thay vì UPDATE SQL thuần
+                var category = new CategoryDTO
+                {
+                    CategoryID = _selectedCategoryID,
+                    CategoryName = txtCategoryName.Text.Trim(),
+                    IsActive = true
+                };
+
+                CategoryBLL.UpdateCategory(category);
                 ShowInfo("✔️ Cập nhật thành công!");
                 ClearCatForm();
                 LoadCategoryData();
@@ -301,7 +319,8 @@ namespace my_own_project.VIEW
 
             try
             {
-                DataHelper.ExecuteNonQuery($"UPDATE Category SET IsActive = 0 WHERE CategoryID = {_selectedCategoryID}");
+                // [ĐÃ SỬA]: Gọi BLL thay vì UPDATE Category SET IsActive=0 SQL thuần
+                CategoryBLL.DeleteCategory(_selectedCategoryID);
                 ShowInfo("✔️ Xóa danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
@@ -326,11 +345,6 @@ namespace my_own_project.VIEW
         }
 
         // ===================== HELPER FUNCTIONS =====================
-        private string EscapeSQL(string input)
-        {
-            return input.Replace("'", "''");
-        }
-
         private void ShowInfo(string msg)
             => MessageBox.Show(msg, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

@@ -14,5 +14,10 @@ namespace my_own_project.BLL
         public static DataTable GetRecentOrders(DateTime start, DateTime end) => DashboardDAL.GetRecentOrders(start, end);
         public static DataTable GetRevenueChart(DateTime start, DateTime end) => DashboardDAL.GetRevenueChart(start, end);
         public static DataTable GetTopProducts(DateTime start, DateTime end) => DashboardDAL.GetTopProducts(start, end);
+        public static DataTable GetCategoryRevenueShare(DateTime start, DateTime end)
+        => DashboardDAL.GetCategoryRevenueShare(start, end);
+
+        public static DataTable GetTop5Products(DateTime start, DateTime end)
+            => DashboardDAL.GetTop5Products(start, end);
     }
 }

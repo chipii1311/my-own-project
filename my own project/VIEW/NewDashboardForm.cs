@@ -37,11 +37,9 @@ namespace my_own_project.VIEW
             return dt.Columns.Count > 0 ? dt.Columns[0].ColumnName : "";
         }
 
-        private SqlParameter[] Params(DateTime start, DateTime end) => new SqlParameter[]
-        {
-            new SqlParameter("@StartDate", start),
-            new SqlParameter("@EndDate",   end)
-        };
+
+
+        
 
         // ═══════════════════════════════════════════════════════════════
         //  DATA LOADING
@@ -56,12 +54,13 @@ namespace my_own_project.VIEW
             LoadOrders();
         }
 
+
         private void LoadKPIs()
         {
             try
             {
-                var p = Params(DateTime.Today, DateTime.Today.AddDays(1).AddSeconds(-1));
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetSummary", p);
+                // [ĐÃ SỬA]: Gọi qua BLL
+                var dt = DashboardBLL.GetSummary(DateTime.Today, DateTime.Today.AddDays(1).AddSeconds(-1));
 
                 decimal rev = 0; int ord = 0;
                 if (dt?.Rows.Count > 0)
@@ -89,7 +88,6 @@ namespace my_own_project.VIEW
             try
             {
                 int lowStockCount = IngredientBLL.GetLowStockCount();
-
                 if (lowStockCount > 0)
                 {
                     lblInv.Text = lowStockCount + " mặt hàng";
@@ -103,12 +101,7 @@ namespace my_own_project.VIEW
                     lblInvSub.Text = "Kho đang đủ hàng";
                 }
             }
-            catch
-            {
-                lblInv.Text = "--";
-                lblInv.ForeColor = MUTED;
-                lblInvSub.Text = "Không thể kiểm tra kho";
-            }
+            catch { lblInv.Text = "--"; lblInv.ForeColor = MUTED; lblInvSub.Text = "Không thể kiểm tra kho"; }
         }
 
         private void LoadRevChart()
@@ -116,39 +109,34 @@ namespace my_own_project.VIEW
             lblRevMsg.Text = "Đang tải..."; lblRevMsg.Visible = true;
             try
             {
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetRevenueByDate",
-                    Params(DateTime.Today.AddDays(-6), DateTime.Today.AddDays(1)));
+                // [ĐÃ SỬA]: Gọi qua BLL
+                var dt = DashboardBLL.GetRevenueChart(
+                    DateTime.Today.AddDays(-6), DateTime.Today.AddDays(1));
 
                 chartRev.Series["rev"].Points.Clear();
-
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     string dc = FindCol(dt, "OrderDate", "Date", "CreatedAt");
                     string rc = FindCol(dt, "Revenue", "TotalRevenue", "TotalAmount");
                     foreach (DataRow row in dt.Rows)
                     {
-                        string lbl = DateTime.TryParse(row[dc].ToString(), out var d)
-                            ? d.ToString("dd/MM") : row[dc].ToString();
+                        string lbl = DateTime.TryParse(row[dc].ToString(), out var d) ? d.ToString("dd/MM") : row[dc].ToString();
                         decimal rev = row[rc] == DBNull.Value ? 0 : Convert.ToDecimal(row[rc]);
                         chartRev.Series["rev"].Points.AddXY(lbl, rev);
                     }
-                    lblRevMsg.Visible = false;
-                    chartRev.Visible = true;
-                    chartRev.Invalidate();
-                    chartRev.Update();
+                    lblRevMsg.Visible = false; chartRev.Visible = true;
+                    chartRev.Invalidate(); chartRev.Update();
                 }
                 else
                 {
                     chartRev.Visible = false;
-                    lblRevMsg.Text = "Không có dữ liệu 7 ngày qua";
-                    lblRevMsg.Visible = true;
+                    lblRevMsg.Text = "Không có dữ liệu 7 ngày qua"; lblRevMsg.Visible = true;
                 }
             }
             catch (Exception ex)
             {
                 chartRev.Visible = false;
-                lblRevMsg.Text = "Lỗi: " + Short(ex.Message, 60);
-                lblRevMsg.Visible = true;
+                lblRevMsg.Text = "Lỗi: " + Short(ex.Message, 60); lblRevMsg.Visible = true;
             }
         }
 
@@ -157,111 +145,120 @@ namespace my_own_project.VIEW
             lblCatMsg.Text = "Đang tải..."; lblCatMsg.Visible = true;
             try
             {
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetCategoryRevenueShare",
-                    Params(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1)));
+                // [ĐÃ SỬA]: Gọi qua BLL (method mới thêm)
+                var dt = DashboardBLL.GetCategoryRevenueShare(
+                    DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1));
 
                 chartCat.Series["cat"].Points.Clear();
-
                 if (dt != null && dt.Rows.Count > 0)
                 {
-                    string nc = FindCol(dt, "CategoryName", "Name");
-                    string vc = FindCol(dt, "Revenue", "TotalRevenue", "Quantity");
-                    Color[] pal = { PURPLE, BLUE, GREEN, AMBER, RED, Color.FromArgb(168, 85, 247) };
-                    int i = 0;
+                    string nc = FindCol(dt, "CategoryName", "Name", "Category");
+                    string vc = FindCol(dt, "Revenue", "TotalRevenue", "TotalAmount", "Value");
                     foreach (DataRow row in dt.Rows)
                     {
-                        double v = row[vc] == DBNull.Value ? 0 : Convert.ToDouble(row[vc]);
-                        if (v <= 0) continue;
-                        int idx = chartCat.Series["cat"].Points.AddXY(row[nc]?.ToString() ?? "?", v);
-                        chartCat.Series["cat"].Points[idx].Color = pal[i++ % pal.Length];
+                        string lbl = Short(row[nc].ToString(), 18);
+                        decimal val = row[vc] == DBNull.Value ? 0 : Convert.ToDecimal(row[vc]);
+                        chartCat.Series["cat"].Points.AddXY(lbl, val);
                     }
-                    if (chartCat.Series["cat"].Points.Count > 0)
-                    {
-                        lblCatMsg.Visible = false;
-                        chartCat.Visible = true;
-                        chartCat.Invalidate();
-                        chartCat.Update();
-                    }
-                    else
-                    {
-                        chartCat.Visible = false;
-                        lblCatMsg.Text = "Không có dữ liệu";
-                        lblCatMsg.Visible = true;
-                    }
+                    lblCatMsg.Visible = false; chartCat.Visible = true;
                 }
                 else
                 {
                     chartCat.Visible = false;
-                    lblCatMsg.Text = "Không có dữ liệu 30 ngày";
-                    lblCatMsg.Visible = true;
+                    lblCatMsg.Text = "Không có dữ liệu"; lblCatMsg.Visible = true;
                 }
             }
             catch (Exception ex)
             {
                 chartCat.Visible = false;
-                lblCatMsg.Text = "Lỗi: " + Short(ex.Message, 60);
-                lblCatMsg.Visible = true;
+                lblCatMsg.Text = "Lỗi: " + Short(ex.Message, 60); lblCatMsg.Visible = true;
             }
         }
 
         private void LoadTop5()
         {
-            flowTop5?.Controls.Clear();
             try
             {
-                DataTable dt;
-                try
-                {
-                    dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetTop5Products",
-                        Params(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1)));
-                }
-                catch
-                {
-                    dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetTopProducts",
-                        Params(DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1)));
-                }
+                var dt = DashboardBLL.GetTop5Products(
+                    DateTime.Today.AddDays(-30), DateTime.Today.AddDays(1));
+
+                flowTop5.Controls.Clear();
 
                 if (dt == null || dt.Rows.Count == 0)
                 {
-                    flowTop5.Controls.Add(Lbl("Chưa có dữ liệu bán hàng 30 ngày.",
-                        new Font("Segoe UI", 9.5F), MUTED, new Point(0, 8)));
+                    flowTop5.Controls.Add(new Label
+                    {
+                        Text = "Không có dữ liệu",
+                        Font = new Font("Segoe UI", 10F),
+                        ForeColor = MUTED,
+                        AutoSize = true
+                    });
                     return;
                 }
 
-                string nc = FindCol(dt, "ProductName", "MenuItemName", "ItemName", "FoodName", "Name");
-                string qc = FindCol(dt, "TotalQuantity", "Quantity", "Count", "SoldQuantity");
-                string rc = FindCol(dt, "Revenue", "TotalRevenue", "TotalAmount", "Amount");
+                int rank = 1;
 
-                Color[] rankColors = { AMBER, PURPLE, BLUE, GREEN, MUTED };
-
-                int rank = 0;
                 foreach (DataRow row in dt.Rows)
                 {
-                    if (rank >= 5) break;
-                    string name = row[nc]?.ToString() ?? "?";
-                    int qty = row[qc] == DBNull.Value ? 0 : Convert.ToInt32(row[qc]);
-                    decimal rev = string.IsNullOrEmpty(rc) || row[rc] == DBNull.Value
-                        ? 0 : Convert.ToDecimal(row[rc]);
+                    string nameCol = FindCol(dt, "ProductName", "Name", "Product");
+                    string qtyCol = FindCol(dt, "Quantity", "TotalQuantity", "SoldQty", "Qty");
 
-                    int w = Math.Max(220, flowTop5.ClientSize.Width - 28);
-                    var item = new Panel { Size = new Size(w, 54), BackColor = WHITE, Margin = new Padding(0, 0, 0, 6) };
+                    string productName = row[nameCol]?.ToString() ?? "";
+                    string quantity = row[qtyCol]?.ToString() ?? "0";
+
+                    var item = new Panel
+                    {
+                        Width = flowTop5.ClientSize.Width - 30,
+                        Height = 52,
+                        BackColor = WHITE,
+                        Margin = new Padding(0, 0, 0, 8)
+                    };
+
+                    var lblRank = new Label
+                    {
+                        Text = "#" + rank,
+                        Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                        ForeColor = PURPLE,
+                        Location = new Point(4, 14),
+                        AutoSize = true
+                    };
+
+                    var lblName = new Label
+                    {
+                        Text = Short(productName, 25),
+                        Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                        ForeColor = TEXT,
+                        Location = new Point(48, 8),
+                        AutoSize = true
+                    };
+
+                    var lblQty = new Label
+                    {
+                        Text = quantity + " đã bán",
+                        Font = new Font("Segoe UI", 9F),
+                        ForeColor = MUTED,
+                        Location = new Point(48, 29),
+                        AutoSize = true
+                    };
+
+                    item.Controls.Add(lblRank);
+                    item.Controls.Add(lblName);
+                    item.Controls.Add(lblQty);
+
                     flowTop5.Controls.Add(item);
-                    flowTop5.Resize += (s, e) => item.Width = Math.Max(220, flowTop5.ClientSize.Width - 28);
-
-                    var badge = new Label { Text = "#" + (rank + 1), Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = rankColors[rank], BackColor = Color.Transparent, Size = new Size(34, 24), Location = new Point(0, 10), TextAlign = ContentAlignment.MiddleLeft };
-                    var lName = new Label { Text = name, Font = new Font("Segoe UI", 9.5F, FontStyle.Bold), ForeColor = TEXT, AutoEllipsis = true, Size = new Size(w - 150, 20), Location = new Point(36, 4) };
-                    var lQty = new Label { Text = qty.ToString("N0") + " đã bán", Font = new Font("Segoe UI", 8.5F), ForeColor = MUTED, AutoSize = true, Location = new Point(36, 26) };
-                    var lRev = new Label { Text = rev > 0 ? rev.ToString("N0") + " đ" : "", Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = GREEN, Size = new Size(105, 20), TextAlign = ContentAlignment.MiddleRight, Location = new Point(w - 112, 14), Anchor = AnchorStyles.Top | AnchorStyles.Right };
-                    var div = new Panel { BackColor = BORDER, Size = new Size(w - 36, 1), Location = new Point(36, 52) };
-
-                    item.Controls.AddRange(new Control[] { badge, lName, lQty, lRev, div });
                     rank++;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                flowTop5?.Controls.Clear();
-                flowTop5?.Controls.Add(Lbl("Lỗi: " + Short(ex.Message, 80), new Font("Segoe UI", 9F), RED, new Point(0, 8)));
+                flowTop5.Controls.Clear();
+                flowTop5.Controls.Add(new Label
+                {
+                    Text = "Không thể tải Top 5",
+                    Font = new Font("Segoe UI", 10F),
+                    ForeColor = RED,
+                    AutoSize = true
+                });
             }
         }
 
@@ -269,61 +266,14 @@ namespace my_own_project.VIEW
         {
             try
             {
-                var dt = DataHelper.ExecuteSPGetTable("sp_Dashboard_GetRecentOrders",
-                    Params(DateTime.Today.AddDays(-15), DateTime.Today.AddDays(1)));
-                if (dt == null) return;
-
-                foreach (var c in new[] { "Product", "Notes", "RestaurantID" })
-                    if (dt.Columns.Contains(c)) dt.Columns.Remove(c);
+                var dt = DashboardBLL.GetRecentOrders(
+                    DateTime.Today, DateTime.Today.AddDays(1).AddSeconds(-1));
 
                 dgv.DataSource = dt;
-
-                var hmap = new Dictionary<string, string>
-                {
-                    {"OrderID","Mã HĐ"}, {"Customer","Khách hàng"}, {"CustomerName","Khách hàng"},
-                    {"TableNumber","Bàn"}, {"OrderDate","Ngày đặt"}, {"OrderType","Loại"},
-                    {"TotalAmount","Tổng tiền (đ)"}, {"Total","Tổng tiền (đ)"}, {"Status","Trạng thái"}
-                };
-                foreach (DataGridViewColumn col in dgv.Columns)
-                {
-                    if (hmap.ContainsKey(col.Name)) col.HeaderText = hmap[col.Name];
-                    if (col.Name == "Total" || col.Name == "TotalAmount")
-                    {
-                        col.DefaultCellStyle.Format = "N0";
-                        col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                    }
-                }
-                foreach (DataGridViewRow row in dgv.Rows)
-                {
-                    if (!dgv.Columns.Contains("Status")) break;
-                    var cell = row.Cells["Status"];
-                    if (cell?.Value == null) continue;
-                    switch (cell.Value.ToString())
-                    {
-                        case "Completed":
-                        case "Paid":
-                            cell.Value = "✓ Đã thanh toán";
-                            cell.Style.ForeColor = GREEN;
-                            cell.Style.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold); break;
-                        case "Pending":
-                        case "Processing":
-                        case "Open":
-                            cell.Value = "⏳ Chờ xử lý";
-                            cell.Style.ForeColor = AMBER;
-                            cell.Style.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold); break;
-                        case "Cancelled":
-                        case "Canceled":
-                            cell.Value = "✕ Đã huỷ";
-                            cell.Style.ForeColor = RED;
-                            cell.Style.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold); break;
-                    }
-                }
             }
-            catch (Exception ex)
+            catch
             {
                 dgv.DataSource = null;
-                var err = new DataTable(); err.Columns.Add("Lỗi");
-                err.Rows.Add(ex.Message); dgv.DataSource = err;
             }
         }
     }

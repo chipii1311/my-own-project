@@ -22,11 +22,8 @@ namespace my_own_project.VIEW
         public HistoryForm()
         {
             InitializeComponent();
-
-            // Gọi hàm xây dựng giao diện từ file Designer
             BuildUI();
 
-            // Khởi tạo máy in
             printDoc = new PrintDocument();
             printDoc.DefaultPageSettings.PaperSize = new PaperSize("Thermal80mm", 315, 600);
             printDoc.PrintPage += PrintDoc_PrintPage;
@@ -42,14 +39,12 @@ namespace my_own_project.VIEW
             this.Load += (s, e) => LoadData();
         }
 
-        // ════════════════════════════════════════════════════════
-        // SỰ KIỆN NÚT LỌC TIME
-        // ════════════════════════════════════════════════════════
         public void BtnToday_Click(object sender, EventArgs e) { dtpFrom.Value = DateTime.Today; dtpTo.Value = DateTime.Today; SetQuickActive(btnToday); LoadData(); }
         public void Btn7Days_Click(object sender, EventArgs e) { dtpFrom.Value = DateTime.Today.AddDays(-6); dtpTo.Value = DateTime.Today; SetQuickActive(btn7Days); LoadData(); }
         public void Btn30Days_Click(object sender, EventArgs e) { dtpFrom.Value = DateTime.Today.AddDays(-29); dtpTo.Value = DateTime.Today; SetQuickActive(btn30Days); LoadData(); }
         public void BtnThisMonth_Click(object sender, EventArgs e) { dtpFrom.Value = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1); dtpTo.Value = DateTime.Today; SetQuickActive(btnThisMonth); LoadData(); }
         public void BtnFilter_Click(object sender, EventArgs e) { SetQuickActive(null); LoadData(); }
+
 
         private void SetQuickActive(Guna2Button active)
         {
@@ -61,34 +56,14 @@ namespace my_own_project.VIEW
             }
         }
 
-        // ════════════════════════════════════════════════════════
-        // LOAD DATA
-        // ════════════════════════════════════════════════════════
         private void LoadData()
         {
             try
             {
-                string fromDate = dtpFrom.Value.ToString("yyyyMMdd");
-                string toDate = dtpTo.Value.ToString("yyyyMMdd");
-
-                string query = $@"
-                    SELECT 
-                        o.OrderID                                        AS [Mã HĐ],
-                        o.OrderDate                                      AS [Ngày giờ],
-                        ISNULL(CAST(t.TableNumber AS NVARCHAR), N'Mang đi') AS [Bàn],
-                        o.OrderType                                          AS [Loại],
-                        o.TotalAmount                                        AS [Tổng tiền]
-                    FROM Orders o
-                    LEFT JOIN DiningTable t  ON o.TableID  = t.TableID
-                    WHERE o.Status = 'Completed'
-                      AND CAST(o.OrderDate AS DATE) >= '{fromDate}'
-                      AND CAST(o.OrderDate AS DATE) <= '{toDate}'
-                    ORDER BY o.OrderDate DESC";
-
-                DataTable dt = DataHelper.ExecuteQuery(query);
+                // [ĐÃ SỬA]: Gọi qua BLL thay vì DataHelper.ExecuteQuery(rawSQL)
+                DataTable dt = OrderBLL.GetCompletedOrdersByDateRange(dtpFrom.Value, dtpTo.Value);
                 dgvHistory.DataSource = dt;
 
-                // Format columns
                 if (dgvHistory.Columns.Contains("Tổng tiền"))
                 {
                     var col = dgvHistory.Columns["Tổng tiền"];
@@ -97,7 +72,6 @@ namespace my_own_project.VIEW
                     col.DefaultCellStyle.Padding = new Padding(0, 0, 18, 0);
                 }
 
-                // Stat cards
                 decimal totalRev = 0;
                 int count = dt.Rows.Count;
                 foreach (DataRow row in dt.Rows)
@@ -108,15 +82,15 @@ namespace my_own_project.VIEW
                 lblAvgOrder.Text = count > 0 ? (totalRev / count).ToString("N0") + " đ" : "—";
 
                 if (lblRowCount != null) lblRowCount.Text = count + " hóa đơn";
-                if (lblLastUpdated != null)
-                    lblLastUpdated.Text = $"Cập nhật lúc {DateTime.Now:HH:mm:ss}  ·  "
-                        + $"{dtpFrom.Value:dd/MM/yyyy} — {dtpTo.Value:dd/MM/yyyy}";
+                if (lblLastUpdated != null) lblLastUpdated.Text =
+                    $"Cập nhật lúc {DateTime.Now:HH:mm:ss}  ·  {dtpFrom.Value:dd/MM/yyyy} — {dtpTo.Value:dd/MM/yyyy}";
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi tải dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         // ════════════════════════════════════════════════════════
         // CELL FORMATTING
