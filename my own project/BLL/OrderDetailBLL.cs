@@ -60,6 +60,29 @@ namespace my_own_project.BLL
             }
         }
 
+        // ==================== UPDATE ====================
+        /// <summary>
+        /// Cập nhật số lượng món trong giỏ hàng, SubTotal tự tính lại.
+        /// </summary>
+        public static bool UpdateQuantity(int orderDetailID, int newQuantity)
+        {
+            try
+            {
+                if (orderDetailID <= 0)
+                    throw new Exception("OrderDetailID không hợp lệ!");
+
+                if (newQuantity <= 0)
+                    throw new Exception("Số lượng phải lớn hơn 0!");
+
+                return OrderDetailDAL.UpdateQuantity(orderDetailID, newQuantity);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"OrderDetailBLL.UpdateQuantity Error: {ex.Message}");
+                throw;
+            }
+        }
+
         // ==================== DELETE ====================
         public static bool RemoveOrderDetail(int orderDetailID, int orderID)
         {

@@ -104,13 +104,21 @@ namespace my_own_project.VIEW
 
             try
             {
-                int isActive = (cboStatus.Text == "Hoạt động") ? 1 : 0;
+                // Lấy user hiện tại từ DB để giữ nguyên các field không thay đổi (PasswordHash, CreatedAt...)
+                my_own_project.DTO.UserDTO userToUpdate = my_own_project.BLL.UserBLL.GetUserByID(_selectedUserID);
+                if (userToUpdate == null)
+                {
+                    MessageBox.Show("Không tìm thấy nhân viên!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-                string query = $"UPDATE Users SET FullName = N'{EscapeSQL(txtFullName.Text)}', Email = N'{EscapeSQL(txtEmail.Text)}', Phone = N'{EscapeSQL(txtPhone.Text)}', " +
-                               $"Role = N'{cboRole.Text}', IsActive = {isActive} " +
-                               $"WHERE UserID = {_selectedUserID}";
+                userToUpdate.FullName = txtFullName.Text.Trim();
+                userToUpdate.Email = txtEmail.Text.Trim();
+                userToUpdate.Phone = txtPhone.Text.Trim();
+                userToUpdate.Role = cboRole.Text;
+                userToUpdate.IsActive = (cboStatus.Text == "Hoạt động");
 
-                my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                my_own_project.BLL.UserBLL.UpdateUser(userToUpdate);
                 MessageBox.Show("Cập nhật thông tin thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 ClearInputs();
@@ -140,8 +148,7 @@ namespace my_own_project.VIEW
             {
                 try
                 {
-                    string query = $"DELETE FROM Users WHERE UserID = {_selectedUserID}";
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery(query);
+                    my_own_project.BLL.UserBLL.DeleteUser(_selectedUserID);
                     MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     ClearInputs();
                     LoadStaffData();
@@ -238,10 +245,6 @@ namespace my_own_project.VIEW
             return Regex.IsMatch(phone, @"^\d{10,11}$");
         }
 
-        private string EscapeSQL(string input)
-        {
-            return input.Replace("'", "''");
-        }
 
         #endregion
     }

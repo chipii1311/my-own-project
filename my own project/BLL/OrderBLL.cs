@@ -162,6 +162,29 @@ namespace my_own_project.BLL
             }
         }
 
+        /// <summary>
+        /// Hoàn tất đơn hàng sau khi thanh toán: cập nhật Status, TotalAmount, PromotionID, StaffID.
+        /// Thay thế cho việc ghép chuỗi SQL trực tiếp ở PaymentForm.
+        /// </summary>
+        public static bool CompleteOrder(int orderID, decimal totalAmount, int? promotionID, int staffID)
+        {
+            try
+            {
+                if (orderID <= 0)
+                    throw new Exception("OrderID không hợp lệ!");
+
+                if (totalAmount < 0)
+                    throw new Exception("Tổng tiền không hợp lệ!");
+
+                return OrderDAL.Complete(orderID, totalAmount, promotionID, staffID);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"OrderBLL.CompleteOrder Error: {ex.Message}");
+                throw;
+            }
+        }
+
         // ==================== HELPER ====================
         /// <summary>
         /// Lấy tổng số đơn hàng

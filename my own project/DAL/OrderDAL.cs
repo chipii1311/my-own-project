@@ -144,6 +144,31 @@ namespace my_own_project.DAL
             }
         }
 
+        /// <summary>
+        /// Hoàn tất đơn hàng — gọi SP sp_Orders_Complete với SqlParameter, không ghép chuỗi SQL.
+        /// </summary>
+        public static bool Complete(int orderID, decimal totalAmount, int? promotionID, int staffID)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@OrderID",     orderID),
+                    new SqlParameter("@TotalAmount", totalAmount),
+                    new SqlParameter("@PromotionID", promotionID.HasValue ? (object)promotionID.Value : DBNull.Value),
+                    new SqlParameter("@StaffID",     staffID > 0           ? (object)staffID          : DBNull.Value)
+                };
+
+                DataHelper.ExecuteSP("sp_Orders_Complete", parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"OrderDAL.Complete Error: {ex.Message}");
+                throw;
+            }
+        }
+
         // ==================== HELPER ====================
         private static OrderDTO MapDTO(DataRow row)
         {

@@ -17,7 +17,7 @@ namespace my_own_project.DAL
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    
+
                     new SqlParameter("@TableNumber", table.TableNumber),
                     new SqlParameter("@Capacity", table.Capacity),
                     new SqlParameter("@Status", table.Status ?? "Available"),
@@ -71,7 +71,7 @@ namespace my_own_project.DAL
             }
         }
 
-        
+
 
         public static DataTable GetAvailableTables()
         {
@@ -79,7 +79,7 @@ namespace my_own_project.DAL
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                    
+
                     new SqlParameter("@Status", "Available")
                 };
 
@@ -116,6 +116,29 @@ namespace my_own_project.DAL
             }
         }
 
+        /// <summary>
+        /// Cập nhật nhanh trạng thái bàn (Trống / Có khách / Đặt trước)
+        /// </summary>
+        public static bool UpdateStatus(int tableID, string status)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@TableID", tableID),
+                    new SqlParameter("@Status",  status ?? "Trống")
+                };
+
+                DataHelper.ExecuteSP("sp_DiningTable_UpdateStatus", parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DiningTableDAL.UpdateStatus Error: {ex.Message}");
+                throw;
+            }
+        }
+
         // ==================== DELETE ====================
         public static bool Delete(int tableID)
         {
@@ -142,12 +165,12 @@ namespace my_own_project.DAL
             return new DiningTableDTO
             {
                 TableID = (int)row["TableID"],
-                
+
                 TableNumber = (int)row["TableNumber"],
                 Capacity = (int)row["Capacity"],
                 Status = row["Status"]?.ToString() ?? "Available",
                 Notes = row["Notes"]?.ToString() ?? "",
-                
+
             };
         }
     }

@@ -37,8 +37,6 @@ namespace my_own_project.VIEW
             this.currentStaffID = staffID;
             this.currentStaffName = staffName;
 
-            // Gọi hàm dựng giao diện (từ file Designer)
-            // Lưu ý: Đảm bảo bạn có hàm BuildUI() trong file Designer hoặc định nghĩa ở đâu đó
             BuildUI();
 
             // Khởi tạo máy in khổ 80mm
@@ -86,30 +84,55 @@ namespace my_own_project.VIEW
         {
             try
             {
-                string query = @"SELECT PromotionID, 
-                                        PromotionName + ' (-' + CAST(CAST(DiscountPercent AS int) AS VARCHAR) + '%)' AS PromoDisplay, 
-                                        DiscountPercent 
-                                 FROM Promotion 
-                                 WHERE Status = 'Active' AND CAST(GETDATE() AS DATE) BETWEEN StartDate AND EndDate";
+                // [ĐÃ SỬA LỖI]: Thêm ApplyType và logic kiểm tra món ăn có trong đơn hàng không (EXISTS)
+                string query = $@"
+                    SELECT p.PromotionID, 
+                           p.PromotionName + ' (-' + CAST(CAST(p.DiscountPercent AS int) AS VARCHAR) + '%)' AS PromoDisplay, 
+                           p.DiscountPercent,
+                           p.ApplyType
+                    FROM Promotion p 
+                    WHERE p.Status = 'Active' 
+                      AND CAST(GETDATE() AS DATE) BETWEEN p.StartDate AND p.EndDate
+                      AND (
+                          p.ApplyType = 0 
+                          OR (p.ApplyType = 1 AND EXISTS (
+                              SELECT 1 
+                              FROM PromotionDetail pd 
+                              INNER JOIN OrderDetail od ON pd.MenuItemID = od.MenuItemID 
+                              WHERE pd.PromotionID = p.PromotionID AND od.OrderID = {currentOrderID}
+                          ))
+                      )";
+
                 DataTable dtPromo = my_own_project.DAL.DataHelper.ExecuteQuery(query);
 
                 DataRow dr = dtPromo.NewRow();
                 dr["PromotionID"] = -1;
                 dr["PromoDisplay"] = "-- Không áp dụng khuyến mãi --";
                 dr["DiscountPercent"] = 0;
+                dr["ApplyType"] = 0; // Khởi tạo mặc định để tránh lỗi Null
                 dtPromo.Rows.InsertAt(dr, 0);
+
+                // Gỡ sự kiện cũ để tránh lỗi gọi hàm tính toán nhiều lần khi load data
+                cboPromotion.SelectedIndexChanged -= CboPromotion_SelectedIndexChanged;
 
                 cboPromotion.DataSource = dtPromo;
                 cboPromotion.DisplayMember = "PromoDisplay";
                 cboPromotion.ValueMember = "PromotionID";
                 cboPromotion.SelectedIndex = 0;
 
-                cboPromotion.SelectedIndexChanged += (s, e) => CalculateFinalAmount();
+                // Gắn lại sự kiện
+                cboPromotion.SelectedIndexChanged += CboPromotion_SelectedIndexChanged;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi tải mã khuyến mãi: " + ex.Message);
             }
+        }
+
+        // Tách sự kiện ra hàm riêng cho sạch sẽ
+        private void CboPromotion_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CalculateFinalAmount();
         }
 
         private void CalculateFinalAmount()
@@ -120,7 +143,29 @@ namespace my_own_project.VIEW
             {
                 DataRowView drv = (DataRowView)cboPromotion.SelectedItem;
                 decimal percent = Convert.ToDecimal(drv["DiscountPercent"]);
-                discountAmount = subTotal * (percent / 100m);
+                int applyType = Convert.ToInt32(drv["ApplyType"]);
+                int promoID = Convert.ToInt32(drv["PromotionID"]);
+
+                if (applyType == 0)
+                {
+                    // [GIẢM TOÀN BILL]: Lấy Tổng bill * phần trăm
+                    discountAmount = subTotal * (percent / 100m);
+                }
+                else if (applyType == 1)
+                {
+                    // [ĐÃ SỬA LỖI] [GIẢM THEO MÓN]: Chỉ lấy Tổng tiền của riêng các món ăn được khuyến mãi trong đơn
+                    string checkEligibleSQL = $@"
+                        SELECT ISNULL(SUM(od.SubTotal), 0)
+                        FROM OrderDetail od
+                        INNER JOIN PromotionDetail pd ON od.MenuItemID = pd.MenuItemID
+                        WHERE od.OrderID = {currentOrderID} AND pd.PromotionID = {promoID}";
+
+                    object result = my_own_project.DAL.DataHelper.ExecuteScalar(checkEligibleSQL);
+                    decimal eligibleAmount = (result != null && result != DBNull.Value) ? Convert.ToDecimal(result) : 0;
+
+                    // Tiền giảm giá chỉ tính trên tiền món ăn hợp lệ
+                    discountAmount = eligibleAmount * (percent / 100m);
+                }
             }
 
             finalAmount = subTotal - discountAmount;
@@ -144,47 +189,23 @@ namespace my_own_project.VIEW
                 try
                 {
                     int selectedPromoID = Convert.ToInt32(cboPromotion.SelectedValue);
-                    string promoSQL = (selectedPromoID == -1) ? "NULL" : selectedPromoID.ToString();
+                    int? promoID = (selectedPromoID == -1) ? (int?)null : selectedPromoID;
 
-                    // FIX: Kiểm tra StaffID có thực sự tồn tại trong bảng Staff không
-                    // Bằng cách dùng hàm ExecuteScalar vừa được thêm vào DataHelper
-                    string staffIDSQL = "NULL";
-                    if (currentStaffID > 0)
-                    {
-                        string checkSQL = $"SELECT COUNT(1) FROM dbo.Staff WHERE StaffID = {currentStaffID}";
-                        object result = my_own_project.DAL.DataHelper.ExecuteScalar(checkSQL);
-                        bool staffExists = (result != null && Convert.ToInt32(result) > 0);
+                    // 1. Cập nhật trạng thái & tổng tiền đơn hàng qua BLL
+                    OrderBLL.CompleteOrder(currentOrderID, finalAmount, promoID, currentStaffID);
 
-                        if (staffExists)
-                        {
-                            staffIDSQL = currentStaffID.ToString();
-                        }
-                        // Nếu không tồn tại (admin), staffIDSQL vẫn giữ nguyên là "NULL" để tránh lỗi Foreign Key
-                    }
-
-                    // 1. Cập nhật Hóa đơn
-                    string updateOrderSQL = $@"UPDATE Orders 
-                                       SET Status = 'Completed', 
-                                           TotalAmount = {finalAmount}, 
-                                           PromotionID = {promoSQL},
-                                           StaffID = {staffIDSQL} 
-                                       WHERE OrderID = {currentOrderID}";
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery(updateOrderSQL);
-
-                    // 2. Lưu lịch sử giao dịch thanh toán
+                    // 2. Lưu lịch sử thanh toán
                     PaymentDTO newPayment = new PaymentDTO
                     {
                         OrderID = currentOrderID,
                         Method = cboPaymentMethod.Text,
                         Amount = finalAmount
                     };
-                    my_own_project.BLL.PaymentBLL.CreatePayment(newPayment);
+                    PaymentBLL.CreatePayment(newPayment);
 
                     // 3. Giải phóng bàn
                     if (tableID > 0)
-                    {
-                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = {tableID}");
-                    }
+                        DiningTableBLL.UpdateStatus(tableID, "Trống");
 
                     MessageBox.Show("Thanh toán thành công!", "Hoàn tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
 

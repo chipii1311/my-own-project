@@ -230,7 +230,8 @@ namespace my_own_project.VIEW
             {
                 try
                 {
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE MenuItem SET ItemStatus = 0 WHERE MenuItemID = {txtID.Text}");
+                    int menuItemID = Convert.ToInt32(txtID.Text);
+                    my_own_project.BLL.MenuItemBLL.DeleteMenuItem(menuItemID);
                     MessageBox.Show("Đã xóa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadProductData();
                 }

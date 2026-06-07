@@ -53,6 +53,30 @@ namespace my_own_project.DAL
             }
         }
 
+        // ==================== UPDATE ====================
+        /// <summary>
+        /// Cập nhật số lượng và tính lại SubTotal = newQuantity * UnitPrice.
+        /// </summary>
+        public static bool UpdateQuantity(int orderDetailID, int newQuantity)
+        {
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@OrderDetailID", orderDetailID),
+                    new SqlParameter("@Quantity",      newQuantity)
+                };
+
+                DataHelper.ExecuteSP("sp_OrderDetail_UpdateQuantity", parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"OrderDetailDAL.UpdateQuantity Error: {ex.Message}");
+                throw;
+            }
+        }
+
         // ==================== DELETE ====================
         public static bool Delete(int orderDetailID, int orderID)
         {

@@ -19,7 +19,7 @@ namespace my_own_project.DAL
             {
                 SqlParameter[] parameters = new SqlParameter[]
                 {
-                   
+
                     new SqlParameter("@CategoryID", item.CategoryID),
                     new SqlParameter("@ItemName", item.ItemName ?? ""),
                     new SqlParameter("@Description", item.Description ?? ""),
@@ -115,12 +115,28 @@ namespace my_own_project.DAL
         // ==================== UPDATE ====================
         public static bool Update(MenuItemDTO item)
         {
-            string imgQuery = string.IsNullOrEmpty(item.ImageUrl) ? "" : $", ImageUrl = '{item.ImageUrl}'";
+            try
+            {
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@MenuItemID",   item.MenuItemID),
+                    new SqlParameter("@CategoryID",   item.CategoryID),
+                    new SqlParameter("@ItemName",     item.ItemName      ?? ""),
+                    new SqlParameter("@Description",  item.Description   ?? ""),
+                    new SqlParameter("@Price",        item.Price),
+                    new SqlParameter("@Status",       item.Status        ?? "Active"),
+                    new SqlParameter("@ImageUrl",     item.ImageUrl      ?? ""),
+                    new SqlParameter("@ItemStatus",   item.ItemStatus)
+                };
 
-            string query = $"UPDATE MenuItem SET CategoryID = {item.CategoryID}, ItemName = N'{item.ItemName}', Price = {item.Price}, Status = N'{item.Status}' {imgQuery} WHERE MenuItemID = {item.MenuItemID}";
-
-            int rowsAffected = DataHelper.ExecuteNonQuery(query);
-            return rowsAffected > 0;
+                DataHelper.ExecuteSP("sp_MenuItem_Update", parameters);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"MenuItemDAL.Update Error: {ex.Message}");
+                throw;
+            }
         }
 
         // ==================== DELETE ====================
@@ -149,7 +165,7 @@ namespace my_own_project.DAL
             return new MenuItemDTO
             {
                 MenuItemID = (int)row["MenuItemID"],
-              
+
                 CategoryID = (int)row["CategoryID"],
                 ItemName = row["ItemName"]?.ToString() ?? "",
                 Description = row["Description"]?.ToString() ?? "",
@@ -160,7 +176,7 @@ namespace my_own_project.DAL
                 CreatedAt = row["CreatedAt"] != DBNull.Value ? (DateTime)row["CreatedAt"] : DateTime.Now,
                 UpdatedAt = row["UpdatedAt"] != DBNull.Value ? (DateTime?)row["UpdatedAt"] : null,
                 CategoryName = row["CategoryName"]?.ToString() ?? "",
-                
+
             };
         }
 

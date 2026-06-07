@@ -108,6 +108,28 @@ namespace my_own_project.BLL
             }
         }
 
+        /// <summary>
+        /// Cập nhật nhanh trạng thái bàn (Trống / Có khách / Đặt trước)
+        /// </summary>
+        public static bool UpdateStatus(int tableID, string status)
+        {
+            try
+            {
+                if (tableID <= 0)
+                    throw new Exception("TableID không hợp lệ!");
+
+                if (string.IsNullOrWhiteSpace(status))
+                    throw new Exception("Trạng thái không được để trống!");
+
+                return DiningTableDAL.UpdateStatus(tableID, status);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DiningTableBLL.UpdateStatus Error: {ex.Message}");
+                throw;
+            }
+        }
+
         // ==================== DELETE ====================
         public static bool DeleteTable(int tableID)
         {

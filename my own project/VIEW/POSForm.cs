@@ -151,22 +151,31 @@ namespace my_own_project.DesignForms
 
                     Button btnDelete = new Button { Anchor = AnchorStyles.Top | AnchorStyles.Right, Size = new Size(24, 24), Location = new Point(itemW - 28, 13), BackColor = Color.FromArgb(255, 200, 200), ForeColor = Color.Red, Text = "X", Font = new Font("Arial", 9F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Padding = new Padding(0), UseCompatibleTextRendering = true, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
                     btnDelete.FlatAppearance.BorderSize = 0;
-                    btnDelete.Click += (s, ev) => { my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderDetailID = {detailID}"); ShowBill(); };
+                    btnDelete.Click += (s, ev) =>
+                    {
+                        OrderDetailBLL.RemoveOrderDetail(detailID, currentOrderID);
+                        ShowBill();
+                    };
 
                     Label lblRowTotal = new Label { Anchor = AnchorStyles.Top | AnchorStyles.Right, Text = rowTotal.ToString("N0"), Location = new Point(itemW - 110, 15), Font = new Font("Segoe UI", 10F, FontStyle.Bold), AutoSize = true };
                     Label lblPrice = new Label { Anchor = AnchorStyles.Top | AnchorStyles.Right, Text = price.ToString("N0"), Location = new Point(itemW - 175, 15), Font = new Font("Segoe UI", 10F), AutoSize = true };
 
                     Button btnPlus = new Button { Anchor = AnchorStyles.Top | AnchorStyles.Right, Size = new Size(24, 24), Location = new Point(itemW - 215, 13), BackColor = Color.FromArgb(230, 230, 230), ForeColor = Color.Black, Text = "+", Font = new Font("Arial", 14F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Padding = new Padding(0), UseCompatibleTextRendering = true, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
                     btnPlus.FlatAppearance.BorderSize = 0;
-                    btnPlus.Click += (s, ev) => { my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE OrderDetail SET Quantity = Quantity + 1, SubTotal = (Quantity + 1) * UnitPrice WHERE OrderDetailID = {detailID}"); ShowBill(); };
+                    btnPlus.Click += (s, ev) =>
+                    {
+                        OrderDetailBLL.UpdateQuantity(detailID, qty + 1);
+                        ShowBill();
+                    };
 
                     Label lblQty = new Label { Anchor = AnchorStyles.Top | AnchorStyles.Right, Text = qty.ToString(), Location = new Point(itemW - 245, 13), Font = new Font("Segoe UI", 11F, FontStyle.Bold), AutoSize = false, Size = new Size(30, 24), TextAlign = ContentAlignment.MiddleCenter };
 
                     Button btnMinus = new Button { Anchor = AnchorStyles.Top | AnchorStyles.Right, Size = new Size(24, 24), Location = new Point(itemW - 275, 13), BackColor = Color.FromArgb(230, 230, 230), ForeColor = Color.Black, Text = "-", Font = new Font("Arial", 14F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Padding = new Padding(0), UseCompatibleTextRendering = true, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
                     btnMinus.FlatAppearance.BorderSize = 0;
-                    btnMinus.Click += (s, ev) => {
-                        if (qty > 1) my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE OrderDetail SET Quantity = Quantity - 1, SubTotal = (Quantity - 1) * UnitPrice WHERE OrderDetailID = {detailID}");
-                        else my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderDetailID = {detailID}");
+                    btnMinus.Click += (s, ev) =>
+                    {
+                        if (qty > 1) OrderDetailBLL.UpdateQuantity(detailID, qty - 1);
+                        else OrderDetailBLL.RemoveOrderDetail(detailID, currentOrderID);
                         ShowBill();
                     };
 
@@ -224,7 +233,7 @@ namespace my_own_project.DesignForms
 
                     currentOrderID = OrderBLL.CreateOrder(newOrder);
                     if (newOrder.TableID != null)
-                        my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Có khách' WHERE TableID = {newOrder.TableID}");
+                        DiningTableBLL.UpdateStatus(newOrder.TableID.Value, "Có khách");
                     LoadDiningTables();
                 }
 
@@ -247,10 +256,12 @@ namespace my_own_project.DesignForms
             {
                 try
                 {
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"UPDATE DiningTable SET Status = N'Trống' WHERE TableID = (SELECT TableID FROM Orders WHERE OrderID = {currentOrderID})");
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderDetail WHERE OrderID = {currentOrderID}");
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM OrderHistory WHERE OrderID = {currentOrderID}");
-                    my_own_project.DAL.DataHelper.ExecuteNonQuery($"DELETE FROM Orders WHERE OrderID = {currentOrderID}");
+                    // Lấy TableID của order để giải phóng bàn trước khi xóa order
+                    OrderDTO order = OrderBLL.GetOrderByID(currentOrderID);
+                    if (order?.TableID != null)
+                        DiningTableBLL.UpdateStatus(order.TableID.Value, "Trống");
+
+                    OrderBLL.CancelOrder(currentOrderID);
 
                     currentOrderID = -1;
                     ShowBill();
