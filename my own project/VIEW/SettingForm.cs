@@ -2,6 +2,7 @@
 using my_own_project.DAL;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace my_own_project.VIEW
@@ -22,22 +23,13 @@ namespace my_own_project.VIEW
         {
             try
             {
-                string q = @"
-                    SELECT TableID     AS [TableID],
-                           TableNumber AS [Số bàn],
-                           Capacity    AS [Sức chứa],
-                           Status      AS [Trạng thái]
-                    FROM   DiningTable
-                    ORDER  BY TableNumber";
-
-                DataTable dt = DataHelper.ExecuteQuery(q);
+                DataTable dt = DataHelper.ExecuteSPGetTable("sp_DiningTable_GetAll");
                 dgvTables.DataSource = dt;
 
                 if (dgvTables.Columns.Contains("TableID"))
                     dgvTables.Columns["TableID"].Visible = false;
 
-                if (lblTableCount != null)
-                    lblTableCount.Text = $"{dt.Rows.Count} bàn ăn";
+                lblTableCount.Text = $"{dt.Rows.Count} bàn ăn";
             }
             catch (Exception ex)
             {
@@ -49,14 +41,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                string q = @"
-                    SELECT CategoryID   AS [CategoryID],
-                           CategoryName AS [Tên danh mục]
-                    FROM   Category
-                    WHERE  IsActive = 1
-                    ORDER  BY CategoryID";
-
-                DataTable dt = DataHelper.ExecuteQuery(q);
+                DataTable dt = DataHelper.ExecuteSPGetTable("sp_Category_GetAll");
                 dgvCategories.DataSource = dt;
 
                 if (dgvCategories.Columns.Contains("CategoryID"))
@@ -122,7 +107,7 @@ namespace my_own_project.VIEW
 
             if (!int.TryParse(txtTableNumber.Text, out int num))
             {
-                ShowWarn("Số bàn chỉ được nhập số (VD: 1, 2, 3...)");
+                ShowWarn("Số bàn chỉ được nhập số!");
                 return;
             }
 
@@ -132,9 +117,15 @@ namespace my_own_project.VIEW
 
             try
             {
-                string q = $@"INSERT INTO DiningTable (TableNumber, Capacity, Status)
-                              VALUES ({num}, {cap}, N'{cboTableStatus.Text}')";
-                DataHelper.ExecuteNonQuery(q);
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@TableNumber", num),
+                    new SqlParameter("@Capacity", cap),
+                    new SqlParameter("@Status", cboTableStatus.Text ?? "Trống"),
+                    new SqlParameter("@Notes", "")
+                };
+
+                DataHelper.ExecuteSP("sp_DiningTable_Insert", parameters);
                 ShowInfo("✔️ Thêm bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -147,16 +138,11 @@ namespace my_own_project.VIEW
 
         private void BtnSaveTable_Click(object sender, EventArgs e)
         {
-            if (_selectedTableID == -1)
-            {
-                ShowWarn("Vui lòng chọn bàn cần sửa!");
-                return;
-            }
+            if (_selectedTableID == -1) { ShowWarn("Vui lòng chọn bàn!"); return; }
 
             if (!int.TryParse(txtTableNumber.Text, out int num))
             {
-                ShowWarn("Số bàn chỉ được nhập số!");
-                return;
+                ShowWarn("Số bàn không hợp lệ!"); return;
             }
 
             int cap = 4;
@@ -165,12 +151,16 @@ namespace my_own_project.VIEW
 
             try
             {
-                string q = $@"UPDATE DiningTable
-                              SET TableNumber = {num},
-                                  Capacity    = {cap},
-                                  Status      = N'{cboTableStatus.Text}'
-                              WHERE TableID = {_selectedTableID}";
-                DataHelper.ExecuteNonQuery(q);
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@TableID", _selectedTableID),
+                    new SqlParameter("@TableNumber", num),
+                    new SqlParameter("@Capacity", cap),
+                    new SqlParameter("@Status", cboTableStatus.Text ?? "Trống"),
+                    new SqlParameter("@Notes", "")
+                };
+
+                DataHelper.ExecuteSP("sp_DiningTable_Update", parameters);
                 ShowInfo("✔️ Cập nhật bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -183,22 +173,15 @@ namespace my_own_project.VIEW
 
         private void BtnDeleteTable_Click(object sender, EventArgs e)
         {
-            if (_selectedTableID == -1)
-            {
-                ShowWarn("Vui lòng chọn bàn cần xóa!");
-                return;
-            }
+            if (_selectedTableID == -1) return;
 
-            if (MessageBox.Show(
-                    $"Xóa bàn số {txtTableNumber.Text}? Hành động không thể hoàn tác.",
-                    "Xác nhận xóa",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show("Xóa bàn này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try
             {
-                DataHelper.ExecuteNonQuery($"DELETE FROM DiningTable WHERE TableID = {_selectedTableID}");
+                SqlParameter[] parameters = { new SqlParameter("@TableID", _selectedTableID) };
+                DataHelper.ExecuteSP("sp_DiningTable_Delete", parameters);
                 ShowInfo("✔️ Xóa bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -244,14 +227,17 @@ namespace my_own_project.VIEW
         {
             if (string.IsNullOrWhiteSpace(txtCategoryName.Text))
             {
-                ShowWarn("Vui lòng nhập tên danh mục!");
-                return;
+                ShowWarn("Vui lòng nhập tên danh mục!"); return;
             }
 
             try
             {
-                string q = $"INSERT INTO Category (CategoryName, IsActive) VALUES (N'{EscapeSQL(txtCategoryName.Text.Trim())}', 1)";
-                DataHelper.ExecuteNonQuery(q);
+                SqlParameter[] parameters =
+                {
+                    new SqlParameter("@CategoryName", txtCategoryName.Text.Trim())
+                };
+
+                DataHelper.ExecuteSP("sp_Category_Insert", parameters);
                 ShowInfo("✔️ Thêm danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
@@ -264,17 +250,18 @@ namespace my_own_project.VIEW
 
         private void BtnEditCategory_Click(object sender, EventArgs e)
         {
-            if (_selectedCategoryID == -1)
-            {
-                ShowWarn("Vui lòng chọn danh mục cần sửa!");
-                return;
-            }
+            if (_selectedCategoryID == -1) { ShowWarn("Vui lòng chọn danh mục!"); return; }
 
             try
             {
-                string q = $"UPDATE Category SET CategoryName = N'{EscapeSQL(txtCategoryName.Text.Trim())}' WHERE CategoryID = {_selectedCategoryID}";
-                DataHelper.ExecuteNonQuery(q);
-                ShowInfo("✔️ Cập nhật thành công!");
+                SqlParameter[] parameters =
+                {
+                    new SqlParameter("@CategoryID", _selectedCategoryID),
+                    new SqlParameter("@CategoryName", txtCategoryName.Text.Trim())
+                };
+
+                DataHelper.ExecuteSP("sp_Category_Update", parameters);
+                ShowInfo("✔️ Cập nhật danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
             }
@@ -286,22 +273,15 @@ namespace my_own_project.VIEW
 
         private void BtnDeleteCategory_Click(object sender, EventArgs e)
         {
-            if (_selectedCategoryID == -1)
-            {
-                ShowWarn("Vui lòng chọn danh mục cần xóa!");
-                return;
-            }
+            if (_selectedCategoryID == -1) return;
 
-            if (MessageBox.Show(
-                    $"Ẩn danh mục \"{txtCategoryName.Text}\"?",
-                    "Xác nhận",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show("Ẩn danh mục này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try
             {
-                DataHelper.ExecuteNonQuery($"UPDATE Category SET IsActive = 0 WHERE CategoryID = {_selectedCategoryID}");
+                SqlParameter[] parameters = { new SqlParameter("@CategoryID", _selectedCategoryID) };
+                DataHelper.ExecuteSP("sp_Category_Delete", parameters);
                 ShowInfo("✔️ Xóa danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();

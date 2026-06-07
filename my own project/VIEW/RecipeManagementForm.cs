@@ -2,6 +2,7 @@
 using my_own_project.DAL;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -15,11 +16,12 @@ namespace my_own_project.VIEW
         public RecipeManagementForm()
         {
             InitializeComponent();
+            BuildUI(); // Nếu bạn có hàm này trong Designer
+            this.Load += RecipeManagementForm_Load;
+        }
 
-            // Gọi hàm dựng giao diện từ file Designer
-            BuildUI();
-
-            // Tải dữ liệu ban đầu
+        private void RecipeManagementForm_Load(object sender, EventArgs e)
+        {
             LoadMenuItems();
             LoadIngredients();
             LoadRecipeBySelectedMenu();
@@ -30,7 +32,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                DataTable dt = DataHelper.ExecuteSPGetTable("sp_MenuItem_GetAllLite", null);
+                DataTable dt = DataHelper.ExecuteSPGetTable("sp_MenuItem_GetAllLite");
                 cboMenuItem.DataSource = dt;
                 cboMenuItem.DisplayMember = "ItemName";
                 cboMenuItem.ValueMember = "MenuItemID";
@@ -45,8 +47,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                DataTable dt = DataHelper.ExecuteSPGetTable("sp_Ingredient_GetAll", null);
-
+                DataTable dt = DataHelper.ExecuteSPGetTable("sp_Ingredient_GetAll");
                 cboIngredient.DataSource = dt.Copy();
                 cboIngredient.DisplayMember = "IngredientName";
                 cboIngredient.ValueMember = "IngredientID";
@@ -63,36 +64,19 @@ namespace my_own_project.VIEW
         private void LoadRecipeBySelectedMenu()
         {
             int menuItemID = GetSelectedMenuItemID();
-
             if (menuItemID <= 0)
             {
-                if (dgvRecipe != null) dgvRecipe.DataSource = null;
+                dgvRecipe.DataSource = null;
                 UpdateSelectedFoodText(0);
                 return;
             }
 
             try
             {
-                string query = @"
-                    SELECT
-                        r.RecipeID,
-                        r.MenuItemID,
-                        m.ItemName,
-                        r.IngredientID,
-                        i.IngredientName,
-                        i.Unit,
-                        r.Quantity,
-                        ISNULL(i.StockQuantity, 0) AS StockQuantity,
-                        ISNULL(i.MinStock, 0)      AS MinStock
-                    FROM dbo.Recipe r
-                    INNER JOIN dbo.MenuItem m ON r.MenuItemID = m.MenuItemID
-                    INNER JOIN dbo.Ingredient i ON r.IngredientID = i.IngredientID
-                    WHERE r.MenuItemID = " + menuItemID + @"
-                    ORDER BY i.IngredientName;";
+                SqlParameter[] parameters = { new SqlParameter("@MenuItemID", menuItemID) };
+                DataTable dt = DataHelper.ExecuteSPGetTable("sp_Recipe_GetByMenuItem", parameters);
 
-                DataTable dt = DataHelper.ExecuteQuery(query);
                 dgvRecipe.DataSource = dt;
-
                 FormatRecipeGrid();
                 UpdateSelectedFoodText(dt.Rows.Count);
             }
@@ -140,26 +124,27 @@ namespace my_own_project.VIEW
 
                 if (RecipeExists(menuItemID, ingredientID))
                 {
-                    DialogResult confirm = MessageBox.Show(
-                        "Nguyên liệu này đã có trong công thức. Bạn muốn cập nhật định lượng không?",
-                        "Nguyên liệu đã tồn tại",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (MessageBox.Show("Nguyên liệu này đã tồn tại. Cập nhật định lượng?", "Xác nhận",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                        return;
 
-                    if (confirm != DialogResult.Yes) return;
-
-                    string updateSql = @"
-                        UPDATE dbo.Recipe
-                        SET Quantity = " + SqlDecimal(quantity) + @"
-                        WHERE MenuItemID = " + menuItemID + @"
-                          AND IngredientID = " + ingredientID + ";";
-                    DataHelper.ExecuteNonQuery(updateSql);
+                    SqlParameter[] param = new SqlParameter[]
+                    {
+                        new SqlParameter("@MenuItemID", menuItemID),
+                        new SqlParameter("@IngredientID", ingredientID),
+                        new SqlParameter("@Quantity", quantity)
+                    };
+                    DataHelper.ExecuteSP("sp_Recipe_Update", param);
                 }
                 else
                 {
-                    string insertSql = @"
-                        INSERT INTO dbo.Recipe (MenuItemID, IngredientID, Quantity)
-                        VALUES (" + menuItemID + ", " + ingredientID + ", " + SqlDecimal(quantity) + ");";
-                    DataHelper.ExecuteNonQuery(insertSql);
+                    SqlParameter[] param = new SqlParameter[]
+                    {
+                        new SqlParameter("@MenuItemID", menuItemID),
+                        new SqlParameter("@IngredientID", ingredientID),
+                        new SqlParameter("@Quantity", quantity)
+                    };
+                    DataHelper.ExecuteSP("sp_Recipe_Insert", param);
                 }
 
                 MessageBox.Show("Lưu công thức thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -174,25 +159,23 @@ namespace my_own_project.VIEW
 
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
+            if (selectedRecipeID <= 0) throw new Exception("Vui lòng chọn dòng cần cập nhật.");
+
             try
             {
-                if (selectedRecipeID <= 0) throw new Exception("Vui lòng chọn dòng công thức cần cập nhật.");
-
                 int ingredientID = GetSelectedIngredientID();
                 decimal quantity = ReadQuantity();
 
-                if (ingredientID <= 0) throw new Exception("Vui lòng chọn nguyên liệu.");
-                if (quantity <= 0) throw new Exception("Định lượng phải lớn hơn 0.");
+                SqlParameter[] parameters = new SqlParameter[]
+                {
+                    new SqlParameter("@RecipeID", selectedRecipeID),
+                    new SqlParameter("@IngredientID", ingredientID),
+                    new SqlParameter("@Quantity", quantity)
+                };
 
-                string query = @"
-                    UPDATE dbo.Recipe
-                    SET IngredientID = " + ingredientID + @",
-                        Quantity     = " + SqlDecimal(quantity) + @"
-                    WHERE RecipeID = " + selectedRecipeID + ";";
+                DataHelper.ExecuteSP("sp_Recipe_Update", parameters);
 
-                DataHelper.ExecuteNonQuery(query);
-
-                MessageBox.Show("Cập nhật công thức thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Cập nhật thành công.", "Thành công");
                 ClearInput(false);
                 LoadRecipeBySelectedMenu();
             }
@@ -204,27 +187,24 @@ namespace my_own_project.VIEW
 
         private void BtnDelete_Click(object sender, EventArgs e)
         {
+            if (selectedRecipeID <= 0) return;
+
+            if (MessageBox.Show("Xóa nguyên liệu này khỏi công thức?", "Xác nhận",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
             try
             {
-                if (selectedRecipeID <= 0) throw new Exception("Vui lòng chọn dòng công thức cần xóa.");
+                SqlParameter[] parameters = { new SqlParameter("@RecipeID", selectedRecipeID) };
+                DataHelper.ExecuteSP("sp_Recipe_Delete", parameters);
 
-                DialogResult confirm = MessageBox.Show(
-                    "Bạn có chắc muốn xóa nguyên liệu này khỏi công thức?",
-                    "Xóa nguyên liệu",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-                if (confirm != DialogResult.Yes) return;
-
-                string query = "DELETE FROM dbo.Recipe WHERE RecipeID = " + selectedRecipeID + ";";
-                DataHelper.ExecuteNonQuery(query);
-
-                MessageBox.Show("Xóa khỏi công thức thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Xóa thành công.");
                 ClearInput(false);
                 LoadRecipeBySelectedMenu();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi: " + ex.Message);
             }
         }
 
@@ -326,11 +306,14 @@ namespace my_own_project.VIEW
         // ===================== CRUD HELPERS =====================
         private bool RecipeExists(int menuItemID, int ingredientID)
         {
-            string query = @"
-                SELECT RecipeID FROM dbo.Recipe
-                WHERE MenuItemID = " + menuItemID + " AND IngredientID = " + ingredientID + ";";
-            DataTable dt = DataHelper.ExecuteQuery(query);
-            return dt != null && dt.Rows.Count > 0;
+            SqlParameter[] parameters =
+            {
+                new SqlParameter("@MenuItemID", menuItemID),
+                new SqlParameter("@IngredientID", ingredientID)
+            };
+
+            DataTable dt = DataHelper.ExecuteSPGetTable("sp_Recipe_CheckExists", parameters);
+            return dt.Rows.Count > 0;
         }
 
         private void FillInputFromRecipeRow(int rowIndex)
@@ -350,15 +333,13 @@ namespace my_own_project.VIEW
         // ===================== GENERAL HELPERS =====================
         private int GetSelectedMenuItemID()
         {
-            if (cboMenuItem == null || cboMenuItem.SelectedValue == null) return 0;
-            if (cboMenuItem.SelectedValue is DataRowView) return 0;
+            if (cboMenuItem?.SelectedValue == null) return 0;
             return Convert.ToInt32(cboMenuItem.SelectedValue);
         }
 
         private int GetSelectedIngredientID()
         {
-            if (cboIngredient == null || cboIngredient.SelectedValue == null) return 0;
-            if (cboIngredient.SelectedValue is DataRowView) return 0;
+            if (cboIngredient?.SelectedValue == null) return 0;
             return Convert.ToInt32(cboIngredient.SelectedValue);
         }
 
@@ -366,7 +347,7 @@ namespace my_own_project.VIEW
         {
             string text = txtQuantity.Text.Trim().Replace(",", ".");
             if (!decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal qty))
-                throw new Exception("Định lượng không hợp lệ. Ví dụ nhập: 0.25 hoặc 1.");
+                throw new Exception("Định lượng không hợp lệ. Ví dụ: 0.25 hoặc 1");
             return qty;
         }
 
@@ -375,22 +356,16 @@ namespace my_own_project.VIEW
         private void ClearInput(bool clearIngredient)
         {
             selectedRecipeID = 0;
-            if (txtQuantity != null) txtQuantity.Clear();
+            txtQuantity.Clear();
             if (clearIngredient && cboIngredient != null && cboIngredient.Items.Count > 0)
                 cboIngredient.SelectedIndex = 0;
         }
 
         private void UpdateSelectedFoodText(int recipeCount)
         {
-            string foodName = cboMenuItem == null ? "" : cboMenuItem.Text;
-
-            if (lblSelectedFood != null)
-                lblSelectedFood.Text = string.IsNullOrWhiteSpace(foodName)
-                    ? "Chưa chọn món"
-                    : "Công thức: " + foodName;
-
-            if (lblRecipeCount != null)
-                lblRecipeCount.Text = recipeCount > 0 ? recipeCount + " nguyên liệu" : "";
+            string foodName = cboMenuItem?.Text ?? "";
+            lblSelectedFood.Text = string.IsNullOrWhiteSpace(foodName) ? "Chưa chọn món" : "Công thức: " + foodName;
+            lblRecipeCount.Text = recipeCount > 0 ? recipeCount + " nguyên liệu" : "";
         }
 
         private void FilterIngredientGrid()
