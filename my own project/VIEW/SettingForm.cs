@@ -1,4 +1,5 @@
 ﻿using Guna.UI2.WinForms;
+using my_own_project.BLL;
 using my_own_project.DAL;
 using System;
 using System.Data;
@@ -23,7 +24,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                DataTable dt = DataHelper.ExecuteSPGetTable("sp_DiningTable_GetAll");
+                DataTable dt = DiningTableBLL.GetAllTables();
                 dgvTables.DataSource = dt;
 
                 if (dgvTables.Columns.Contains("TableID"))
@@ -41,7 +42,7 @@ namespace my_own_project.VIEW
         {
             try
             {
-                DataTable dt = DataHelper.ExecuteSPGetTable("sp_Category_GetAll");
+                DataTable dt = CategoryBLL.GetAllCategories();
                 dgvCategories.DataSource = dt;
 
                 if (dgvCategories.Columns.Contains("CategoryID"))
@@ -117,15 +118,15 @@ namespace my_own_project.VIEW
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[]
+                var table = new DiningTableDTO
                 {
-                    new SqlParameter("@TableNumber", num),
-                    new SqlParameter("@Capacity", cap),
-                    new SqlParameter("@Status", cboTableStatus.Text ?? "Trống"),
-                    new SqlParameter("@Notes", "")
+                    TableNumber = num,
+                    Capacity = cap,
+                    Status = cboTableStatus.Text ?? "Trống",
+                    Notes = ""
                 };
 
-                DataHelper.ExecuteSP("sp_DiningTable_Insert", parameters);
+                DiningTableBLL.AddTable(table);
                 ShowInfo("✔️ Thêm bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -151,16 +152,16 @@ namespace my_own_project.VIEW
 
             try
             {
-                SqlParameter[] parameters = new SqlParameter[]
+                var table = new DiningTableDTO
                 {
-                    new SqlParameter("@TableID", _selectedTableID),
-                    new SqlParameter("@TableNumber", num),
-                    new SqlParameter("@Capacity", cap),
-                    new SqlParameter("@Status", cboTableStatus.Text ?? "Trống"),
-                    new SqlParameter("@Notes", "")
+                    TableID = _selectedTableID,
+                    TableNumber = num,
+                    Capacity = cap,
+                    Status = cboTableStatus.Text ?? "Trống",
+                    Notes = ""
                 };
 
-                DataHelper.ExecuteSP("sp_DiningTable_Update", parameters);
+                DiningTableBLL.UpdateTable(table);
                 ShowInfo("✔️ Cập nhật bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -180,8 +181,7 @@ namespace my_own_project.VIEW
 
             try
             {
-                SqlParameter[] parameters = { new SqlParameter("@TableID", _selectedTableID) };
-                DataHelper.ExecuteSP("sp_DiningTable_Delete", parameters);
+                DiningTableBLL.DeleteTable(_selectedTableID);
                 ShowInfo("✔️ Xóa bàn thành công!");
                 ClearTableForm();
                 LoadTableData();
@@ -232,12 +232,9 @@ namespace my_own_project.VIEW
 
             try
             {
-                SqlParameter[] parameters =
-                {
-                    new SqlParameter("@CategoryName", txtCategoryName.Text.Trim())
-                };
+                var category = new CategoryDTO { CategoryName = txtCategoryName.Text.Trim() };
 
-                DataHelper.ExecuteSP("sp_Category_Insert", parameters);
+                CategoryBLL.AddCategory(category);
                 ShowInfo("✔️ Thêm danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
@@ -254,13 +251,13 @@ namespace my_own_project.VIEW
 
             try
             {
-                SqlParameter[] parameters =
+                var category = new CategoryDTO
                 {
-                    new SqlParameter("@CategoryID", _selectedCategoryID),
-                    new SqlParameter("@CategoryName", txtCategoryName.Text.Trim())
+                    CategoryID = _selectedCategoryID,
+                    CategoryName = txtCategoryName.Text.Trim()
                 };
 
-                DataHelper.ExecuteSP("sp_Category_Update", parameters);
+                CategoryBLL.UpdateCategory(category);
                 ShowInfo("✔️ Cập nhật danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
@@ -280,8 +277,7 @@ namespace my_own_project.VIEW
 
             try
             {
-                SqlParameter[] parameters = { new SqlParameter("@CategoryID", _selectedCategoryID) };
-                DataHelper.ExecuteSP("sp_Category_Delete", parameters);
+                CategoryBLL.DeleteCategory(_selectedCategoryID);
                 ShowInfo("✔️ Xóa danh mục thành công!");
                 ClearCatForm();
                 LoadCategoryData();
