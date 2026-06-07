@@ -1,6 +1,5 @@
 ﻿using Guna.UI2.WinForms;
 using my_own_project.BLL;
-using my_own_project.DAL;
 using my_own_project.DTO;
 using System;
 using System.Data;
@@ -58,7 +57,7 @@ namespace my_own_project.DesignForms
             {
                 object currentSelectedValue = cboTable?.SelectedValue;
 
-                DataTable dt = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_DiningTable_GetAll");
+                DataTable dt = DiningTableBLL.GetAllTables();
                 dt.Columns.Add("TableDisplay", typeof(string));
                 foreach (DataRow row in dt.Rows) row["TableDisplay"] = $"Bàn {row["TableNumber"]} - {row["Status"]}";
 
@@ -87,12 +86,12 @@ namespace my_own_project.DesignForms
             Guna2Button btnAll = CreateCatButton("All", 0);
             btnAll.Checked = true;
             flpCategories.Controls.Add(btnAll);
-            try { foreach (DataRow row in CategoryDAL.GetAll().Rows) flpCategories.Controls.Add(CreateCatButton(row["CategoryName"].ToString(), Convert.ToInt32(row["CategoryID"]))); } catch { }
+            try { foreach (DataRow row in CategoryBLL.GetAllCategories().Rows) flpCategories.Controls.Add(CreateCatButton(row["CategoryName"].ToString(), Convert.ToInt32(row["CategoryID"]))); } catch { }
         }
 
         private void LoadMenuItems()
         {
-            dtAllMenu = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_POS_GetMenuWithStockStatus");
+            dtAllMenu = MenuItemBLL.GetAllForPOS(); // Assume or add this method
             LoadCategories();
             FilterMenu(0, "");
         }
@@ -202,10 +201,7 @@ namespace my_own_project.DesignForms
                 else
                 {
                     int tableID = Convert.ToInt32(val);
-                    System.Data.SqlClient.SqlParameter[] p = new System.Data.SqlClient.SqlParameter[] { new System.Data.SqlClient.SqlParameter("@TableID", tableID) };
-                    DataTable dtOrder = my_own_project.DAL.DataHelper.ExecuteSPGetTable("sp_Orders_GetByTable", p);
-                    if (dtOrder != null && dtOrder.Rows.Count > 0) currentOrderID = Convert.ToInt32(dtOrder.Rows[0]["OrderID"]);
-                    else currentOrderID = -1;
+                    currentOrderID = OrderBLL.GetOrderIDByTable(tableID); // Use BLL
                 }
                 ShowBill();
             }
@@ -308,7 +304,6 @@ namespace my_own_project.DesignForms
                 }
 
                 // 2. Thanh toán như cũ
-                // Tùy thuộc namespace của PaymentForm bạn đang sử dụng
                 my_own_project.VIEW.PaymentForm frm = new my_own_project.VIEW.PaymentForm(currentOrderID, -1, currentStaffID, currentStaffName);
 
                 if (frm.ShowDialog() == DialogResult.OK)
