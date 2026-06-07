@@ -3,6 +3,7 @@ using my_own_project.BLL;
 using my_own_project.DTO;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 // [ĐÃ SỬA]: Bỏ using my_own_project.DAL — Form không được gọi trực tiếp xuống DAL
@@ -33,8 +34,7 @@ namespace my_own_project.VIEW
                 if (dgvTables.Columns.Contains("TableID"))
                     dgvTables.Columns["TableID"].Visible = false;
 
-                if (lblTableCount != null)
-                    lblTableCount.Text = $"{dt.Rows.Count} bàn ăn";
+                lblTableCount.Text = $"{dt.Rows.Count} bàn ăn";
             }
             catch (Exception ex)
             {
@@ -114,7 +114,7 @@ namespace my_own_project.VIEW
 
             if (!int.TryParse(txtTableNumber.Text, out int num))
             {
-                ShowWarn("Số bàn chỉ được nhập số (VD: 1, 2, 3...)");
+                ShowWarn("Số bàn chỉ được nhập số!");
                 return;
             }
 
@@ -146,16 +146,11 @@ namespace my_own_project.VIEW
 
         private void BtnSaveTable_Click(object sender, EventArgs e)
         {
-            if (_selectedTableID == -1)
-            {
-                ShowWarn("Vui lòng chọn bàn cần sửa!");
-                return;
-            }
+            if (_selectedTableID == -1) { ShowWarn("Vui lòng chọn bàn!"); return; }
 
             if (!int.TryParse(txtTableNumber.Text, out int num))
             {
-                ShowWarn("Số bàn chỉ được nhập số!");
-                return;
+                ShowWarn("Số bàn không hợp lệ!"); return;
             }
 
             int cap = 4;
@@ -187,17 +182,9 @@ namespace my_own_project.VIEW
 
         private void BtnDeleteTable_Click(object sender, EventArgs e)
         {
-            if (_selectedTableID == -1)
-            {
-                ShowWarn("Vui lòng chọn bàn cần xóa!");
-                return;
-            }
+            if (_selectedTableID == -1) return;
 
-            if (MessageBox.Show(
-                    $"Xóa bàn số {txtTableNumber.Text}? Hành động không thể hoàn tác.",
-                    "Xác nhận xóa",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show("Xóa bàn này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try
@@ -249,8 +236,7 @@ namespace my_own_project.VIEW
         {
             if (string.IsNullOrWhiteSpace(txtCategoryName.Text))
             {
-                ShowWarn("Vui lòng nhập tên danh mục!");
-                return;
+                ShowWarn("Vui lòng nhập tên danh mục!"); return;
             }
 
             try
@@ -275,11 +261,7 @@ namespace my_own_project.VIEW
 
         private void BtnEditCategory_Click(object sender, EventArgs e)
         {
-            if (_selectedCategoryID == -1)
-            {
-                ShowWarn("Vui lòng chọn danh mục cần sửa!");
-                return;
-            }
+            if (_selectedCategoryID == -1) { ShowWarn("Vui lòng chọn danh mục!"); return; }
 
             try
             {
@@ -304,17 +286,9 @@ namespace my_own_project.VIEW
 
         private void BtnDeleteCategory_Click(object sender, EventArgs e)
         {
-            if (_selectedCategoryID == -1)
-            {
-                ShowWarn("Vui lòng chọn danh mục cần xóa!");
-                return;
-            }
+            if (_selectedCategoryID == -1) return;
 
-            if (MessageBox.Show(
-                    $"Ẩn danh mục \"{txtCategoryName.Text}\"?",
-                    "Xác nhận",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show("Ẩn danh mục này?", "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try

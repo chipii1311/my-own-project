@@ -12,7 +12,7 @@ namespace my_own_project.DAL
 {
     public class DashboardDAL
     {
-        private static DataTable GetDataWithDateRange(string spName, DateTime startDate, DateTime endDate)
+        public static DataTable GetDataWithDateRange(string spName, DateTime startDate, DateTime endDate)
         {
             SqlParameter[] parameters = new SqlParameter[]
             {
